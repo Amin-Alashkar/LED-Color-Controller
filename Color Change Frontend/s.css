@@ -1,0 +1,316 @@
+@keyframes ledGlow {
+    0% { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+    50% { text-shadow: 0 0 15px currentColor, 0 0 30px currentColor; }
+    100% { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+}
+
+@keyframes colorChange {
+    0% { color: #ff0000; }
+    25% { color: #ffff00; }
+    50% { color: #00ff00; }
+    75% { color: #00ffff; }
+    100% { color: #ff0000; }
+}
+
+@keyframes rotateHue {
+    0% { border-color: #ff0000; }
+    25% { border-color: #ffff00; }
+    50% { border-color: #00ff00; }
+    75% { border-color: #00ffff; }
+    100% { border-color: #ff0000; }
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.5s ease;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    min-height: 100vh;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1) inset;
+}
+
+.led-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    animation: ledGlow 2s infinite, colorChange 8s infinite;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    position: relative;
+    display: inline-block;
+}
+
+.led-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    animation: ledGlow 2s infinite;
+}
+
+.button-title{
+    /* font-size: 2.5rem; */
+    font-weight: bold;
+    margin-bottom: 30px;
+    animation: ledGlow 2s infinite, colorChange 8s infinite;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    position: relative;
+    display: inline-block;
+}
+
+.button-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    animation: ledGlow 2s infinite;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.2);
+}
+
+
+#redBtn {
+    background-color: #ff0000;
+    color: white;
+}
+
+#greenBtn {
+    background-color: #00ff00;
+}
+
+#blueBtn {
+    background-color: #0000ff;
+    color: white;
+}
+
+#orangeBtn {
+    background-color: #FFA500;
+    color: black;
+}
+
+
+#yellowBtn {
+    color: black;
+    background-color: #FFFF00;
+}
+#purpleBtn {
+    background-color: #A020F0;
+    color: black;
+}
+
+#pinkBtn {
+    background-color: #FFC0CB;
+    color: black;
+}
+
+
+#whiteBtn {
+    background-color: #FFFFFF;
+    color: black;
+}
+
+
+#gray-greyBtn {
+    background-color: #808080;
+    color: black;
+}
+
+
+#brownBtn {
+    background-color: #964B00;
+    color: black;
+}
+
+
+#offBtn {
+    background-color: #000000;
+    color: white;
+}
+
+
+@keyframes rotateColors {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.color-picker-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 20px auto;
+}
+
+#colorPicker {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
+#colorPicker:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.color-ring {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #ff0000, 
+        #ff8000, 
+        #ffff00, 
+        #80ff00, 
+        #00ff00, 
+        #00ff80, 
+        #00ffff, 
+        #0080ff, 
+        #0000ff, 
+        #8000ff, 
+        #ff00ff, 
+        #ff0080,
+        #ff0000
+    );
+    animation: rotateColors 5s linear infinite;
+    box-sizing: border-box;
+    z-index: 1;
+    filter: blur(5px);
+    opacity: 0.8;
+}
+
+.color-ring-inner {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    background: white;
+    border-radius: 50%;
+    top: 5px;
+    left: 5px;
+    z-index: 1;
+}
+.color-picker-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 20px auto;
+}
+
+#colorPicker {
+    width: 100px;
+    height: 100px;
+    position: absolute; 
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
+#colorPicker:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.color-ring {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid;
+    border-color: #ff0000;
+    animation: rotateHue 8s linear infinite;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    transition: all 0.3s ease;
+}
+
+.color-display {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background: #ff0000;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+@keyframes lightOneByOne {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+    }
+    25% {
+        box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+    }
+    75% {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+    }
+}
+
+.light-one {
+animation: lightOneByOne 2s infinite alternate;
+border-radius: 8px;
+transition: all 0.3s ease-in-out;
+}
