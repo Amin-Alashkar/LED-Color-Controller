@@ -308,9 +308,121 @@ button:hover {
         box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
     }
 }
+/* إضافة هذه الأنماط في نهاية الملف */
 
-.light-one {
-animation: lightOneByOne 2s infinite alternate;
-border-radius: 8px;
-transition: all 0.3s ease-in-out;
+/* أنميشن الزر النشط */
+.button-container button.active {
+    animation: pulse 1.5s infinite;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#lightOneBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#lightOneBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#lightOneBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#lightOneBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#lightOneBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#lightOneBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+#offBtn {
+    background: #000000;
+    color: white;
+    font-weight: bold;
+    border: 2px solid #333;
+}
+
+#offBtn:hover {
+    background: #333;
+    transform: scale(1.05);
 }
