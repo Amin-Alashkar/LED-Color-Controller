@@ -159,6 +159,11 @@ button:hover {
     color: white;
 }
 
+#off2Btn {
+    background-color: #000000;
+    color: white;
+}
+
 
 @keyframes rotateColors {
     0% { transform: rotate(0deg); }
@@ -308,9 +313,8 @@ button:hover {
         box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
     }
 }
-/* إضافة هذه الأنماط في نهاية الملف */
 
-/* أنميشن الزر النشط */
+
 .button-container button.active {
     animation: pulse 1.5s infinite;
     position: relative;
@@ -415,14 +419,919 @@ button:hover {
     }
 }
 
-#offBtn {
-    background: #000000;
-    color: white;
-    font-weight: bold;
-    border: 2px solid #333;
+
+
+.button-container button.active {
+    animation: pulse 1.5s infinite;
+    position: relative;
+    z-index: 1;
 }
 
-#offBtn:hover {
-    background: #333;
-    transform: scale(1.05);
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
 }
+
+/* تأثير خاص لزر Light One by One */
+#WaveEffectBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#WaveEffectBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#WaveEffectBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#WaveEffectBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#WaveEffectBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#WaveEffectBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#FadeInandOutBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#FadeInandOutBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#FadeInandOutBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#FadeInandOutBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#FadeInandOutBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#FadeInandOutBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#RainbowFlowBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#RainbowFlowBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#RainbowFlowBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#RainbowFlowBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#RainbowFlowBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#RainbowFlowBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#BlinkingPatternBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#BlinkingPatternBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#BlinkingPatternBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#BlinkingPatternBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#BlinkingPatternBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#BlinkingPatternBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#RunningLightsBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#RunningLightsBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#RunningLightsBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#RunningLightsBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#RunningLightsBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#RunningLightsBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#BreathingEffectBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#BreathingEffectBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#BreathingEffectBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#BreathingEffectBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#BreathingEffectBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#BreathingEffectBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#MeteorShowerBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#MeteorShowerBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#MeteorShowerBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#MeteorShowerBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#MeteorShowerBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#MeteorShowerBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#PulseSyncBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#PulseSyncBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#PulseSyncBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#PulseSyncBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#PulseSyncBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#PulseSyncBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#FireworksBurstBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#FireworksBurstBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#FireworksBurstBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#FireworksBurstBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#FireworksBurstBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#FireworksBurstBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
