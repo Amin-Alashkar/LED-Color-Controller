@@ -28,6 +28,7 @@ stop_requested = False
 class AnimationRequest(BaseModel):
     animation_type: str
     color_index: int = 0
+    hex_color: str = None  # أضف هذا الحقل
 
 class ColorRequest(BaseModel):
     hex_color: str
@@ -94,16 +95,20 @@ async def start_animation(request: AnimationRequest):
 @app.post("/color")
 async def set_color(request: ColorRequest):
     with animation_lock:
-        # Clear queue and stop current animation
         animation_queue.clear()
         global stop_requested
         stop_requested = True
         
-        # Add solid color request
-        animation_queue.append(AnimationRequest(
-            animation_type="solid_color",
-            hex_color=request.hex_color
-        ))
+        # استخدم ColorRequest مباشرة
+        r = int(request.hex_color[1:3], 16)
+        g = int(request.hex_color[3:5], 16)
+        b = int(request.hex_color[5:7], 16)
+        
+        # ضع اللون مباشرة دون إضافته للقائمة
+        for i in range(20):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+    
     return {"status": "color_changed", "color": request.hex_color}
 
 @app.post("/stop")
@@ -118,3 +123,6 @@ async def stop_animation():
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
     return {"status": "stopped"}
+
+
+    
