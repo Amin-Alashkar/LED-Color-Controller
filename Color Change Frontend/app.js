@@ -4,6 +4,7 @@ const API_BASE_URL = "http://10.220.1.123:8000";
 const colorDisplay = document.getElementById('colorDisplay');
 const lightOneBtn = document.getElementById('lightOneBtn');
 const offBtn = document.getElementById('offBtn');
+const off2Btn = document.getElementById('off2Btn');
 
 // Animation state
 let isAnimationRunning = false;
@@ -24,26 +25,29 @@ async function sendRequest(endpoint, data) {
     }
 }
 
-async function setColor(color) {
+async function changeColor(color) {
+    // أوقف أي تأثير قيد التشغيل أولاً
+    await stopAnimation();
     updateUI(color);
     await sendRequest("/color", { hex_color: color });
 }
 
 async function startLightOneByOne() {
-    if (isAnimationRunning) return;
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
     
     isAnimationRunning = true;
     lightOneBtn.classList.add('active');
-    lightOneBtn.textContent = 'Running...';
+    lightOneBtn.textContent = 'Light One by One (Running)';
     
     const response = await sendRequest("/animate", {
         animation_type: "light_one_by_one",
         color_index: 0
     });
     
-    if (response.status === "queued") {
-        // Animation started successfully
-    } else {
+    if (response.status !== "queued") {
         resetAnimationState();
     }
 }
@@ -52,6 +56,18 @@ async function stopAnimation() {
     const response = await sendRequest("/stop");
     resetAnimationState();
     updateUI('#000000');
+}
+
+function resetAnimationState() {
+    isAnimationRunning = false;
+    // أعد تعيين كل أزرار التأثيرات
+    document.querySelectorAll('.button-container button').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.id === 'lightOneBtn') {
+            btn.textContent = 'Light One by One';
+        }
+        // يمكنك إضافة المزيد من الأزرار هنا إذا لزم الأمر
+    });
 }
 
 function resetAnimationState() {
@@ -81,6 +97,10 @@ function setTextColor(color) {
 // Event Listeners
 lightOneBtn.addEventListener("click", startLightOneByOne);
 offBtn.addEventListener("click", stopAnimation);
+off2Btn.addEventListener("click", stopAnimation);
 
 // Initialize
 updateUI('#ff0000');
+
+
+
