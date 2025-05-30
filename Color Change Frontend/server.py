@@ -1,4 +1,4 @@
-# Server.py
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
@@ -7,11 +7,11 @@ from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 
-# Raspberry Pi NeoPixel init
+
 neo = Pi5Neo('/dev/spidev0.0', 20, 800)
 app = FastAPI()
 
-# Enable CORS
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -20,12 +20,12 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# Animation control variables
+
 animation_queue = deque()
 animation_lock = threading.Lock()
 stop_requested = False
 
-# Request models
+
 class AnimationRequest(BaseModel):
     animation_type: str        # "light_one_by_one" | "fade_colors" | "solid_color"
     color_index: int = 0       # used by light_one_by_one
