@@ -1,14 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
 import asyncio
+from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
+import threading
+import time
 
-# إعداد الراسبيري والـFastAPI
 neo = Pi5Neo('/dev/spidev0.0', 20, 800)
 app = FastAPI()
-
-# تمكين CORS
+stop_requested = False
+pause_durtion = 0
+# Enable CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,19 +20,146 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# متغيرات تحكم بالأنيميشن
+# Animation control variables
+animation_queue = deque()
+current_animation_task = None
+animation_lock = threading.Lock()
 stop_requested = False
-animation_task: asyncio.Task = None
 
-# نماذج البيانات
 class AnimationRequest(BaseModel):
     animation_type: str
     color_index: int = 0
+    hex_color: str = None  # أضف هذا الحقل
 
 class ColorRequest(BaseModel):
     hex_color: str
 
-# دالة تشغيل دورة واحدة
+async def light_up_one_by_one(color_index, delay=0.011):
+    global stop_requested
+    colors = [
+        (255, 0, 50), (255, 0, 0), (255, 55, 0),
+        (255, 255, 0), (0, 255, 0), (0, 255, 255),
+        (0, 0, 255), (255, 0, 50), (255, 0, 255),
+        (255, 105, 180)
+    ]
+    color = colors[color_index % len(colors)]
+    
+    stop_requested = False
+    for j in range(20):
+        if stop_requested:
+            break
+        for i in range(19, j - 1, -1):
+            if stop_requested:
+                break
+            neo.set_led_color(i, *color)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+            if i != j:
+                neo.set_led_color(i, 0, 0, 0)
+            neo.update_strip()
+        neo.set_led_color(j, *color)
+    neo.update_strip()
+
+async def animation_worker():
+    global current_animation_task, stop_requested
+    while True:
+        if animation_queue:
+            with animation_lock:
+                request = animation_queue.popleft()
+            
+            stop_requested = False
+            if request.animation_type == "light_oneby_one":
+                while not stop_requested:
+                    await light_up_one_by_one(request.color_index)
+                    await asyncio.sleep(pause_durtion)
+            elif request.animation_type == "solid_color":
+                r = int(request.hex_color[1:3], 16)
+                g = int(request.hex_color[3:5], 16)
+                b = int(request.hex_color[5:7], 16)
+                for i in range(20):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+            current_animation_task = None
+        await asyncio.sleep(0.1)
+
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(animation_worker())
+
+@app.post("/animate")
+async def start_animation(request: AnimationRequest):
+    with animation_lock:
+        animation_queue.append(request)
+    return {"status": "queued", "animation": request.animation_type}
+
+@app.post("/color")
+async def set_color(request: ColorRequest):
+    with animation_lock:
+        animation_queue.clear()
+        global stop_requested
+        stop_requested = True
+        
+        # استخدم ColorRequest مباشرة
+        r = int(request.hex_color[1:3], 16)
+        g = int(request.hex_color[3:5], 16)
+        b = int(request.hex_color[5:7], 16)
+        
+        # ضع اللون مباشرة دون إضافته للقائمة
+        for i in range(20):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+    
+    return {"status": "color_changed", "color": request.hex_color}
+
+@app.post("/stop")
+async def stop_animation():
+    with animation_lock:
+        animation_queue.clear()
+        global stop_requested
+        stop_requested = True
+        
+        # Turn all LEDs off
+        for i in range(20):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+    return {"status": "stopped"} 
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from pi5neo import Pi5Neo
+import asyncio
+from collections import deque
+from fastapi.middleware.cors import CORSMiddleware
+import threading
+
+# إعداد الراسبيري والـFastAPI
+neo = Pi5Neo('/dev/spidev0.0', 20, 800)
+app = FastAPI()
+
+# تمكين CORS لكل الواجهات
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+# متغيرات التحكم بالأنيميشن
+animation_queue = deque()
+animation_lock = threading.Lock()
+stop_requested = False
+pause_duration = 0  # تأخير صفري بين الدورات
+
+# نماذج البيانات الواردة من العميل
+class AnimationRequest(BaseModel):
+    animation_type: str
+    color_index: int = 0
+    hex_color: str = None
+
+class ColorRequest(BaseModel):
+    hex_color: str
+
+# دالة التشغيل خطوة بخطوة
 async def light_up_one_by_one(color_index, delay=0.011):
     colors = [
         (255, 0, 50), (255, 0, 0), (255, 55, 0),
@@ -38,8 +168,9 @@ async def light_up_one_by_one(color_index, delay=0.011):
         (255, 105, 180)
     ]
     color = colors[color_index % len(colors)]
+
     for j in range(20):
-        if stop_requested: 
+        if stop_requested:
             break
         for i in range(19, j - 1, -1):
             if stop_requested:
@@ -53,55 +184,74 @@ async def light_up_one_by_one(color_index, delay=0.011):
         neo.set_led_color(j, *color)
     neo.update_strip()
 
-# المهمة التي تدير الأنيميشن المتكرر
-async def run_animation_loop(color_index):
+# عامل المعالجة الخلفية للانيميشن
+async def animation_worker():
     global stop_requested
-    while not stop_requested:
-        await light_up_one_by_one(color_index)
-    # عند الخروج، تأكد الإنارة مطفأة
-    for i in range(20):
-        neo.set_led_color(i, 0, 0, 0)
-    neo.update_strip()
+    while True:
+        if animation_queue:
+            with animation_lock:
+                request = animation_queue.popleft()
+            stop_requested = False
 
-# نقطة نهاية لبدء الأنيميشن
+            if request.animation_type == "light_one_by_one":
+                # كرر الأنيميشن فورًا بدون توقف حتى يطلب المستخدم الإيقاف
+                while not stop_requested:
+                    await light_up_one_by_one(request.color_index)
+                    await asyncio.sleep(pause_duration)
+
+            elif request.animation_type == "solid_color":
+                # تنفيذ تغيير اللون الثابت
+                r = int(request.hex_color[1:3], 16)
+                g = int(request.hex_color[3:5], 16)
+                b = int(request.hex_color[5:7], 16)
+                for i in range(20):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+
+        await asyncio.sleep(0.1)
+
+# تشغيل عامل الأنيميشن مع بدء السيرفر
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(animation_worker())
+
+# نقطة نهاية لبدء أنيميشن
 @app.post("/animate")
-async def start_animation(req: AnimationRequest):
-    global stop_requested, animation_task
-    # أوقف أي أنيميشن شغّال حالياً
-    stop_requested = True
-    if animation_task:
-        await animation_task
-    stop_requested = False
-    # اخلق مهمة جديدة للثيم اللا متناهي
-    animation_task = asyncio.create_task(run_animation_loop(req.color_index))
-    return {"status": "started", "animation": req.animation_type}
+async def start_animation(request: AnimationRequest):
+    with animation_lock:
+        animation_queue.append(request)
+    return {"status": "queued", "animation": request.animation_type}
 
-# نقطة نهاية لتغيير اللون الثابت
+# نقطة نهاية لتغيير اللون مباشرة
 @app.post("/color")
-async def set_color(req: ColorRequest):
-    global stop_requested, animation_task
-    # أوقف الأنيميشن
-    stop_requested = True
-    if animation_task:
-        await animation_task
-    # طبّق اللون الثابت
-    r = int(req.hex_color[1:3], 16)
-    g = int(req.hex_color[3:5], 16)
-    b = int(req.hex_color[5:7], 16)
-    for i in range(20):
-        neo.set_led_color(i, r, g, b)
-    neo.update_strip()
-    return {"status": "color_changed", "color": req.hex_color}
+async def set_color(request: ColorRequest):
+    with animation_lock:
+        animation_queue.clear()
+        global stop_requested
+        stop_requested = True
 
-# نقطة نهاية للإيقاف التام
+        r = int(request.hex_color[1:3], 16)
+        g = int(request.hex_color[3:5], 16)
+        b = int(request.hex_color[5:7], 16)
+        for i in range(20):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+    return {"status": "color_changed", "color": request.hex_color}
+
+# نقطة نهاية لإيقاف كل شيء
 @app.post("/stop")
 async def stop_animation():
-    global stop_requested, animation_task
-    stop_requested = True
-    if animation_task:
-        await animation_task
-    # أطفئ جميع الـ LEDs
-    for i in range(20):
-        neo.set_led_color(i, 0, 0, 0)
-    neo.update_strip()
+    with animation_lock:
+        animation_queue.clear()
+        global stop_requested
+        stop_requested = True
+
+        for i in range(20):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+
     return {"status": "stopped"}
+
+
+    
