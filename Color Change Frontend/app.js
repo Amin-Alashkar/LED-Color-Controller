@@ -1,87 +1,40 @@
 // at school
-// const API_BASE_URL = "http://10.220.1.123:8000";
-
+// const API_BASE_URL = "http://10.220.1.123:// app.js
 // at home
 const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 const colorDisplay = document.getElementById('colorDisplay');
-const lightOneBtn = document.getElementById('lightOneBtn');
-const offBtn = document.getElementById('offBtn');
-const off2Btn = document.getElementById('off2Btn');
+const lightOneBtn   = document.getElementById('lightOneBtn');
+const offBtn        = document.getElementById('offBtn');
+const off2Btn       = document.getElementById('off2Btn');
 
-// Animation state
 let isAnimationRunning = false;
 
 async function sendRequest(endpoint, data) {
     try {
-        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+        let res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify(data)
         });
-        return await response.json();
-    } catch (error) {
-        console.error('API Error:', error);
-        return { status: "error", message: error.message };
+        return await res.json();
+    } catch(e) {
+        console.error("API Error:", e);
+        return { status:"error", message: e.message };
     }
-}
-
-async function changeColor(color) {
-    // أوقف أي تأثير قيد التشغيل أولاً
-    await stopAnimation();
-    updateUI(color);
-    await sendRequest("/color", { hex_color: color });
-}
-
-async function startLightOneByOne() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    
-    isAnimationRunning = true;
-    lightOneBtn.classList.add('active');
-    lightOneBtn.textContent = 'Light One by One (Running)';
-    
-    const response = await sendRequest("/animate", {
-        animation_type: "light_one_by_one",
-        color_index: 0
-    });
-    
-    if (response.status !== "queued") {
-        resetAnimationState();
-    }
-}
-
-async function updateColor(color) {
-await changeColor(color);
 }
 
 async function stopAnimation() {
-    const response = await sendRequest("/stop");
-    resetAnimationState();
+    await sendRequest("/stop");
+    resetUI();
+}
+
+function resetUI() {
+    isAnimationRunning = false;
+    document.querySelectorAll('.button-container button').forEach(btn => btn.classList.remove('active'));
+    lightOneBtn.textContent = 'Fade Colors';
     updateUI('#000000');
-}
-
-function resetAnimationState() {
-    isAnimationRunning = false;
-    // أعد تعيين كل أزرار التأثيرات
-    document.querySelectorAll('.button-container button').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.id === 'lightOneBtn') {
-            btn.textContent = 'Light One by One';
-        }
-        // يمكنك إضافة المزيد من الأزرار هنا إذا لزم الأمر
-    });
-}
-
-function resetAnimationState() {
-    isAnimationRunning = false;
-    lightOneBtn.classList.remove('active');
-    lightOneBtn.textContent = 'Light One by One';
 }
 
 function updateUI(color) {
@@ -90,24 +43,23 @@ function updateUI(color) {
     colorDisplay.style.background = color;
     colorDisplay.textContent = color.toUpperCase();
     document.getElementById('colorPicker').value = color;
-    setTextColor(color);
 }
 
-function setTextColor(color) {
-    const r = parseInt(color.substr(1,2), 16);
-    const g = parseInt(color.substr(3,2), 16);
-    const b = parseInt(color.substr(5,2), 16);
-    const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
-    document.querySelector('h1').style.color = luminance > 0.5 ? '#333' : '#fff';
-    document.querySelector('.card').style.background = luminance > 0.5 ? 'white' : 'rgba(0,0,0,0.7)';
+async function startFadeAnimation() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    lightOneBtn.classList.add('active');
+    lightOneBtn.textContent = 'Fade Colors (Running)';
+    await sendRequest("/animate", { animation_type: "fade_colors" });
 }
 
-// Event Listeners
-lightOneBtn.addEventListener("click", startLightOneByOne);
+// Event listeners
+lightOneBtn.addEventListener("click", startFadeAnimation);
 offBtn.addEventListener("click", stopAnimation);
 off2Btn.addEventListener("click", stopAnimation);
 
 // Initialize
 updateUI('#ff0000');
-
-
