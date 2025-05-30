@@ -1,5 +1,5 @@
 // at school
-// const API_BASE_URL = "http://10.220.1.123:// // app.js
+// const API_BASE_URL = "http://10.220.1.123:// // // app.js
 // at home
 const API_BASE_URL = "http://192.168.1.247:8000";
 
