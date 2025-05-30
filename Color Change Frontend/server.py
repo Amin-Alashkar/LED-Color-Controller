@@ -9,7 +9,8 @@ import time
 
 neo = Pi5Neo('/dev/spidev0.0', 20, 800)
 app = FastAPI()
-
+stop_requested = False
+pause_durtion = 0
 # Enable CORS
 app.add_middleware(
     CORSMiddleware,
@@ -67,11 +68,10 @@ async def animation_worker():
                 request = animation_queue.popleft()
             
             stop_requested = False
-            if request.animation_type == "light_one_by_one":
-                current_animation_task = asyncio.create_task(
-                    light_up_one_by_one(request.color_index)
-                )
-                await current_animation_task
+            if request.animation_type == "light_oneby_one":
+                while not stop_requested:
+                    await light_up_one_by_one(request.color_index)
+                    await asyncio.sleep(pause_durtion)
             elif request.animation_type == "solid_color":
                 r = int(request.hex_color[1:3], 16)
                 g = int(request.hex_color[3:5], 16)
