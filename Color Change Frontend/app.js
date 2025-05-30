@@ -1,4 +1,8 @@
-const API_BASE_URL = "http://10.220.1.123:8000";
+// at school
+// const API_BASE_URL = "http://10.220.1.123:8000";
+
+// at home
+const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 const colorDisplay = document.getElementById('colorDisplay');
@@ -52,6 +56,10 @@ async function startLightOneByOne() {
     }
 }
 
+async function updateColor(color) {
+await changeColor(color);
+}
+
 async function stopAnimation() {
     const response = await sendRequest("/stop");
     resetAnimationState();
@@ -101,6 +109,5 @@ off2Btn.addEventListener("click", stopAnimation);
 
 // Initialize
 updateUI('#ff0000');
-
 
 
