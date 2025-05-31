@@ -9,7 +9,7 @@
 <body>
     <div class="card">
         <h1 class="led-title">LED Color Controller</h1>
-        <div class="color-display" id="colorDisplay">#FF0000</div>
+        <div class="color-display" id="colorDisplay">#------</div>
 
         <h2 class="button-title">Colors</h2>
         <div class="button-container">
@@ -24,22 +24,19 @@
             <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button>
             <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button>
             <br>
-            <button id="offBtn"    onclick="changeColor('#000000')">Off</button>
+            <button id="offBtn" onclick="changeColor('#000000')">Off</button>
         </div>
 
         <div class="color-picker-wrapper">
             <div class="color-ring"></div>
-            <!-- أزلنا oninput هنا لأننا ربطنا المستمع في app.js -->
-            <input type="color" id="colorPicker" value="#ff0000">
+            <input type="color" id="colorPicker" value="#000000">
         </div>
 
         <h2 class="button-title">Animation</h2>
         <div class="button-container">
-            <!-- الزر الخاص بتشغيل/إيقاف Fade Colors -->
             <button id="lightOneBtn">Fade Colors</button>
-            <!-- أزرار أخرى (غير مفعّلة حالياً) -->
+            <!-- الأزرار التالية غير مفعّلة برمجياً حاليًا -->
             <button id="WaveEffectBtn"       onclick="changeColor('')">Wave Effect</button>
-            <!--<button id="FadeInandOutBtn" onclick="changeColor('')">Fade In & Out</button>-->
             <button id="RainbowFlowBtn"      onclick="changeColor('')">Rainbow Flow</button>
             <button id="BlinkingPatternBtn"  onclick="changeColor('')">Blinking Pattern</button>
             <button id="RunningLightsBtn"    onclick="changeColor('')">Running Lights</button>
@@ -52,7 +49,6 @@
         </div>
     </div>
 
-    <!-- ربط ملف الجافاسكربت -->
     <script src="app.js"></script>
 </body>
 </html>
