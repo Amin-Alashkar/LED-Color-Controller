@@ -9,7 +9,8 @@
 <body>
     <div class="card">
         <h1 class="led-title">LED Color Controller</h1>
-        <div class="color-display" id="colorDisplay">#------</div>
+        <!-- سنترك الدائرة فارغة في البداية حتى نجلب الحالة الحقيقية -->
+        <div class="color-display" id="colorDisplay">Loading…</div>
 
         <h2 class="button-title">Colors</h2>
         <div class="button-container">
@@ -29,13 +30,14 @@
 
         <div class="color-picker-wrapper">
             <div class="color-ring"></div>
+            <!-- لا ننفذ changeColor مباشرة من هنا، بل نربط الحدث في JS -->
             <input type="color" id="colorPicker" value="#000000">
         </div>
 
         <h2 class="button-title">Animation</h2>
         <div class="button-container">
             <button id="lightOneBtn">Fade Colors</button>
-            <!-- الأزرار التالية غير مفعّلة برمجياً حاليًا -->
+            <!-- باقي الأزرار حالياً لاّصّة مجرد لواجهة المستخدم، ولم تربط بعد بأيّ دوال JS -->
             <button id="WaveEffectBtn"       onclick="changeColor('')">Wave Effect</button>
             <button id="RainbowFlowBtn"      onclick="changeColor('')">Rainbow Flow</button>
             <button id="BlinkingPatternBtn"  onclick="changeColor('')">Blinking Pattern</button>
