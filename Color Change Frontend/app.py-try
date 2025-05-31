@@ -14,9 +14,11 @@ const colorPicker     = document.getElementById('colorPicker');
 let isAnimationRunning = false;
 
 /**
- * دالة مساعدة لإرسال POST إلى الخادم
- * endpoint: مسار النهاية ("/animate", "/color", "/stop", إلخ)
- * data: جسم الـ JSON (مثل { animation_type: "...", color_index: ... } أو { hex_color: "#..." })
+ * دالة مساعدة لإرسال طلب POST إلى الخادم.
+ * 
+ * @param {string} endpoint  نصّ المسار، مثل "/animate", "/color", "/stop"
+ * @param {object} data      جسم الطلب (JSON)، مثل { animation_type: "...", color_index: ... } أو { hex_color: "#..." }
+ * @returns {Promise<object>}  يسترجع استجابة JSON من الخادم أو كائن خطأ
  */
 async function sendRequest(endpoint, data) {
     try {
@@ -33,10 +35,10 @@ async function sendRequest(endpoint, data) {
 }
 
 /**
- * عند اختيار لون ثابت (Red, Green, ... أو Color Picker):
- * 1. يتوقّف أي أنيميشن جاري (إذا كان هناك واحد) عبر stopAnimation()
- * 2. يحدث الواجهة محليًا عبر updateUI(color)
- * 3. يرسل POST إلى /color مع { hex_color: color }
+ * عندما يضغط المستخدم على زر لون ثابت (أحمر/أخضر/... أو Color Picker):
+ * 1) إن كان هناك أنيميشن جارٍ، يتوقف عبر stopAnimation()
+ * 2) يحدث العرض محليًا إلى اللون الجديد
+ * 3) يرسل POST إلى /color مع { hex_color: color }
  */
 async function changeColor(color) {
     if (isAnimationRunning) {
@@ -47,11 +49,11 @@ async function changeColor(color) {
 }
 
 /**
- * لإيقاف الأنيميشن تمامًا:
- * 1. يرسل POST إلى /stop
- * 2. يضبط الحالة المحليّة isAnimationRunning = false
- * 3. يغيّر نص الزرّ إلى 'Fade Colors'
- * 4. يحدث العرض محليًا للون أسود (Off)
+ * يُوقف أي أنيميشن جارٍ:
+ * 1) يرسل POST إلى /stop
+ * 2) يعدّل المتغيرات المحليّة isAnimationRunning = false
+ * 3) يغيّر نص الزرّ إلى "Fade Colors"
+ * 4) حدّث العرض محليًا إلى اللون الأسود (#000000)
  */
 async function stopAnimation() {
     await sendRequest("/stop");
@@ -62,13 +64,13 @@ async function stopAnimation() {
 }
 
 /**
- * عند الضغط على زرّ "Fade Colors":
- * إذا كان الأنيميشن جاريًا ⇒ استدعاء stopAnimation()
- * خلاف ذلك ⇒
- *   - ضبط isAnimationRunning = true
- *   - إضافة الـ CSS class 'active' لتأثير البَصْمَة (pulse)
- *   - تغيير نصّ الزرّ إلى 'Fade Colors (Running)'
- *   - ثمّ إرسال POST إلى /animate مع { animation_type: "fade_colors" }
+ * عند الضغط على زر "Fade Colors":
+ * إذا كان الأنيميشن جاريًا ⇒ نستدعي stopAnimation()
+ * غير ذلك ⇒
+ *   - نضبط isAnimationRunning = true
+ *   - نضيف الـ CSS class 'active' لكي يظهر التأثير البصري (pulse)
+ *   - نغيّر نصّ الزرّ إلى 'Fade Colors (Running)'
+ *   - ثم نرسل POST إلى /animate مع JSON { animation_type: "fade_colors" }
  */
 async function startFadeAnimation() {
     if (isAnimationRunning) {
@@ -82,46 +84,50 @@ async function startFadeAnimation() {
 }
 
 /**
- * دالة جديدة: ترسل GET إلى /state لاستلام حالة اللون والأنيميشن الحالي من الخادم
- * الخادم سيُرجع:
- *   {
- *     "animation": null | "fade_colors" | "light_one_by_one" | ...,
- *     "color": "#RRGGBB"
- *   }
- *
- * بناءً عليه، نجري:
- *   - updateUI(color)
- *   - إذا كانت animation === "fade_colors" ⇒ نجعل الزرّ في وضع (Running)
- *   - وإلاّ نجعله في الوضع الافتراضي "Fade Colors"
+ * دالة جديدة تُسمّى عند تحميل الصفحة (DOMContentLoaded) لجلب الحالة الحقيقية:
+ *   1) ترسل GET إلى /state
+ *   2) تستقبل JSON بالشكل { animation: "...", color: "#RRGGBB" }
+ *   3) تحدّث العرض المحليّ استنادًا إلى تلك القيم:
+ *      - إذا كان هناك لون ثابت (color ليس null) ⇒ show that color
+ *      - إذا كانت animation === "fade_colors" ⇒ اضبط الزرّ في وضع (Running)
  */
 async function fetchAndApplyState() {
     try {
+        // نرسل GET إلى /state
         const res = await fetch(`${API_BASE_URL}/state`);
         const { animation, color } = await res.json();
 
-        // حدّث العرض للون
-        updateUI(color);
+        // إذا كان هناك لون ثابت مُخزن (color ليس null)، نحدّث العرض به فورًا
+        if (color) {
+            updateUI(color);
+        } else {
+            // إذا لم يكن هناك لون ثابت (color === null) ونريد مثلاً عرض Off أو leave placeholder
+            updateUI('#000000');
+        }
 
+        // إن كان الأنيميشن جارٍ (fade_colors)، نظهر الزرّ بوضع (Running)
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
             lightOneBtn.textContent = 'Fade Colors (Running)';
         } else {
+            // لا أنيميشن جارٍ ⇒ وضع الزرّ الافتراضي
             isAnimationRunning = false;
             lightOneBtn.classList.remove('active');
             lightOneBtn.textContent = 'Fade Colors';
         }
     } catch (err) {
         console.error("Error fetching state:", err);
+        // في حال فشل الجلب (مثلاً الخادم غير متاح)، يمكنك تجاهل التحديث أو عرض رسالة.
     }
 }
 
 /**
- * تحدّث الصفحة بصريًا:
- *   - لون الخلفيّة (body)
- *   - لون الدائرة (colorDisplay)
- *   - نص الدائرة (#RRGGBB)
- *   - قيمة الـ colorPicker نفسها
+ * تحديث العناصر البصريّة في الصفحة إلى اللون المعطى:
+ *   - خلفيّة الصفحة
+ *   - الدائرة الوسطية colorDisplay
+ *   - قيمة colorPicker نفسها
+ *   - النص داخل colorDisplay هو قيمة الـ hex بالأحرف الكبيرة
  */
 function updateUI(color) {
     document.body.style.background     = color;
@@ -131,20 +137,14 @@ function updateUI(color) {
     colorPicker.value                  = color;
 }
 
-// ===== ربط الأحداث على الأزرار والعناصر =====
+// === ربط الأحداث ===
 lightOneBtn.addEventListener("click", startFadeAnimation);
 offBtn       .addEventListener("click", stopAnimation);
 off2Btn      .addEventListener("click", stopAnimation);
+colorPicker  .addEventListener("input", e => changeColor(e.target.value));
 
-// ربط color-picker لالتقاط التغيير وإرسال changeColor(...)
-colorPicker.addEventListener("input", e => changeColor(e.target.value));
-
-// عند تحميل الصفحة (DOMContentLoaded) ننفّذ:
+// عند تحميل الصفحة، ننفّذ:
 document.addEventListener("DOMContentLoaded", async () => {
-    // نضبط اسم الزرّ افتراضيًا إلى "Fade Colors"
-    lightOneBtn.textContent = 'Fade Colors';
-    // نحدّث العرض مؤقتًا إلى اللون الأحمر (يمكن تغييره لاحقًا)
-    updateUI('#ff0000');
-    // ثمّ نطلب الحالة الحقيقية من الخادم كي نعكسها في الواجهة
+    // أولًا: نجلب الحالة من الخادم قبل تعيين أي لون افتراضي
     await fetchAndApplyState();
 });
