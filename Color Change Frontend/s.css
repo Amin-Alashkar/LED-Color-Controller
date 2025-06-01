@@ -1414,33 +1414,88 @@ body {
 }
 
 /* بطاقة المحتوى */
+/* نجعل .card مستطيلاً كاملاً بارتفاع ثابت وزوايا غير حادة */
 .card {
-  position: relative;
-  width: 90vw;
-  max-width: 800px;
-  padding: 40px;
-  border-radius: 24px;
-  background: rgba(20, 30, 50, var(--alpha-med));
-  box-shadow: var(--shadow-glow-large) var(--aura-color-1);
-  backdrop-filter: blur(20px) brightness(1.2);
-  z-index: 10;
-  overflow: hidden;
-  animation: card-pulse var(--anim-speed-medium) infinite alternate;
+    width: 350px;              /* عرض ثابت للمستطيل */
+    height: 90vh;              /* ارتفاع يغطي 90% من نافذة العرض */
+    max-height: 90vh;          
+    margin: 20px auto;         /* مركزيه أفقياً ومسافة من الأعلى */
+    background: rgba(0, 0, 0, 0.6);
+    border: 2px solid #00ff00; /* حد أخضر مشع */
+    overflow-y: auto;          /* تمكين التمرير داخل المستطيل */
+    position: relative;
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.7);
+    border-radius: 0;          /* زوايا غير حادة */
 }
 
-/* تذبذب خفيف للبطاقة */
-@keyframes card-pulse {
-  0% {
-    box-shadow: var(--shadow-glow-large) var(--aura-color-1);
-  }
-  50% {
-    box-shadow: var(--shadow-glow-large) var(--aura-color-2);
-  }
-  100% {
-    box-shadow: var(--shadow-glow-large) var(--aura-color-3);
-  }
+/* حدود متحركة حول المستطيل */
+.card::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border: 3px solid transparent;
+    border-image: linear-gradient(60deg, #00ff00, #000, #00ff00) 1;
+    animation: border-spin 4s linear infinite;
+    border-radius: 0;
 }
 
+@keyframes border-spin {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* نزيل الانحناءات تماماً */
+.card,
+.card::before {
+    border-radius: 0;
+}
+
+/* مثال على محتوى طويل داخل .card */
+.card .content {
+    padding: 20px;
+    color: #ddd;
+    line-height: 1.4;
+}
+
+/* ننشئ شريط تمرير مخصص بلون أخضر */
+.card::-webkit-scrollbar {
+    width: 8px;
+}
+
+.card::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.card::-webkit-scrollbar-thumb {
+    background-color: #00ff00;
+    border-radius: 0;
+    border: 1px solid #000;
+}
+
+/* تطبيق تعديلات أخرى لضمان تأثيرات "Aura" خفيفة حول المحتوى */
+.card h1, .card h2, .card p {
+    text-shadow: 0 0 8px rgba(0, 255, 0, 0.8);
+}
+
+.card button {
+    background: linear-gradient(135deg, #00ff00, #00aa00);
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
+    border-radius: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 1);
+}
 /*==================================================================
   3. تأثيرات الجداول والخطوط العائمة في الخلفية (Background Overlays)
 ==================================================================*/
