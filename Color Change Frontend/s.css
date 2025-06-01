@@ -2959,3 +2959,48 @@ body { background: #000; overflow: hidden; position: relative; }
 
 .wave-2000 { background: linear-gradient(20000deg, rgba(208,160,176,0.1) 0%, transparent 50%); height: 5px; }
 
+/* ـــــــــــــــــــــ Fade‐Card CSSAnimation ـــــــــــــــــــــ */
+
+/**
+ * هذه Keyframes تجعل الخلفية تنتقل من لون إلى آخر حسب قائمة COLORS في بايثون:
+ * White → Red → Blue → Green → Yellow → Magenta → Cyan → عودة إلى White
+ *
+ * نستخدم توقيت 14 ثانية للإنتقال بين الـ7 ألوان (كل لون يأخذ 2 ثواني كاملة).
+ */
+@keyframes fadeCardColors {
+  /* 0% بداية باللون الأبيض (255,255,255) */
+  0%   { background-color: #FFFFFF; }
+
+  /* 14% تقريباً منتصف لون الأبيض والانتقال إلى الأحمر */
+  /* ولكن في الواقع: بما أن 14 ثانية لكل دورة، 1 ثانية للـfade-in الأول، 1 ثانية للـfade-out، 
+     فالأفضل أن نوزع النسب كما يلي: */
+  /* كل لون يأخذ 2 ثواني كاملة = (2 / 14) * 100% ≈ 14.2857% */
+  /* سنضع القيم عند 0%, 14.28%, 28.57%, 42.85%, 57.14%, 71.42%, 85.71%, 100%. */
+
+  /* نهاية أول 2 ثانية = 14.2857% → لون Red بقمة سطوعه */
+  14.2857%   { background-color: #FF0000; }
+
+  /* بعد 4 ثواني (2 ثانية Red تماماً، ثم يبدأ الانتقال إلى Blue) → 28.5714% */
+  28.5714%   { background-color: #0000FF; }
+
+  /* بعد 6 ثواني (42.8571%) → Green */
+  42.8571%   { background-color: #00FF00; }
+
+  /* بعد 8 ثواني (57.1428%) → Yellow */
+  57.1428%   { background-color: #FFFF00; }
+
+  /* بعد 10 ثواني (71.4285%) → Magenta (أرجواني فاتح) */
+  71.4285%   { background-color: #FF00FF; }
+
+  /* بعد 12 ثواني (85.7142%) → Cyan (أزرق سماوي) */
+  85.7142%   { background-color: #00FFFF; }
+
+  /* بعد 14 ثواني (100%) → نرجع إلى White */
+  100% { background-color: #FFFFFF; }
+}
+
+/* الكلاس الذي سنطبّقه/نزيله على العنصر <div class="card">  */
+.card.animate-fade {
+  animation: fadeCardColors 14s linear infinite;
+  /* يُمكنك إضافة transition خفيف لأي خواص إضافية داخل .card */
+}
