@@ -5,48 +5,110 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="s.css">
     <title>LED Color Controller</title>
-
 </head>
 <body>
     <div class="card">
         <h1 class="led-title">LED Color Controller</h1>
-        <div class="color-display" id="colorDisplay">#FF0000</div>
+        <!-- سنترك الدائرة فارغة في البداية حتى نجلب الحالة الحقيقية -->
+        <div class="color-display" id="colorDisplay">Loading…</div>
+
         <h2 class="button-title">Colors</h2>
         <div class="button-container">
-            <button id="redBtn" onclick="changeColor('#ff0000')">Red</button>
-            <button id="greenBtn" onclick="changeColor('#00ff00')">Green</button>
-            <button id="blueBtn" onclick="changeColor('#0000ff')">Blue</button>            
+            <button id="redBtn"    onclick="changeColor('#ff0000')">Red</button>
+            <button id="greenBtn"  onclick="changeColor('#00ff00')">Green</button>
+            <button id="blueBtn"   onclick="changeColor('#0000ff')">Blue</button>
             <button id="orangeBtn" onclick="changeColor('#FFA500')">Orange</button>
             <button id="yellowBtn" onclick="changeColor('#FFFF00')">Yellow</button>
-            <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple </button>
-            <button id="pinkBtn" onclick="changeColor('#FFC0CB')">Pink </button>
-            <button id="whiteBtn" onclick="changeColor('#FFFFFF')">White </button>
-            <button id="gray-greyBtn" onclick="changeColor('#808080')">Gray </button>
-            <button id="brownBtn" onclick="changeColor('#964B00')">Brown </button>
+            <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple</button>
+            <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button>
+            <button id="whiteBtn"  onclick="changeColor('#FFFFFF')">White</button>
+            <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button>
+            <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button>
             <br>
-            <button id="offBtn" onclick="changeColor('#000000')">Off </button>
+            <button id="offBtn" onclick="changeColor('#000000')">Off</button>
         </div>
+
         <div class="color-picker-wrapper">
             <div class="color-ring"></div>
-            <input type="color" id="colorPicker" oninput="updateColor(this.value)" value="#ff0000">
+            <!-- لا ننفذ changeColor مباشرة من هنا، بل نربط الحدث في JS -->
+            <input type="color" id="colorPicker" value="#000000">
         </div>
+
         <h2 class="button-title">Animation</h2>
         <div class="button-container">
             <button id="lightOneBtn">Fade Colors</button>
-            <button id="WaveEffectBtn" onclick="changeColor('')">Wave Effect</button>
-            <!-- <button id="FadeInandOutBtn" onclick="changeColor('')">Fade In & Out</button>             -->
-            <button id="RainbowFlowBtn" onclick="changeColor('')">Rainbow Flow</button>
-            <button id="BlinkingPatternBtn" onclick="changeColor('')">Blinking Pattern </button>
-            <button id="RunningLightsBtn" onclick="changeColor('')">Running Lights</button>
-            <button id="BreathingEffectBtn" onclick="changeColor('')">Breathing Effect</button>
-            <button id="MeteorShowerBtn" onclick="changeColor('')">Meteor Shower</button>
-            <button id="PulseSyncBtn" onclick="changeColor('')">Pulse Sync</button>
-            <button id="FireworksBurstBtn" onclick="changeColor('')">Fireworks Burst</button> 
+            <!-- باقي الأزرار حالياً لاّصّة مجرد لواجهة المستخدم، ولم تربط بعد بأيّ دوال JS -->
+            <button id="WaveEffectBtn"       onclick="changeColor('')">Wave Effect</button>
+            <button id="RainbowFlowBtn"      onclick="changeColor('')">Rainbow Flow</button>
+            <button id="BlinkingPatternBtn"  onclick="changeColor('')">Blinking Pattern</button>
+            <button id="RunningLightsBtn"    onclick="changeColor('')">Running Lights</button>
+            <button id="BreathingEffectBtn"  onclick="changeColor('')">Breathing Effect</button>
+            <button id="MeteorShowerBtn"     onclick="changeColor('')">Meteor Shower</button>
+            <button id="PulseSyncBtn"        onclick="changeColor('')">Pulse Sync</button>
+            <button id="FireworksBurstBtn"   onclick="changeColor('')">Fireworks Burst</button>
             <br>
-            <button id="off2Btn" onclick="changeColor('#000000')">Off </button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
         </div>
     </div>
-    
+
+        <div id="aura-shapes">
+    <!-- 20 شكل متنوع: مثلثات، مربعات، دوائر -->
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+
+    <!-- 6 مذنبات نيون -->
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+
+    <!-- موجة طاقة -->
+    <div class="energy-wave"></div>
+
+    <!-- توليد 40 جسيمًا متحركًا -->
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <!-- كرر حتى 40 -->
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    </div>
+
+    <!-- ضباب ضوئي -->
+    <div class="light-fog"></div>
+    </div>
+
+    <div id="aura-shapes">…</div>
+
+
     <script src="app.js"></script>
 </body>
 </html>
