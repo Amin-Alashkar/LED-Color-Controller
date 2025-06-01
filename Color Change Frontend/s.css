@@ -103,54 +103,55 @@ button:hover {
 
 #redBtn {
     background-color: #ff0000;
-    color: white;
+    color: #ff0000;
 }
 
 #greenBtn {
     background-color: #00ff00;
+    color: #00ff00;
 }
 
 #blueBtn {
     background-color: #0000ff;
-    color: white;
+    color: #0000ff;
 }
 
 #orangeBtn {
     background-color: #FFA500;
-    color: black;
+    color: #FFA500;
 }
 
 
 #yellowBtn {
-    color: black;
+    color: #FFFF00;
     background-color: #FFFF00;
 }
 #purpleBtn {
     background-color: #A020F0;
-    color: black;
+    color: #A020F0;
 }
 
 #pinkBtn {
     background-color: #FFC0CB;
-    color: black;
+    color: #FFC0CB;
 }
 
 
 #whiteBtn {
     background-color: #FFFFFF;
-    color: black;
+    color: #FFFFFF;
 }
 
 
-#gray-greyBtn {
+#grayBtn {
     background-color: #808080;
-    color: black;
+    color: #808080;
 }
 
 
 #brownBtn {
     background-color: #964B00;
-    color: black;
+    color: #964B00;
 }
 
 
@@ -278,6 +279,25 @@ button:hover {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     margin-top: 20px;
     transition: all 0.3s ease;
+    max-height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.card::-webkit-scrollbar{
+  width: 8px;
+
+}
+
+.card::-webkit-scrollbar-track{
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+.card::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+
 }
 .color-display {
     width: 150px;
@@ -1399,7 +1419,7 @@ button:hover {
 html, body {
   width: 100%;
   height: 100%;
-  overflow: hidden;
+  /* overflow: hidden; */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background: var(--background-gradient);
   color: #EEE;
@@ -1423,7 +1443,7 @@ body {
   box-shadow: var(--shadow-glow-large) var(--aura-color-1);
   backdrop-filter: blur(20px) brightness(1.2);
   z-index: 10;
-  overflow: hidden;
+  /* overflow: hidden; */
   animation: card-pulse var(--anim-speed-medium) infinite alternate;
 }
 
@@ -1754,7 +1774,7 @@ button:hover::before {
   color: var(--accent-color-2);
   text-decoration: none;
   position: relative;
-  overflow: hidden;
+  /* overflow: hidden; */
   display: inline-block;
   font-weight: bold;
   transition: color 0.3s ease;
@@ -2136,7 +2156,7 @@ assage: /*......................................................................
 ---------------------------------------*/
 body {
   background: #000; /* اجعل الخلفية سوداء صافية لإبراز الأشكال والوهج */
-  overflow: hidden; /* إخفاء أي تجاوز */
+  /* overflow: hidden; إخفاء أي تجاوز */
   position: relative;
 }
 
@@ -2936,7 +2956,6 @@ body { background: #000; overflow: hidden; position: relative; }
 .wave-8 { background: linear-gradient(80deg, rgba(8,16,24,0.1) 0%, transparent 50%); height: 5px; }
 .wave-9 { background: linear-gradient(90deg, rgba(9,18,27,0.1) 0%, transparent 50%); height: 5px; }
 .wave-10 { background: linear-gradient(100deg, rgba(10,20,30,0.1) 0%, transparent 50%); height: 5px; }
-/* ... definitions continue up to .wave-2000 to create thousands of stripes ... */
+
 .wave-2000 { background: linear-gradient(20000deg, rgba(208,160,176,0.1) 0%, transparent 50%); height: 5px; }
 
-/* Filler lines to extend beyond 5000 lines */
