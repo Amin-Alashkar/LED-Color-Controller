@@ -51,6 +51,64 @@
         </div>
     </div>
 
+        <div id="aura-shapes">
+    <!-- 20 شكل متنوع: مثلثات، مربعات، دوائر -->
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+    <div class="aura-shape circle"></div>
+    <div class="aura-shape triangle"></div>
+    <div class="aura-shape square"></div>
+
+    <!-- 6 مذنبات نيون -->
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+    <div class="neon-comet"></div>
+
+    <!-- موجة طاقة -->
+    <div class="energy-wave"></div>
+
+    <!-- توليد 40 جسيمًا متحركًا -->
+    <div class="background-particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <!-- كرر حتى 40 -->
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+        <div class="particle"></div><div class="particle"></div><div class="particle"></div><div class="particle"></div>
+    </div>
+
+    <!-- ضباب ضوئي -->
+    <div class="light-fog"></div>
+    </div>
+
+    <div id="aura-shapes">…</div>
+
+
     <script src="app.js"></script>
 </body>
 </html>
