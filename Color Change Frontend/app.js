@@ -11,6 +11,9 @@ const offBtn          = document.getElementById('offBtn');
 const off2Btn         = document.getElementById('off2Btn');
 const colorPicker     = document.getElementById('colorPicker');
 
+// نضيف هنا جلب العنصر .card لكي نُشغّل/نوقِف أنيميشن البطاقة
+const cardElement     = document.querySelector('.card');
+
 let isAnimationRunning = false;
 
 /**
@@ -51,7 +54,7 @@ async function fetchAndApplyState() {
         if (color) {
             updateUI(color);
         } else {
-            // لا لون ثابت: نظهر "Off" بالأسود
+            // لا لون ثابت: نظهر Off بالأسود
             updateUI('#000000');
         }
 
@@ -60,11 +63,15 @@ async function fetchAndApplyState() {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
             lightOneBtn.textContent = 'Fade Colors (Running)';
+            // نضيف كلاس الأنيميشن للبطاقة إذا كان الأنيميشن جارٍ عند التحميل
+            cardElement.classList.add('animate-fade');
         } else {
             // لا أنيميشن جارٍ
             isAnimationRunning = false;
             lightOneBtn.classList.remove('active');
             lightOneBtn.textContent = 'Fade Colors';
+            // نتأكد من إزالة كلاس الأنيميشن من البطاقة
+            cardElement.classList.remove('animate-fade');
         }
     } catch (err) {
         console.error("Error fetching state:", err);
@@ -73,6 +80,8 @@ async function fetchAndApplyState() {
         isAnimationRunning = false;
         lightOneBtn.classList.remove('active');
         lightOneBtn.textContent = 'Fade Colors';
+        // نتأكد من إزالة كلاس الأنيميشن من البطاقة
+        cardElement.classList.remove('animate-fade');
     }
 }
 
@@ -96,10 +105,15 @@ async function changeColor(color) {
  * 2) تغيّر المتغيرات المحليّة isAnimationRunning
  * 3) تُعيد نص الزر إلى "Fade Colors"
  * 4) تحدّث العرض إلى الأسود (#000000)
+ * 5) تزيل كلاس الأنيميشن من البطاقة
  */
 async function stopAnimation() {
     await sendRequest("/stop");
     isAnimationRunning = false;
+
+    // نزيل كلاس الأنيميشن من البطاقة
+    cardElement.classList.remove('animate-fade');
+
     lightOneBtn.classList.remove('active');
     lightOneBtn.textContent = 'Fade Colors';
     updateUI('#000000');
@@ -110,8 +124,9 @@ async function stopAnimation() {
  * - إذا كان أنيميشن جاريًا، نستدعي stopAnimation()
  * - غير ذلك:
  *   • نضبط isAnimationRunning = true
- *   • نضيف CSS class 'active' لكي يظهر التأثير البصري
- *   • نغّير نصّ الزرّ إلى 'Fade Colors (Running)'
+ *   • نضيف CSS class 'active' لكي يظهر التأثير البصري للزر
+ *   • نغيّر نصّ الزرّ إلى 'Fade Colors (Running)'
+ *   • نضيف كلاس الأنيميشن 'animate-fade' إلى البطاقة
  *   • نرسل POST إلى /animate مع { animation_type: "fade_colors" }
  */
 async function startFadeAnimation() {
@@ -120,6 +135,10 @@ async function startFadeAnimation() {
         return;
     }
     isAnimationRunning = true;
+
+    // نضيف كلاس الأنيميشن للبطاقة
+    cardElement.classList.add('animate-fade');
+
     lightOneBtn.classList.add('active');
     lightOneBtn.textContent = 'Fade Colors (Running)';
     await sendRequest("/animate", { animation_type: "fade_colors" });
@@ -151,4 +170,3 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 1) نجلب الحالة الحقيقية من الخادم
     await fetchAndApplyState();
 });
-
