@@ -110,6 +110,16 @@
 
     <div id="aura-shapes">…</div>
 
+    <div class="stars-container">
+    <!-- إنشاء عدة نجوم -->
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+        <div class="star"></div>
+    </div>
+
+
 
     <script src="app.js"></script>
 </body>
