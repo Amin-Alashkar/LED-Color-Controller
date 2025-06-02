@@ -171,3 +171,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     // إذا أردت دوريات لجلب الحالة دوريًا:
     setInterval(fetchAndApplyState, 2000);
 });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const starsContainer = document.querySelector(".stars-container");
+
+    for (let i = 0; i < 20; i++) {
+        let star = document.createElement("div");
+        star.classList.add("star");
+        star.innerHTML = "⋆"; // إضافة رمز النجمة الحقيقي
+
+        // وضع النجوم في أماكن عشوائية
+        star.style.left = Math.random() * window.innerWidth + "px";
+        star.style.top = Math.random() * window.innerHeight + "px";
+        star.style.animationDelay = Math.random() * 3 + "s";
+
+        starsContainer.appendChild(star);
+    }
+});
