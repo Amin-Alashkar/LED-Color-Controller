@@ -2833,3 +2833,27 @@ body { background: #000; overflow: hidden; position: relative; }
 
 .wave-2000 { background: linear-gradient(20000deg, rgba(208,160,176,0.1) 0%, transparent 50%); height: 5px; }
 
+
+
+
+.stars-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.star {
+    position: absolute;
+    font-size: 26px; /* Star size */
+    color: silver; /* Star color */
+    opacity: 0;
+    animation: twinkle 3s infinite alternate;
+}
+
+/* Twinkling Effect */
+@keyframes twinkle {
+    0% { opacity: 0.2; transform: scale(0.8); }
+    50% { opacity: 1; transform: scale(1.2); }
+    100% { opacity: 0; transform: scale(0.8); }
+}
