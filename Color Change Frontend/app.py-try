@@ -1,8 +1,8 @@
 // at school
-// const API_BASE_URL = "http://10.220.1.123:8000";
+const API_BASE_URL = "http://10.220.1.123:8000";
 
 // at home
-const API_BASE_URL = "http://192.168.1.247:8000";
+// const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 // … (الكود الحالي لديك) …
@@ -76,6 +76,8 @@ async function fetchAndApplyState() {
             waveEffectBtn.classList.remove('active');
             waveEffectBtn.textContent = 'Wave Effect';
         }
+
+        
 
     } catch (err) {
         console.error("Error fetching state:", err);
@@ -167,5 +169,5 @@ colorPicker   .addEventListener("input", e => changeColor(e.target.value));
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchAndApplyState();
     // إذا أردت دوريات لجلب الحالة دوريًا:
-    // setInterval(fetchAndApplyState, 2000);
+    setInterval(fetchAndApplyState, 2000);
 });
