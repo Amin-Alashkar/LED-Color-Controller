@@ -1,4 +1,4 @@
-// ===== App.js (إضافة Blinking Pattern بنفس الطريقة) =====
+// ===== App.js (إضافة Blinking Pattern و تصحيح Meteor Shower) =====
 
 // في المدرسة كان: // const API_BASE_URL = "http://10.220.1.123:8000";
 // في البيت:
@@ -15,11 +15,15 @@ const colorPicker        = document.getElementById('colorPicker');
 const waveEffectBtn        = document.getElementById('WaveEffectBtn');
 const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
 const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
+const meteorShowerBtn      = document.getElementById('MeteorShowerBtn');
 
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
 
 let isAnimationRunning = false;
+
+// علم لتحديد إذا كنا الآن نختار لون شهاب (ليمنع إرسال /color)
+let isPickingMeteorColor = false;
 
 async function sendRequest(endpoint, data) {
     try {
@@ -98,6 +102,18 @@ async function fetchAndApplyState() {
             blinkingPatternBtn.textContent = 'Blinking Pattern';
         }
 
+        // Meteor Shower (الجديد)
+        if (animation === "meteor_shower") {
+            isAnimationRunning = true;
+            meteorShowerBtn.classList.add('active');
+            meteorShowerBtn.textContent = 'Meteor Shower (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower";
+        } else {
+            meteorShowerBtn.classList.remove('active');
+            meteorShowerBtn.textContent = 'Meteor Shower';
+        }
+
     } catch (err) {
         console.error("Error fetching state:", err);
         updateUI('#000000');
@@ -112,6 +128,8 @@ async function fetchAndApplyState() {
         rainbowFlowBtn.textContent = 'Rainbow Flow';
         blinkingPatternBtn.classList.remove('active');
         blinkingPatternBtn.textContent = 'Blinking Pattern';
+        meteorShowerBtn.classList.remove('active');
+        meteorShowerBtn.textContent = 'Meteor Shower';
 
         cardElement.style.background = "";
     }
@@ -139,6 +157,8 @@ async function stopAnimation() {
     rainbowFlowBtn.textContent = 'Rainbow Flow';
     blinkingPatternBtn.classList.remove('active');
     blinkingPatternBtn.textContent = 'Blinking Pattern';
+    meteorShowerBtn.classList.remove('active');
+    meteorShowerBtn.textContent = 'Meteor Shower';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -200,6 +220,32 @@ async function startBlinkingPattern() {
     await sendRequest("/animate", { animation_type: "blinking_pattern" });
 }
 
+// —== حدث الضغط على زر Meteor Shower (الجديد) ==—
+async function startMeteorShower() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    // نعين العلم حتى يعرف الملقِّي أن اللون لخاص بالشهاب
+    isPickingMeteorColor = true;
+    // نفتح مُختار اللون
+    colorPicker.click();
+    // نضيف مستمع لمرة واحدة لالتقاط اللون المختار
+    const handler = async (e) => {
+        const chosenColor = e.target.value;
+        isPickingMeteorColor = false; // نعيد ضمان أن مستمع اللون العادي يعمل بعد الانتهاء
+        isAnimationRunning = true;
+        meteorShowerBtn.classList.add('active');
+        meteorShowerBtn.textContent = 'Meteor Shower (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Meteor Shower";
+        // نرسل طلب بدء الأنيميشن مع اللون المختار
+        await sendRequest("/animate", { animation_type: "meteor_shower", hex_color: chosenColor });
+        colorPicker.removeEventListener("input", handler);
+    };
+    colorPicker.addEventListener("input", handler);
+}
+
 // دالة لتحديث واجهة المستخدم إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -214,9 +260,16 @@ lightOneBtn        .addEventListener("click", startFadeAnimation);
 waveEffectBtn      .addEventListener("click", startWaveAnimation);
 rainbowFlowBtn     .addEventListener("click", startRainbowAnimation);
 blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
+meteorShowerBtn    .addEventListener("click", startMeteorShower);
 offBtn             .addEventListener("click", stopAnimation);
 off2Btn            .addEventListener("click", stopAnimation);
-colorPicker        .addEventListener("input", e => changeColor(e.target.value));
+
+// تعديل مستمع colorPicker العادي ليُرسِل لونًا ثابتًا فقط إذا لم نكن في وضع اختيار شهاب
+colorPicker.addEventListener("input", e => {
+    if (!isPickingMeteorColor) {
+        changeColor(e.target.value);
+    }
+});
 
 // عند تحميل الصفحة لأول مرة:
 document.addEventListener("DOMContentLoaded", async () => {
@@ -303,6 +356,18 @@ evtSource.onmessage = e => {
         } else {
             blinkingPatternBtn.classList.remove('active');
             blinkingPatternBtn.textContent = 'Blinking Pattern';
+        }
+
+        // meteor_shower (الجديد)
+        if (animation === "meteor_shower") {
+            isAnimationRunning = true;
+            meteorShowerBtn.classList.add('active');
+            meteorShowerBtn.textContent = 'Meteor Shower (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower";
+        } else {
+            meteorShowerBtn.classList.remove('active');
+            meteorShowerBtn.textContent = 'Meteor Shower';
         }
 
     } catch (err) {
