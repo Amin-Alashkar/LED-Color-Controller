@@ -9,7 +9,6 @@
 <body>
     <div class="card">
         <h1 class="led-title">LED Color Controller</h1>
-        <!-- سنترك الدائرة فارغة في البداية حتى نجلب الحالة الحقيقية -->
         <div class="color-display" id="colorDisplay">Loading…</div>
 
         <h2 class="button-title">Colors</h2>
@@ -30,7 +29,6 @@
 
         <div class="color-picker-wrapper">
             <div class="color-ring"></div>
-            <!-- لا ننفذ changeColor مباشرة من هنا، بل نربط الحدث في JS -->
             <input type="color" id="colorPicker" value="#000000">
         </div>
 
@@ -38,11 +36,10 @@
         <div class="button-container">
             <button id="lightOneBtn">Fade Colors</button>
             <button id="WaveEffectBtn">Wave Effect</button>
-            <!-- هنا عدّلنا Rainbow Flow: أزلنا onclick القديم -->
             <button id="RainbowFlowBtn">Rainbow Flow</button>
             <button id="BlinkingPatternBtn">Blinking Pattern</button>
-            <button id="RunningLightsBtn">Running Lights</button> <!-- تم التعديل هنا -->
-            <button id="BreathingEffectBtn"  onclick="changeColor('')">Breathing Effect</button>
+            <button id="RunningLightsBtn">Running Lights</button>
+            <button id="BreathingEffectBtn">Breathing Effect</button> <!-- تم التعديل هنا -->
             <button id="MeteorShowerBtn">Meteor Shower</button>
             <button id="PulseSyncBtn"        onclick="changeColor('')">Pulse Sync</button>
             <button id="FireworksBurstBtn"   onclick="changeColor('')">Fireworks Burst</button>
@@ -53,37 +50,26 @@
 
     </div>
 
-    <!-- بقية القوالب والـ aura-shapes و stars-container كما كانت -->
     <div id="aura-shapes">
-        <!-- 20 شكل متنوع: مثلثات، مربعات، دوائر -->
         <div class="aura-shape triangle"></div>
         <div class="aura-shape square"></div>
         <div class="aura-shape circle"></div>
-        <!-- … (بقية الأشكال) … -->
-        <!-- 6 مذنبات نيون -->
         <div class="neon-comet"></div>
         <div class="neon-comet"></div>
         <div class="neon-comet"></div>
         <div class="neon-comet"></div>
         <div class="neon-comet"></div>
         <div class="neon-comet"></div>
-        <!-- موجة طاقة -->
         <div class="energy-wave"></div>
-        <!-- توليد 40 جسيمًا متحركًا -->
         <div class="background-particles">
             <div class="particle"></div>
             <div class="particle"></div>
             <div class="particle"></div>
-            <!-- … حتى 40 … -->
         </div>
-        <!-- ضباب ضوئي -->
         <div class="light-fog"></div>
     </div>
 
-    <div id="aura-shapes">…</div>
-
     <div class="stars-container">
-        <!-- أنشأنا 20 نجمة ديناميكياً عبر JS -->
     </div>
 
     <script src="app.js"></script>
