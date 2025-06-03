@@ -59,7 +59,7 @@ async def light_up_one_by_one(color_index: int, delay: float = 0.011):
         neo.set_led_color(j, *color)
     neo.update_strip()
 
-async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
+async def fade_colors_loop(delay: float = 0.0001, steps: int = 10):
     global stop_requested
     COLORS = [
         (255, 255, 255),
@@ -177,102 +177,116 @@ async def blinking_pattern_loop(delay: float = 0.5):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-# ─── التعديل الرئيسي: دالة Meteor Shower المعدلة لتعمل بحركة سلسة مثل الأفعى ───
 async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.000001, trail_length: int = 12):
-    """
-    حركة سلسة ومتناسقة تشبه حركة الأفعى:
-    - تبدأ من LED 19 وتتحرك بسلاسة نحو LED 0
-    - ذيل طويل يتلاشى تدريجياً يعطي إحساساً بحركة الشهاب الملتهب
-    - عند الوصول إلى LED 0، تعود إلى البداية بشكل سلس
-    - التأثير دائري ومستمر بدون انقطاع
-    """
     global stop_requested
 
-    # استخراج اللون الأساسي
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
     
-    # مواقع بداية الشهب (نبدأ من النهاية)
     head_position = NUM_LEDS - 1
     
     while not stop_requested:
-        # نرسم الشهاب من الرأس إلى نهاية الذيل
+        neo.clear_strip()
+        
         for i in range(NUM_LEDS):
             if stop_requested:
                 break
             
-            # إطفاء جميع المصابيح
             neo.clear_strip()
             
-            # حساب موقع الرأس الحالي
             current_head = (head_position - i) % NUM_LEDS
             
-            # رسم الذيل خلف الرأس
             for t in range(trail_length):
-                # حساب موقع LED في الذيل
                 tail_pos = (current_head + t) % NUM_LEDS
-                
-                # حساب شدة اللون (تتلاشى مع بعدها عن الرأس)
                 factor = max(0.0, 1.0 - t / trail_length)
-                
-                # تطبيق عامل التلاشي على اللون
                 r = int(r_base * factor)
                 g = int(g_base * factor)
                 b = int(b_base * factor)
-                
-                # تعيين اللون للمصباح
                 neo.set_led_color(tail_pos, r, g, b)
             
-            # تحديث الشريط
             neo.update_strip()
             await asyncio.sleep(delay_per_step)
         
-        # إعادة تعيين موقع البداية للدورة التالية
         head_position = (head_position - 1) % NUM_LEDS
     
-    # إطفاء المصابيح عند التوقف
     neo.clear_strip()
     neo.update_strip()
 
-# ─── إضافة أنيميشن Running Lights الجديد ───
 async def running_lights_loop(hex_color: str, delay: float = 0.05, spacing: int = 3):
-    """
-    حركة أضواء متتابعة تشبه حركة الأضواء على المدرج:
-    - مجموعة من الأضواء (3 بشكل افتراضي) تتحرك بشكل متتابع
-    - كل ضوء يتحرك بنفس السرية ويحافظ على المسافة بينهم
-    - يمكن اختيار اللون من خلال hex_color
-    - التأثير يعمل بشكل دائري مستمر
-    """
     global stop_requested
     
-    # استخراج اللون الأساسي
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
     
-    # تحديد مواقع الأضواء الأولى
     positions = [i * (NUM_LEDS // spacing) for i in range(spacing)]
     
     while not stop_requested:
-        # إطفاء جميع المصابيح
         neo.clear_strip()
         
-        # إضاءة المصابيح في المواقع المحددة
         for pos in positions:
             neo.set_led_color(pos, r_base, g_base, b_base)
         
-        # تحديث الشريط
         neo.update_strip()
         
-        # تحريك المواقع للأمام
         positions = [(pos + 1) % NUM_LEDS for pos in positions]
         
         await asyncio.sleep(delay)
     
-    # إطفاء المصابيح عند التوقف
     neo.clear_strip()
     neo.update_strip()
+
+# ─── تعديل تأثير التنفس ليعمل بألوان متعددة تلقائيًا ───
+async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
+    """
+    تأثير تنفسي ناعم ينتقل بين ألوان مختلفة تلقائيًا:
+    - ينتقل بين مجموعة من الألوان الأساسية
+    - كل لون يمر بدورة تنفس كاملة (زيادة ثم نقصان الشدة)
+    - يعطي إحساساً بالتنفس مع تغير الألوان
+    """
+    global stop_requested
+    
+    # مجموعة الألوان للتنفس
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (128, 0, 128),  # بنفسجي
+        (255, 192, 203) # وردي
+    ]
+    
+    while not stop_requested:
+        for (r_base, g_base, b_base) in COLORS:
+            # زيادة الشدة (التنفس للداخل)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            
+            # تقليل الشدة (التنفس للخارج)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
 
 async def animation_worker():
     global stop_requested, current_anim
@@ -307,6 +321,10 @@ async def animation_worker():
             elif req.animation_type == "running_lights":
                 if req.hex_color:
                     await running_lights_loop(req.hex_color)
+
+            # ─── معالجة تأثير التنفس الجديد (بدون لون محدد) ───
+            elif req.animation_type == "breathing_effect":
+                await breathing_effect_loop()
 
             elif req.animation_type == "solid_color":
                 if req.hex_color:
