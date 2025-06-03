@@ -6,10 +6,10 @@ from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 import time
-import json  # ─── أضفنا هذا للاستفادة من JSON في SSE
-import colorsys  # ─── لإضافة دعم تحويل الألوان من HSV إلى RGB
+import json  # ─── لإرسال بيانات JSON في SSE
+import colorsys  # ─── لتحويل الألوان من HSV إلى RGB
 
-# تهيئة شريط الـLED: عدد المصابيح = 20
+# تهيئة شريط الـLED: عدد المصابيح = 20
 NUM_LEDS = 20
 neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
 
@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# طابورُ الأنيميشن (queue) وقفلُ الوصول إليه (lock)
+# طابور الأنيميشن وقفل الوصول إليه
 animation_queue = deque()
 animation_lock = threading.Lock()
 
@@ -34,16 +34,16 @@ current_hex: str | None = "#000000"
 # اسم الأنيميشن الجاري أو None
 current_anim: str | None = None
 
-# نماذج Pydantic
+# نماذج Pydantic
 class AnimationRequest(BaseModel):
-    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow"
+    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow" | "blinking_pattern"
     color_index: int = 0       # استخدم في light_one_by_one
     hex_color: str | None = None  # استخدم في solid_color
 
 class ColorRequest(BaseModel):
     hex_color: str
 
-# ——— دالة تشغيل حلقة “Light One by One” ———
+# ——— دالة Light One by One ———
 async def light_up_one_by_one(color_index: int, delay: float = 0.011):
     global stop_requested
     colors = [
@@ -68,7 +68,7 @@ async def light_up_one_by_one(color_index: int, delay: float = 0.011):
         neo.set_led_color(j, *color)
     neo.update_strip()
 
-# ——— دالة تشغيل حلقة “Fade Colors” ———
+# ——— دالة Fade Colors ———
 async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
     global stop_requested
     COLORS = [
@@ -82,7 +82,7 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
     ]
     while not stop_requested:
         for (r_t, g_t, b_t) in COLORS:
-            # Fade‑in
+            # Fade-in
             for step in range(steps):
                 if stop_requested:
                     return
@@ -94,7 +94,7 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                     neo.set_led_color(i, r, g, b)
                 neo.update_strip()
                 await asyncio.sleep(delay)
-            # Fade‑out
+            # Fade-out
             for step in range(steps):
                 if stop_requested:
                     return
@@ -107,22 +107,15 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ——— دالة تشغيل حلقة “Wave Effect” (محسّنة) ———
+# ——— دالة Wave Effect ———
 async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
-    """
-    تأثير موجة ألوان قوس قزح ينتقل عبر الشريط بسلاسة،
-    حيث يُحوّل موضع كل LED إلى درجة لونية بناءً على إزاحة متحركة.
-    """
     global stop_requested
-    # درجة السطوع الثابتة
     brightness = 0.5
     step = 0.0
 
     while not stop_requested:
         for i in range(NUM_LEDS):
-            # نحسب موضع Hue لكل LED كنسبة مئوية مضافة للإزاحة الزمنية
             hue = (i / NUM_LEDS + step) % 1.0
-            # نحول من HSV إلى RGB (كل مكون بين 0 و1) ثم نضرب 255
             r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
             r = int(r_f * 255)
             g = int(g_f * 255)
@@ -130,27 +123,19 @@ async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
 
-        # نزيد الإزاحة لنحرك الموجة عبر الوقت
         step = (step + wave_speed) % 1.0
         await asyncio.sleep(delay)
 
-    # عند انتهاء الحلقة (عند طلب التوقف)، نُطفئ جميع المصابيح
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-# ——— دالة تشغيل حلقة “Rainbow Flow” ———
+# ——— دالة Rainbow Flow ———
 async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
-    """
-    تأثير تدفق ألوان قوس قزح بالكامل عبر الشريط:
-    يتغير لون الشريط بالكامل تدريجياً من الأحمر للأرجواني ثم يعود.
-    """
     global stop_requested
     step = 0
     while not stop_requested:
-        # نحسب Hue كنسبة مئوية من الدورة
         hue = (step % steps) / steps
-        # نحول من HSV إلى RGB (كل مكون بين 0 و1) ثم نضرب 255
         r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
         r = int(r_f * 255)
         g = int(g_f * 255)
@@ -162,7 +147,66 @@ async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
         step += 1
         await asyncio.sleep(delay)
 
-    # عند انتهاء الحلقة (عند طلب التوقف)، نُطفئ جميع المصابيح
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+# ——— دالة Blinking Pattern (ألوان متدرجة) ———
+async def blinking_pattern_loop(delay: float = 0.5):
+    """
+    يبدأ بالأبيض (255،255،255)، ثم ينتقل تدريجيًا إلى ألوان أخرى متقاربة:
+    1) أبيض
+    2) أصفر شاحب جدًا
+    3) أصفر شاحب
+    4) أصفر
+    5) برتقالي
+    6) أحمر
+    7) أرجواني
+    8) أزرق
+    9) سماوي
+    10) أخضر
+    وفي كل دورة ON يعرض اللون الحالي من القائمة، ثم OFF، ثم ينتقل للون التالي حلقيًا.
+    """
+    global stop_requested
+
+    # قائمة الألوان المُختارة (RGB)
+    color_steps = [
+        (255, 255, 255),  # White
+        (255, 255, 229),  # Very light yellow
+        (255, 255, 178),  # Light yellow
+        (255, 255,   0),  # Yellow
+        (255, 127,   0),  # Orange
+        (255,   0,   0),  # Red
+        (255,   0, 255),  # Magenta
+        (  0,   0, 255),  # Blue
+        (  0, 255, 255),  # Cyan
+        (  0, 255,   0)   # Green
+    ]
+
+    idx = 0
+    total = len(color_steps)
+
+    while not stop_requested:
+        # ON: اعرض اللون الحالي
+        r, g, b = color_steps[idx]
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+        if stop_requested:
+            break
+
+        # OFF: أطفئ جميع المصابيح
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+        # انتقل للون التالي (دائريًا)
+        idx = (idx + 1) % total
+
+    # عند طلب الإيقاف، تأكد من إطفاء جميع المصابيح
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
@@ -191,8 +235,11 @@ async def animation_worker():
             elif req.animation_type == "rainbow_flow":
                 await rainbow_flow_loop()
 
+            elif req.animation_type == "blinking_pattern":
+                await blinking_pattern_loop()
+
             elif req.animation_type == "solid_color":
-                # لو طلب color ثابت:
+                # إذا طلب لون ثابت:
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
                     g = int(req.hex_color[3:5], 16)
@@ -204,7 +251,7 @@ async def animation_worker():
 
         await asyncio.sleep(0.1)
 
-# عند بدء تشغيل التطبيق، نشغّل عامل الخلفية:
+# عند بدء تشغيل التطبيق، نشغل عامل الخلفية
 @app.on_event("startup")
 async def on_startup():
     asyncio.create_task(animation_worker())
@@ -260,24 +307,19 @@ async def stop_animation():
     current_hex = "#000000"
     return {"status": "stopped"}
 
-# ───────────── START: إضافة نقطة نهاية SSE ─────────────
+# ───────────── START: نقطة نهاية SSE ─────────────
 from fastapi.responses import StreamingResponse
 
 async def event_generator():
     """
-    تُرسل بشكل دوري الحالة الحالية كـ SSE:
-      - بيانات JSON فيها animation و color
+    ترسل الحالة الحالية كـ SSE كل ثانية
     """
     while True:
         data = json.dumps({"animation": current_anim, "color": current_hex})
         yield f"data: {data}\n\n"
-        await asyncio.sleep(1.0)  # نرسل كل ثانية
+        await asyncio.sleep(1.0)
 
 @app.get("/stream")
 async def stream_state():
-    """
-    يعيد StreamingResponse بمحتوى text/event-stream
-    ليتم التقاطه عن طريق EventSource في الـClient.
-    """
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-# ───────────── END: إضافة نقطة نهاية SSE ─────────────
+# ───────────── END: نقطة نهاية SSE ─────────────
