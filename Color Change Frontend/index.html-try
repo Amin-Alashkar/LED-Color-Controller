@@ -40,7 +40,7 @@
         <div class="button-container">
             <button id="lightOneBtn">Fade Colors</button>
             <!-- باقي الأزرار حالياً لاّصّة مجرد لواجهة المستخدم، ولم تربط بعد بأيّ دوال JS -->
-            <button id="WaveEffectBtn"       onclick="changeColor('')">Wave Effect</button>
+            <button id="WaveEffectBtn">Wave Effect</button>
             <button id="RainbowFlowBtn"      onclick="changeColor('')">Rainbow Flow</button>
             <button id="BlinkingPatternBtn"  onclick="changeColor('')">Blinking Pattern</button>
             <button id="RunningLightsBtn"    onclick="changeColor('')">Running Lights</button>
