@@ -6,8 +6,7 @@ from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 import time
-import json  # ─── أضفنا هذا للاستفادة من JSON في SSE
-import colorsys  # ─── لإضافة دعم تحويل الألوان من HSV إلى RGB
+import json
 
 # تهيئة شريط الـLED: عدد المصابيح = 20
 NUM_LEDS = 20
@@ -36,7 +35,7 @@ current_anim: str | None = None
 
 # نماذج Pydantic
 class AnimationRequest(BaseModel):
-    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color"
+    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "rainbow_flow" | "solid_color"
     color_index: int = 0       # استخدم في light_one_by_one
     hex_color: str | None = None  # استخدم في solid_color
 
@@ -107,34 +106,53 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ——— دالة تشغيل حلقة “Wave Effect” (محسّنة) ———
-async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
-    """
-    تأثير موجة ألوان قوس قزح ينتقل عبر الشريط بسلاسة،
-    حيث يُحوّل موضع كل LED إلى درجة لونية بناءً على إزاحة متحركة.
-    """
+# ——— دالة تشغيل حلقة “Wave Effect” ———
+async def wave_effect_loop(delay: float = 0.05):
     global stop_requested
-    # درجة السطوع الثابتة
-    brightness = 0.5
-    step = 0.0
+    color = (80, 80, 255)  # يمكنك تغييره لكل لون تريده للـwave
+    off_color = (0, 0, 0)
 
     while not stop_requested:
+        for idx in range(NUM_LEDS):
+            if stop_requested:
+                break
+            # أطفئ جميع المصابيح أولاً
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, *off_color)
+            # أشعل الـLED الحالي
+            neo.set_led_color(idx, *color)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+    # عندما ينتهي، نطفئ الكل
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+# ——— دالة تشغيل حلقة “Rainbow Flow” ———
+import colorsys
+
+async def rainbow_flow_loop(delay: float = 0.05):
+    """
+    يُنشئ تأثير قوس قزح متحرك عبر كل الـ LEDs:
+    كل LED يأخذ درجة لون من الـ HSV، ثم نغيّر الـ hue تدريجياً لينتقل التأثير.
+    """
+    global stop_requested
+    num_steps = 360  # عدد الخطوات لدورة واحدة كاملة في طيف الألوان
+    pos = 0
+    while not stop_requested:
         for i in range(NUM_LEDS):
-            # نحسب موضع Hue لكل LED كنسبة مئوية مضافة للإزاحة الزمنية
-            hue = (i / NUM_LEDS + step) % 1.0
-            # نحول من HSV إلى RGB (كل مكون بين 0 و1) ثم نضرب 255
-            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
+            # نحسِب الـ hue بناءً على موقع الـ LED والـ pos
+            hue = ((pos + (i * (360 // NUM_LEDS))) % num_steps) / num_steps
+            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+            # نحوّل من [0.0-1.0] إلى [0-255]
             r = int(r_f * 255)
             g = int(g_f * 255)
             b = int(b_f * 255)
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
-
-        # نزيد الإزاحة لنحرك الموجة عبر الوقت
-        step = (step + wave_speed) % 1.0
+        pos = (pos + 1) % num_steps
         await asyncio.sleep(delay)
-
-    # عند انتهاء الحلقة (عند طلب التوقف)، نُطفئ جميع المصابيح
+    # عند الإيقاف، نطفئ جميع الـ LEDs
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
@@ -159,6 +177,9 @@ async def animation_worker():
 
             elif req.animation_type == "wave_effect":
                 await wave_effect_loop()
+
+            elif req.animation_type == "rainbow_flow":
+                await rainbow_flow_loop()
 
             elif req.animation_type == "solid_color":
                 # لو طلب color ثابت:
