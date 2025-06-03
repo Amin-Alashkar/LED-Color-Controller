@@ -36,7 +36,7 @@ current_anim: str | None = None
 
 # نماذج Pydantic
 class AnimationRequest(BaseModel):
-    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color"
+    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow"
     color_index: int = 0       # استخدم في light_one_by_one
     hex_color: str | None = None  # استخدم في solid_color
 
@@ -139,6 +139,34 @@ async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
+# ——— دالة تشغيل حلقة “Rainbow Flow” ———
+async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
+    """
+    تأثير تدفق ألوان قوس قزح بالكامل عبر الشريط:
+    يتغير لون الشريط بالكامل تدريجياً من الأحمر للأرجواني ثم يعود.
+    """
+    global stop_requested
+    step = 0
+    while not stop_requested:
+        # نحسب Hue كنسبة مئوية من الدورة
+        hue = (step % steps) / steps
+        # نحول من HSV إلى RGB (كل مكون بين 0 و1) ثم نضرب 255
+        r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        r = int(r_f * 255)
+        g = int(g_f * 255)
+        b = int(b_f * 255)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+        step += 1
+        await asyncio.sleep(delay)
+
+    # عند انتهاء الحلقة (عند طلب التوقف)، نُطفئ جميع المصابيح
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
 # ——— عامل خلفي لمعالجة طابور الأنيميشن ———
 async def animation_worker():
     global stop_requested, current_anim
@@ -159,6 +187,9 @@ async def animation_worker():
 
             elif req.animation_type == "wave_effect":
                 await wave_effect_loop()
+
+            elif req.animation_type == "rainbow_flow":
+                await rainbow_flow_loop()
 
             elif req.animation_type == "solid_color":
                 # لو طلب color ثابت:
