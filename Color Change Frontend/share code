@@ -1,93 +1,56 @@
-/* ===========================
-   15. إضافة تأثير الشهاب (Meteor)
-   =========================== */
+// ============ تأثير الشهاب (Meteor) ============
 
-/* حاوية عامة للشهب؛ ستكون خلفية شفافة لتستقبل عناصر الشهاب */
-#meteor-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  pointer-events: none; /* حتى تنقر على العناصر الموجودة أسفله */
-  overflow: hidden;
-  z-index: 0; /* تأكد أن طبقة الشهاب تحت العناصر الأخرى أو فوقها حسب حاجتك */
+function createMeteor() {
+    const container = document.getElementById('meteor-container');
+    if (!container) return;
+
+    const meteor = document.createElement('div');
+    meteor.classList.add('meteor');
+
+    const fromLeft = Math.random() < 0.5; // true => من اليسار، false => من اليمين
+
+    if (fromLeft) {
+        meteor.classList.add('left');
+        meteor.style.left = '-50px';
+        meteor.style.top = '-100px';
+    } else {
+        meteor.classList.add('right');
+        meteor.style.right = '-50px';
+        meteor.style.top = '-100px';
+    }
+
+    container.appendChild(meteor);
+
+    // نُضيف علامة منتصف المسار بعد نصف مدة الأنيميشن (2.5s / 2 = 1.25s)
+    const midDelay = 1250;
+    setTimeout(() => {
+        const midX = window.innerWidth / 2;
+        const midY = window.innerHeight / 2;
+
+        const mark = document.createElement('div');
+        mark.classList.add('meteor-mark');
+        mark.style.left = `${midX}px`;
+        mark.style.top  = `${midY}px`;
+
+        container.appendChild(mark);
+
+        // بعد ثانية واحدة، نزيل العلامة
+        setTimeout(() => {
+            if (mark.parentNode === container) {
+                container.removeChild(mark);
+            }
+        }, 1000);
+    }, midDelay);
+
+    // بعد انتهاء حركة الشهاب (2.5s)، نزيله من الـDOM
+    setTimeout(() => {
+        if (meteor.parentNode === container) {
+            container.removeChild(meteor);
+        }
+    }, 2500);
 }
 
-/* شكل الشهاب نفسه: لمسة لونية حمراء-صفراء كالهب */
-.meteor {
-  position: absolute;
-  width: 4px;             /* عرض جسم الشهاب */
-  height: 80px;           /* طول جسم الشهاب؛ يعطي انطباع “الذيل” */
-  background: linear-gradient(to bottom, #ff0000, #ffa500);
-  border-radius: 2px;     /* حواف دائرية خفيفة */
-  filter: blur(1.5px);    /* ضبابية خفيفة لإضفاء وهج */
-  opacity: 0.8;
-}
-
-/* أثناء بداية الحركة نُحدّد جهة البداية (يسار/يمين) عن طريق إضافة إحدى الصنفين: 
-   .left تبدأ من أعلى اليسار متجهة لأسفل اليمين
-   .right تبدأ من أعلى اليمين متجهة لأسفل اليسار
-*/
-
-/* حركة الشهاب المنطلق من أعلى اليسار إلى أسفل اليمين */
-@keyframes meteor-from-left {
-  0% {
-    top: -100px;     /* خارج الشاشة من الأعلى */
-    left: -50px;     /* خارج الشاشة من اليسار قليلاً */
-    opacity: 1;
-  }
-  100% {
-    top: 100vh;      /* أسفل الشاشة */
-    left: 100vw;     /* يمين الشاشة */
-    opacity: 0;      /* يتلاشى عند النهاية */
-  }
-}
-
-/* حركة الشهاب المنطلقة من أعلى اليمين إلى أسفل اليسار */
-@keyframes meteor-from-right {
-  0% {
-    top: -100px;      /* خارج الشاشة من الأعلى */
-    right: -50px;     /* خارج الشاشة من اليمين قليلاً */
-    opacity: 1;
-  }
-  100% {
-    top: 100vh;       /* أسفل الشاشة */
-    right: 100vw;     /* يسار الشاشة */
-    opacity: 0;       /* يتلاشى عند النهاية */
-  }
-}
-
-/* إذا أضفنا .left للشهاب فإنه يشغل الحركة الأولى في مدة 2.5 ث */
-.meteor.left {
-  animation: meteor-from-left 2.5s linear forwards;
-}
-
-/* إذا أضفنا .right للشهاب فإنه يشغل الحركة الثانية في مدة 2.5 ث */
-.meteor.right {
-  animation: meteor-from-right 2.5s linear forwards;
-}
-
-/* علامة بسيطة تتكوّن عندما يمر الشهاب في منتصف مساره – عبارة عن نقطة متوهجة */
-.meteor-mark {
-  position: absolute;
-  width: 6px;
-  height: 6px;
-  background: #ff4500;       /* احمر ناري */
-  border-radius: 50%;
-  box-shadow: 0 0 8px #ff4500;
-  opacity: 0.9;
-  animation: mark-fade 1s forwards; /* تتلاشى بعد 1 ثانية */
-}
-
-/* أنيميشن لتلاشي العلامة تدريجيًا */
-@keyframes mark-fade {
-  0% {
-    opacity: 0.9;
-    transform: scale(1);
-  }
-  100% {
-    opacity: 0;
-    transform: scale(0.3);
-  }
-}
+document.addEventListener('DOMContentLoaded', () => {
+    // كل ثانية، نُنشئ شهاب جديد
+    setInterval(createMeteor, 1000);
+});
