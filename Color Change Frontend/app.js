@@ -1,11 +1,10 @@
+// ===== App.js (التعديلات لتمكين Rainbow Flow) =====
+
 // at school
 // const API_BASE_URL = "http://10.220.1.123:8000";
 
 // at home
 const API_BASE_URL = "http://192.168.1.247:8000";
-
-// DOM Elements
-// … (الكود الحالي لديك) …
 
 // DOM Elements
 const colorDisplay    = document.getElementById('colorDisplay');
@@ -14,8 +13,9 @@ const offBtn          = document.getElementById('offBtn');
 const off2Btn         = document.getElementById('off2Btn');
 const colorPicker     = document.getElementById('colorPicker');
 
-// إضافة مرجع لزر Wave Effect
+// إضافة مرجع لزر Wave Effect و Rainbow Flow
 const waveEffectBtn   = document.getElementById('WaveEffectBtn');
+const rainbowFlowBtn  = document.getElementById('RainbowFlowBtn');
 
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
@@ -52,7 +52,7 @@ async function fetchAndApplyState() {
             cardElement.style.background = "";
         }
 
-        // لو الأنيميشن الجاري هو fade_colors
+        // ==== Fade Colors ====
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
@@ -65,7 +65,7 @@ async function fetchAndApplyState() {
             lightOneBtn.textContent = 'Fade Colors';
         }
 
-        // لو الأنيميشن الجاري هو wave_effect
+        // ==== Wave Effect ====
         if (animation === "wave_effect") {
             isAnimationRunning = true;
             waveEffectBtn.classList.add('active');
@@ -77,16 +77,31 @@ async function fetchAndApplyState() {
             waveEffectBtn.textContent = 'Wave Effect';
         }
 
-        
+        // ==== Rainbow Flow ====
+        if (animation === "rainbow_flow") {
+            isAnimationRunning = true;
+            rainbowFlowBtn.classList.add('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Rainbow Flow";
+        } else {
+            rainbowFlowBtn.classList.remove('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow';
+        }
 
     } catch (err) {
         console.error("Error fetching state:", err);
         updateUI('#000000');
         isAnimationRunning = false;
+
+        // تأكد من إزالة أي حالة نشطة على الأزرار
         lightOneBtn.classList.remove('active');
         lightOneBtn.textContent = 'Fade Colors';
         waveEffectBtn.classList.remove('active');
         waveEffectBtn.textContent = 'Wave Effect';
+        rainbowFlowBtn.classList.remove('active');
+        rainbowFlowBtn.textContent = 'Rainbow Flow';
+
         cardElement.style.background = "";
     }
 }
@@ -109,6 +124,8 @@ async function stopAnimation() {
     lightOneBtn.textContent = 'Fade Colors';
     waveEffectBtn.classList.remove('active');
     waveEffectBtn.textContent = 'Wave Effect';
+    rainbowFlowBtn.classList.remove('active');
+    rainbowFlowBtn.textContent = 'Rainbow Flow';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -149,6 +166,22 @@ async function startWaveAnimation() {
     await sendRequest("/animate", { animation_type: "wave_effect" });
 }
 
+/**
+ * دالة بداية/إيقاف "Rainbow Flow"
+ */
+async function startRainbowAnimation() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    rainbowFlowBtn.classList.add('active');
+    rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Rainbow Flow";
+    await sendRequest("/animate", { animation_type: "rainbow_flow" });
+}
+
 // دالة لتحديث واجهة المستخدم إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -161,6 +194,7 @@ function updateUI(color) {
 // === ربط الأحداث ===
 lightOneBtn   .addEventListener("click", startFadeAnimation);
 waveEffectBtn .addEventListener("click", startWaveAnimation);
+rainbowFlowBtn.addEventListener("click", startRainbowAnimation);
 offBtn        .addEventListener("click", stopAnimation);
 off2Btn       .addEventListener("click", stopAnimation);
 colorPicker   .addEventListener("input", e => changeColor(e.target.value));
@@ -234,6 +268,19 @@ evtSource.onmessage = e => {
             waveEffectBtn.classList.remove('active');
             waveEffectBtn.textContent = 'Wave Effect';
         }
+
+        // rainbow_flow
+        if (animation === "rainbow_flow") {
+            isAnimationRunning = true;
+            rainbowFlowBtn.classList.add('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Rainbow Flow";
+        } else {
+            rainbowFlowBtn.classList.remove('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow';
+        }
+
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
     }
