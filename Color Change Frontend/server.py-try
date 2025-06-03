@@ -346,41 +346,49 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ───── إضافة تأثير Fireworks Burst ─────
-async def fireworks_burst_loop(delay: float = 0.05, bursts: int = 8, sparks_per_burst: int = 6):
+# ───── إضافة تأثير Fireworks Burst مع عشرة LED ثابتين ─────
+async def fireworks_burst_loop(delay: float = 0.1):
     """
     تأثير الألعاب النارية:
-    - يحدث عدد من “الانفجارات” (bursts)
-    - في كل انفجار، يضيء عدد من الشرارات (sparks) بألوان عشوائية على مواضع عشوائية
-    - بعدها تتلاشى الشرارات تدريجيًا
+    - نحدد عشرة مواضع ثابتة في الشريط مع ألوان ثابتة
+    - كل دورة، نضيء هذه المواقع بعناية بألوانها المحددة
+    - ثم ندخل دورة تلاشي لجميع هذه الألوان معًا
+    - نكرر هذا المسار باستمرار طالما لم يُطلَب الإيقاف
     """
     global stop_requested
 
-    for _ in range(bursts):
-        if stop_requested:
-            break
+    # مصفوفة من عشرة أزواج (موقع، لون RGB)
+    fixed_sparks = [
+        (19, (255, 0, 0)),     # LED رقم 19 باللون الأحمر
+        (15, (0, 0, 255)),     # LED رقم 15 باللون الأزرق
+        (2,  (0, 255, 0)),     # LED رقم 2 باللون الأخضر
+        (8,  (255, 255, 0)),   # LED رقم 8 باللون الأصفر
+        (5,  (255, 0, 255)),   # LED رقم 5 باللون الأرجواني
+        (11, (0, 255, 255)),   # LED رقم 11 باللون السماوي
+        (1,  (255, 165, 0)),   # LED رقم 1 باللون البرتقالي
+        (4,  (255, 192, 203)), # LED رقم 4 باللون الوردي
+        (7,  (138, 43, 226)),  # LED رقم 7 باللون الأزرق البنفسجي
+        (10, (50, 205, 50))    # LED رقم 10 باللون الأخضر الليموني
+    ]
 
-        # نختار مواضع الشرارات وألوانها عشوائيًا
-        spark_positions = [random.randint(0, NUM_LEDS - 1) for _ in range(sparks_per_burst)]
-        spark_colors = [
-            (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255))
-            for _ in range(sparks_per_burst)
-        ]
-
-        # نعرض الشرارات بسطوع كامل
-        for pos, (r_base, g_base, b_base) in zip(spark_positions, spark_colors):
+    while not stop_requested:
+        # 1. نضيء العشرة LED المحددين بألوانهم الأصلية
+        neo.clear_strip()
+        for pos, (r_base, g_base, b_base) in fixed_sparks:
             neo.set_led_color(pos, r_base, g_base, b_base)
         neo.update_strip()
         await asyncio.sleep(delay)
 
-        # نعمل تلاشي تدريجي للشرارات
-        fade_steps = 5
-        for step in range(fade_steps, 0, -1):
+        # 2. نعمل تلاشي تدريجي لجميع هذه الألوان في وقت واحد
+        fade_steps = 10
+        for step in range(fade_steps, -1, -1):
             if stop_requested:
+                neo.clear_strip()
+                neo.update_strip()
                 return
             factor = step / fade_steps
             neo.clear_strip()
-            for pos, (r_base, g_base, b_base) in zip(spark_positions, spark_colors):
+            for pos, (r_base, g_base, b_base) in fixed_sparks:
                 r = int(r_base * factor)
                 g = int(g_base * factor)
                 b = int(b_base * factor)
@@ -388,12 +396,10 @@ async def fireworks_burst_loop(delay: float = 0.05, bursts: int = 8, sparks_per_
             neo.update_strip()
             await asyncio.sleep(delay)
 
-        # ننظف الشريط بعد الانفجار
-        neo.clear_strip()
-        neo.update_strip()
+        # 3. ننتظر فترة قصيرة قبل البدء مرة أخرى
         await asyncio.sleep(delay)
 
-    # في النهاية، نتأكد من إطفاء جميع المصابيح
+    # عند طلب الإيقاف، نتأكد من إطفاء جميع المصابيح
     neo.clear_strip()
     neo.update_strip()
 # ────────────────────────────────────────────────────────────────────
