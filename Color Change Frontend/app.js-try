@@ -172,7 +172,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setInterval(fetchAndApplyState, 2000);
 });
 
-
 document.addEventListener("DOMContentLoaded", function () {
     const starsContainer = document.querySelector(".stars-container");
 
@@ -189,3 +188,47 @@ document.addEventListener("DOMContentLoaded", function () {
         starsContainer.appendChild(star);
     }
 });
+
+/* ─── START: إضافة SSE (Server‑Sent Events) لدفع الحالة تلقائيًا ─── */
+const evtSource = new EventSource(`${API_BASE_URL}/stream`);
+evtSource.onmessage = e => {
+    try {
+        const { animation, color } = JSON.parse(e.data);
+
+        // نطبّق المنطق نفسه من fetchAndApplyState() ولكن اعتماداً على الرسالة الواردة
+        if (color) {
+            updateUI(color);
+            cardElement.style.background = "";
+        } else {
+            updateUI('#000000');
+            cardElement.style.background = "";
+        }
+
+        // fade_colors
+        if (animation === "fade_colors") {
+            isAnimationRunning = true;
+            lightOneBtn.classList.add('active');
+            lightOneBtn.textContent = 'Fade Colors (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors";
+        } else {
+            lightOneBtn.classList.remove('active');
+            lightOneBtn.textContent = 'Fade Colors';
+        }
+
+        // wave_effect
+        if (animation === "wave_effect") {
+            isAnimationRunning = true;
+            waveEffectBtn.classList.add('active');
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Wave Effect";
+        } else {
+            waveEffectBtn.classList.remove('active');
+            waveEffectBtn.textContent = 'Wave Effect';
+        }
+    } catch (err) {
+        console.error("SSE onmessage parse error:", err);
+    }
+};
+/* ─── END: إضافة SSE ─── */
