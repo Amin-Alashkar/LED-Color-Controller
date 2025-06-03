@@ -1,8 +1,7 @@
-// ===== App.js (إضافة Blinking Pattern و تصحيح Meteor Shower) =====
-
-// في المدرسة كان: // const API_BASE_URL = "http://10.220.1.123:8000";
+// في المدرسة كان:
+ const API_BASE_URL = "http://10.220.1.123:8000";
 // في البيت:
-const API_BASE_URL = "http://192.168.1.247:8000";
+// const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 const colorDisplay       = document.getElementById('colorDisplay');
@@ -16,6 +15,7 @@ const waveEffectBtn        = document.getElementById('WaveEffectBtn');
 const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
 const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
 const meteorShowerBtn      = document.getElementById('MeteorShowerBtn');
+const runningLightsBtn     = document.getElementById('RunningLightsBtn'); // تمت الإضافة
 
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
@@ -24,6 +24,7 @@ let isAnimationRunning = false;
 
 // علم لتحديد إذا كنا الآن نختار لون شهاب (ليمنع إرسال /color)
 let isPickingMeteorColor = false;
+let isPickingRunningLightsColor = false; // تمت الإضافة
 
 async function sendRequest(endpoint, data) {
     try {
@@ -101,8 +102,8 @@ async function fetchAndApplyState() {
             blinkingPatternBtn.classList.remove('active');
             blinkingPatternBtn.textContent = 'Blinking Pattern';
         }
-
-        // Meteor Shower (الجديد)
+        
+        // Meteor Shower
         if (animation === "meteor_shower") {
             isAnimationRunning = true;
             meteorShowerBtn.classList.add('active');
@@ -112,6 +113,18 @@ async function fetchAndApplyState() {
         } else {
             meteorShowerBtn.classList.remove('active');
             meteorShowerBtn.textContent = 'Meteor Shower';
+        }
+
+        // Running Lights (تمت الإضافة)
+        if (animation === "running_lights") {
+            isAnimationRunning = true;
+            runningLightsBtn.classList.add('active');
+            runningLightsBtn.textContent = 'Running Lights (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights";
+        } else {
+            runningLightsBtn.classList.remove('active');
+            runningLightsBtn.textContent = 'Running Lights';
         }
 
     } catch (err) {
@@ -130,6 +143,8 @@ async function fetchAndApplyState() {
         blinkingPatternBtn.textContent = 'Blinking Pattern';
         meteorShowerBtn.classList.remove('active');
         meteorShowerBtn.textContent = 'Meteor Shower';
+        runningLightsBtn.classList.remove('active'); // تمت الإضافة
+        runningLightsBtn.textContent = 'Running Lights'; // تمت الإضافة
 
         cardElement.style.background = "";
     }
@@ -159,6 +174,8 @@ async function stopAnimation() {
     blinkingPatternBtn.textContent = 'Blinking Pattern';
     meteorShowerBtn.classList.remove('active');
     meteorShowerBtn.textContent = 'Meteor Shower';
+    runningLightsBtn.classList.remove('active'); // تمت الإضافة
+    runningLightsBtn.textContent = 'Running Lights'; // تمت الإضافة
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -220,7 +237,7 @@ async function startBlinkingPattern() {
     await sendRequest("/animate", { animation_type: "blinking_pattern" });
 }
 
-// —== حدث الضغط على زر Meteor Shower (الجديد) ==—
+// —== حدث الضغط على زر Meteor Shower ==—
 async function startMeteorShower() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -246,6 +263,32 @@ async function startMeteorShower() {
     colorPicker.addEventListener("input", handler);
 }
 
+// ─── إضافة دالة لتشغيل Running Lights ───
+async function startRunningLights() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    // نعين العلم حتى يعرف الملقِّي أن اللون خاص بـ Running Lights
+    isPickingRunningLightsColor = true;
+    // نفتح مُختار اللون
+    colorPicker.click();
+    // نضيف مستمع لمرة واحدة لالتقاط اللون المختار
+    const handler = async (e) => {
+        const chosenColor = e.target.value;
+        isPickingRunningLightsColor = false;
+        isAnimationRunning = true;
+        runningLightsBtn.classList.add('active');
+        runningLightsBtn.textContent = 'Running Lights (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Running Lights";
+        // نرسل طلب بدء الأنيميشن مع اللون المختار
+        await sendRequest("/animate", { animation_type: "running_lights", hex_color: chosenColor });
+        colorPicker.removeEventListener("input", handler);
+    };
+    colorPicker.addEventListener("input", handler);
+}
+
 // دالة لتحديث واجهة المستخدم إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -261,12 +304,13 @@ waveEffectBtn      .addEventListener("click", startWaveAnimation);
 rainbowFlowBtn     .addEventListener("click", startRainbowAnimation);
 blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
 meteorShowerBtn    .addEventListener("click", startMeteorShower);
+runningLightsBtn   .addEventListener("click", startRunningLights); // تمت الإضافة
 offBtn             .addEventListener("click", stopAnimation);
 off2Btn            .addEventListener("click", stopAnimation);
 
 // تعديل مستمع colorPicker العادي ليُرسِل لونًا ثابتًا فقط إذا لم نكن في وضع اختيار شهاب
 colorPicker.addEventListener("input", e => {
-    if (!isPickingMeteorColor) {
+    if (!isPickingMeteorColor && !isPickingRunningLightsColor) {
         changeColor(e.target.value);
     }
 });
@@ -358,7 +402,7 @@ evtSource.onmessage = e => {
             blinkingPatternBtn.textContent = 'Blinking Pattern';
         }
 
-        // meteor_shower (الجديد)
+        // meteor_shower
         if (animation === "meteor_shower") {
             isAnimationRunning = true;
             meteorShowerBtn.classList.add('active');
@@ -370,8 +414,21 @@ evtSource.onmessage = e => {
             meteorShowerBtn.textContent = 'Meteor Shower';
         }
 
+        // running_lights (تمت الإضافة)
+        if (animation === "running_lights") {
+            isAnimationRunning = true;
+            runningLightsBtn.classList.add('active');
+            runningLightsBtn.textContent = 'Running Lights (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights";
+        } else {
+            runningLightsBtn.classList.remove('active');
+            runningLightsBtn.textContent = 'Running Lights';
+        }
+
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
     }
 };
 /* ─── نهاية SSE ─── */
+
