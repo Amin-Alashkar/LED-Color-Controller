@@ -3002,3 +3002,44 @@ body { background: #000; overflow: hidden; position: relative; }
    document.documentElement.style.setProperty('--current-color', '#ff0000');
    حينها ستتغير خلفية العنصر .color-display تلقائياً.
 */
+
+
+@media only screen and (max-width: 600px) {
+
+  /* 1. نتأكد من أن حاوية الأزرار تأخذ العرض الكامل ولا تُخبَّأ */
+  .button-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;           /* مسافة أصغر بين الأزرار */
+    margin-bottom: 20px;
+    width: 100%;
+    padding: 0 5px;     /* حاشية جانبية بسيطة حتى لا تنلصق الأزرار بحواف الهاتف */
+  }
+
+  /* 2. نجعل كل زر يحتل تقريبًا نصف العرض ونتيح له اتساعًا جيدًا للضغط */
+  .button-container button {
+    flex: 1 1 45%;      /* كل زر يأخذ تقريبًا 45% من العرض، مع مرونة للتغيّر */
+    max-width: 45%;     /* نمنع كل زر من أن يصبح أكبر من 45% */
+    min-width: 40%;     /* ونعطيه حدًا أدنى ليبقى مقروءًا */
+    margin: 6px 2px;    /* مسافات رأس/تحت ويسار/يمين قليلة لتنسيق أفضل */
+    padding: 10px 0;    /* تقليل الحشوة عموديًا حتى تبقى مرتاح للعرض */
+    font-size: 0.9rem;  /* تصغير طفيف لحجم الخط على الهاتف */
+  }
+
+  /* 3. إذا كان هناك زر واحد فقط في صف، نجعله يتمدد كامل العرض */
+  .button-container button:only-child {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+
+  /* 4. نعطي الزرّات حدًّا أدنى مناسبًا للارتفاع يجعلها بارزة */
+  .button-container button {
+    min-height: 40px;
+  }
+
+  /* 5. نتأكد من أن البطاقة تسمح بالتمرير العمودي وليس إخفاء المحتوى */
+  .card {
+    overflow-y: auto;
+  }
+}
