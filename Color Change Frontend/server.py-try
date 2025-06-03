@@ -1,377 +1,376 @@
-// ===== App.js (إضافة Blinking Pattern و تصحيح Meteor Shower) =====
+from fastapi import FastAPI
+from pydantic import BaseModel
+from pi5neo import Pi5Neo
+import asyncio
+from collections import deque
+from fastapi.middleware.cors import CORSMiddleware
+import threading
+import time
+import json  # ─── لإرسال بيانات JSON في SSE
+import colorsys  # ─── لتحويل الألوان من HSV إلى RGB
 
-// في المدرسة كان: // const API_BASE_URL = "http://10.220.1.123:8000";
-// في البيت:
-const API_BASE_URL = "http://192.168.1.247:8000";
+# تهيئة شريط الـLED: عدد المصابيح = 20
+NUM_LEDS = 20
+neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
 
-// DOM Elements
-const colorDisplay       = document.getElementById('colorDisplay');
-const lightOneBtn        = document.getElementById('lightOneBtn');
-const offBtn             = document.getElementById('offBtn');
-const off2Btn            = document.getElementById('off2Btn');
-const colorPicker        = document.getElementById('colorPicker');
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
 
-// أزرار الأنيميشن
-const waveEffectBtn        = document.getElementById('WaveEffectBtn');
-const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
-const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
-const meteorShowerBtn      = document.getElementById('MeteorShowerBtn');
+# طابور الأنيميشن وقفل الوصول إليه
+animation_queue = deque()
+animation_lock = threading.Lock()
 
-// العنصر الخاص بالبطاقة
-const cardElement     = document.querySelector('.card');
+# علم لإيقاف الحلقة الحالية
+stop_requested = False
 
-let isAnimationRunning = false;
+# الحالة الحالية: لون ثابت أو None
+current_hex: str | None = "#000000"
+# اسم الأنيميشن الجاري أو None
+current_anim: str | None = None
 
-// علم لتحديد إذا كنا الآن نختار لون شهاب (ليمنع إرسال /color)
-let isPickingMeteorColor = false;
+# نماذج Pydantic
+class AnimationRequest(BaseModel):
+    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow" | "blinking_pattern" | "meteor_shower"
+    color_index: int = 0       # استخدم في light_one_by_one
+    hex_color: str | None = None  # استخدم في solid_color و meteor_shower
 
-async function sendRequest(endpoint, data) {
-    try {
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        return await res.json();
-    } catch (e) {
-        console.error("API Error:", e);
-        return { status: "error", message: e.message };
-    }
-}
+class ColorRequest(BaseModel):
+    hex_color: str
 
-async function fetchAndApplyState() {
-    try {
-        const res = await fetch(`${API_BASE_URL}/state`);
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const { animation, color } = await res.json();
+# ——— دالة Light One by One ———
+async def light_up_one_by_one(color_index: int, delay: float = 0.011):
+    global stop_requested
+    colors = [
+        (255, 0, 50),  (255, 0, 0),  (255, 55, 0),
+        (255, 255, 0),(0, 255, 0),(0, 255, 255),
+        (0, 0, 255),  (255, 0, 50), (255, 0, 255),
+        (255, 105, 180)
+    ]
+    color = colors[color_index % len(colors)]
+    for j in range(NUM_LEDS):
+        if stop_requested:
+            break
+        for i in range(NUM_LEDS - 1, j - 1, -1):
+            if stop_requested:
+                break
+            neo.set_led_color(i, *color)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+            if i != j:
+                neo.set_led_color(i, 0, 0, 0)
+                neo.update_strip()
+        neo.set_led_color(j, *color)
+    neo.update_strip()
 
-        if (color) {
-            updateUI(color);
-            cardElement.style.background = "";
-        } else {
-            updateUI('#000000');
-            cardElement.style.background = "";
-        }
+# ——— دالة Fade Colors ———
+async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
+    global stop_requested
+    COLORS = [
+        (255, 255, 255),  # White
+        (255,   0,   0),  # Red
+        (0,     0, 255),  # Blue
+        (0,   255,   0),  # Green
+        (255, 255,   0),  # Yellow
+        (255,   0, 255),  # Magenta
+        (0,   255, 255),  # Cyan
+    ]
+    while not stop_requested:
+        for (r_t, g_t, b_t) in COLORS:
+            # Fade-in
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_t * factor)
+                g = int(g_t * factor)
+                b = int(b_t * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            # Fade-out
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_t * factor)
+                g = int(g_t * factor)
+                b = int(b_t * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
 
-        // Fade Colors
-        if (animation === "fade_colors") {
-            isAnimationRunning = true;
-            lightOneBtn.classList.add('active');
-            lightOneBtn.textContent = 'Fade Colors (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Fade Colors";
-        } else {
-            isAnimationRunning = false;
-            lightOneBtn.classList.remove('active');
-            lightOneBtn.textContent = 'Fade Colors';
-        }
+# ——— دالة Wave Effect ———
+async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
+    global stop_requested
+    brightness = 0.5
+    step = 0.0
 
-        // Wave Effect
-        if (animation === "wave_effect") {
-            isAnimationRunning = true;
-            waveEffectBtn.classList.add('active');
-            waveEffectBtn.textContent = 'Wave Effect (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Wave Effect";
-        } else {
-            waveEffectBtn.classList.remove('active');
-            waveEffectBtn.textContent = 'Wave Effect';
-        }
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            hue = (i / NUM_LEDS + step) % 1.0
+            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
+            r = int(r_f * 255)
+            g = int(g_f * 255)
+            b = int(b_f * 255)
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
 
-        // Rainbow Flow
-        if (animation === "rainbow_flow") {
-            isAnimationRunning = true;
-            rainbowFlowBtn.classList.add('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Rainbow Flow";
-        } else {
-            rainbowFlowBtn.classList.remove('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow';
-        }
+        step = (step + wave_speed) % 1.0
+        await asyncio.sleep(delay)
 
-        // Blinking Pattern
-        if (animation === "blinking_pattern") {
-            isAnimationRunning = true;
-            blinkingPatternBtn.classList.add('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Blinking Pattern";
-        } else {
-            blinkingPatternBtn.classList.remove('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern';
-        }
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
 
-        // Meteor Shower (الجديد)
-        if (animation === "meteor_shower") {
-            isAnimationRunning = true;
-            meteorShowerBtn.classList.add('active');
-            meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Meteor Shower";
-        } else {
-            meteorShowerBtn.classList.remove('active');
-            meteorShowerBtn.textContent = 'Meteor Shower';
-        }
+# ——— دالة Rainbow Flow ———
+async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
+    global stop_requested
+    step = 0
+    while not stop_requested:
+        hue = (step % steps) / steps
+        r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        r = int(r_f * 255)
+        g = int(g_f * 255)
+        b = int(b_f * 255)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
 
-    } catch (err) {
-        console.error("Error fetching state:", err);
-        updateUI('#000000');
-        isAnimationRunning = false;
+        step += 1
+        await asyncio.sleep(delay)
 
-        // إزالة أي حالة نشطة على الأزرار
-        lightOneBtn.classList.remove('active');
-        lightOneBtn.textContent = 'Fade Colors';
-        waveEffectBtn.classList.remove('active');
-        waveEffectBtn.textContent = 'Wave Effect';
-        rainbowFlowBtn.classList.remove('active');
-        rainbowFlowBtn.textContent = 'Rainbow Flow';
-        blinkingPatternBtn.classList.remove('active');
-        blinkingPatternBtn.textContent = 'Blinking Pattern';
-        meteorShowerBtn.classList.remove('active');
-        meteorShowerBtn.textContent = 'Meteor Shower';
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
 
-        cardElement.style.background = "";
-    }
-}
+# ——— دالة Blinking Pattern (ألوان متدرجة) ———
+async def blinking_pattern_loop(delay: float = 0.5):
+    """
+    يبدأ بالأبيض (255،255،255)، ثم ينتقل تدريجيًا إلى ألوان أخرى متقاربة:
+    1) أبيض
+    2) أصفر شاحب جدًا
+    3) أصفر شاحب
+    4) أصفر
+    5) برتقالي
+    6) أحمر
+    7) أرجواني
+    8) أزرق
+    9) سماوي
+    10) أخضر
+    وفي كل دورة ON يعرض اللون الحالي من القائمة، ثم OFF، ثم ينتقل للون التالي حلقيًا.
+    """
+    global stop_requested
 
-// ——————————————————————————————
-// دالة تغيير اللون الثابت
-async function changeColor(color) {
-    if (isAnimationRunning) {
-        await stopAnimation();
-    }
-    updateUI(color);
-    cardElement.style.background = "";
-    await sendRequest("/color", { hex_color: color });
-}
+    # قائمة الألوان المُختارة (RGB)
+    color_steps = [
+        (255, 255, 255),  # White
+        (255, 255, 229),  # Very light yellow
+        (255, 255, 178),  # Light yellow
+        (255, 255,   0),  # Yellow
+        (255, 127,   0),  # Orange
+        (255,   0,   0),  # Red
+        (255,   0, 255),  # Magenta
+        (  0,   0, 255),  # Blue
+        (  0, 255, 255),  # Cyan
+        (  0, 255,   0)   # Green
+    ]
 
-// دالة إيقاف الأنيميشن (POST /stop)
-async function stopAnimation() {
-    isAnimationRunning = false;
-    lightOneBtn.classList.remove('active');
-    lightOneBtn.textContent = 'Fade Colors';
-    waveEffectBtn.classList.remove('active');
-    waveEffectBtn.textContent = 'Wave Effect';
-    rainbowFlowBtn.classList.remove('active');
-    rainbowFlowBtn.textContent = 'Rainbow Flow';
-    blinkingPatternBtn.classList.remove('active');
-    blinkingPatternBtn.textContent = 'Blinking Pattern';
-    meteorShowerBtn.classList.remove('active');
-    meteorShowerBtn.textContent = 'Meteor Shower';
-    colorDisplay.textContent = 'Off';
-    cardElement.style.background = "";
-    await sendRequest("/stop", {});
-}
+    idx = 0
+    total = len(color_steps)
 
-// عند الضغط على زر Fade Colors
-async function startFadeAnimation() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    lightOneBtn.classList.add('active');
-    lightOneBtn.textContent = 'Fade Colors (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Fade Colors";
-    await sendRequest("/animate", { animation_type: "fade_colors" });
-}
+    while not stop_requested:
+        # ON: اعرض اللون الحالي
+        r, g, b = color_steps[idx]
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+        await asyncio.sleep(delay)
 
-// عند الضغط على زر Wave Effect
-async function startWaveAnimation() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    waveEffectBtn.classList.add('active');
-    waveEffectBtn.textContent = 'Wave Effect (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Wave Effect";
-    await sendRequest("/animate", { animation_type: "wave_effect" });
-}
+        if stop_requested:
+            break
 
-// عند الضغط على زر Rainbow Flow
-async function startRainbowAnimation() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    rainbowFlowBtn.classList.add('active');
-    rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Rainbow Flow";
-    await sendRequest("/animate", { animation_type: "rainbow_flow" });
-}
+        # OFF: أطفئ جميع المصابيح
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+        await asyncio.sleep(delay)
 
-// عند الضغط على زر Blinking Pattern
-async function startBlinkingPattern() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    blinkingPatternBtn.classList.add('active');
-    blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Blinking Pattern";
-    await sendRequest("/animate", { animation_type: "blinking_pattern" });
-}
+        # انتقل للون التالي (دائريًا)
+        idx = (idx + 1) % total
 
-// —== حدث الضغط على زر Meteor Shower (الجديد) ==—
-async function startMeteorShower() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    // نعين العلم حتى يعرف الملقِّي أن اللون لخاص بالشهاب
-    isPickingMeteorColor = true;
-    // نفتح مُختار اللون
-    colorPicker.click();
-    // نضيف مستمع لمرة واحدة لالتقاط اللون المختار
-    const handler = async (e) => {
-        const chosenColor = e.target.value;
-        isPickingMeteorColor = false; // نعيد ضمان أن مستمع اللون العادي يعمل بعد الانتهاء
-        isAnimationRunning = true;
-        meteorShowerBtn.classList.add('active');
-        meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-        cardElement.style.background = "#000000";
-        colorDisplay.textContent = "Meteor Shower";
-        // نرسل طلب بدء الأنيميشن مع اللون المختار
-        await sendRequest("/animate", { animation_type: "meteor_shower", hex_color: chosenColor });
-        colorPicker.removeEventListener("input", handler);
-    };
-    colorPicker.addEventListener("input", handler);
-}
+    # عند طلب الإيقاف، تأكد من إطفاء جميع المصابيح
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
 
-// دالة لتحديث واجهة المستخدم إلى اللون المعطى
-function updateUI(color) {
-    document.body.style.background     = color;
-    document.body.style.boxShadow      = `0 0 80px ${color}80 inset`;
-    colorDisplay.style.background      = color;
-    colorDisplay.textContent           = color.toUpperCase();
-    colorPicker.value                  = color;
-}
+# ——— دالة Meteor Shower (الجديد) ———
+async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.15, trail_length: int = 5):
+    """
+    شهاب يمر من LED رقم 19 إلى LED رقم 0 بلون متدرج:
+    - اللون الأساسي: hex_color (مثلاً #FF0000)
+    - الرأس (head) عند فهرس h يكون بلون كامل (factor = 1.0)
+    - اللاحقات (trail) تقل تدريجيًا في السطوع حتى تنتهي عند trail_length
+    - الكل يكرر حتى يُطلَب التوقف
+    """
+    global stop_requested
 
-// —=== ربط الأحداث ===—
-lightOneBtn        .addEventListener("click", startFadeAnimation);
-waveEffectBtn      .addEventListener("click", startWaveAnimation);
-rainbowFlowBtn     .addEventListener("click", startRainbowAnimation);
-blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
-meteorShowerBtn    .addEventListener("click", startMeteorShower);
-offBtn             .addEventListener("click", stopAnimation);
-off2Btn            .addEventListener("click", stopAnimation);
+    # استخراج RGB من النص السداسيّ:
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
 
-// تعديل مستمع colorPicker العادي ليُرسِل لونًا ثابتًا فقط إذا لم نكن في وضع اختيار شهاب
-colorPicker.addEventListener("input", e => {
-    if (!isPickingMeteorColor) {
-        changeColor(e.target.value);
-    }
-});
+    while not stop_requested:
+        # نتحرك من النهاية (19) إلى البداية (0)
+        for head in range(NUM_LEDS - 1, -1, -1):
+            if stop_requested:
+                break
 
-// عند تحميل الصفحة لأول مرة:
-document.addEventListener("DOMContentLoaded", async () => {
-    await fetchAndApplyState();
-    // دورية لجلب الحالة كل ثانيتين
-    setInterval(fetchAndApplyState, 2000);
-});
+            # أولاً: إطفاء الكل
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, 0, 0, 0)
 
-// تكويد النجوم المتوهجة كما كان
-document.addEventListener("DOMContentLoaded", function () {
-    const starsContainer = document.querySelector(".stars-container");
-    for (let i = 0; i < 20; i++) {
-        let star = document.createElement("div");
-        star.classList.add("star");
-        star.innerHTML = "⋆";
-        star.style.left = Math.random() * window.innerWidth + "px";
-        star.style.top = Math.random() * window.innerHeight + "px";
-        star.style.animationDelay = Math.random() * 3 + "s";
-        star.addEventListener("animationiteration", () => {
-            star.style.left = Math.random() * window.innerWidth + "px";
-            star.style.top = Math.random() * window.innerHeight + "px";
-        });
-        starsContainer.appendChild(star);
-    }
-});
+            # نرسم الرأس والترايل
+            for t in range(trail_length):
+                idx = head + t
+                if idx < NUM_LEDS:
+                    factor = max((trail_length - t) / trail_length, 0)
+                    r = int(r_base * factor)
+                    g = int(g_base * factor)
+                    b = int(b_base * factor)
+                    neo.set_led_color(idx, r, g, b)
 
-/* ─── SSE لدفع الحالة تلقائيًا ─── */
-const evtSource = new EventSource(`${API_BASE_URL}/stream`);
-evtSource.onmessage = e => {
-    try {
-        const { animation, color } = JSON.parse(e.data);
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
 
-        if (color) {
-            updateUI(color);
-            cardElement.style.background = "";
-        } else {
-            updateUI('#000000');
-            cardElement.style.background = "";
-        }
+        await asyncio.sleep(0.1)
 
-        // fade_colors
-        if (animation === "fade_colors") {
-            isAnimationRunning = true;
-            lightOneBtn.classList.add('active');
-            lightOneBtn.textContent = 'Fade Colors (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Fade Colors";
-        } else {
-            lightOneBtn.classList.remove('active');
-            lightOneBtn.textContent = 'Fade Colors';
-        }
+    # عند التوقف، نطفي جميع المصابيح
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
 
-        // wave_effect
-        if (animation === "wave_effect") {
-            isAnimationRunning = true;
-            waveEffectBtn.classList.add('active');
-            waveEffectBtn.textContent = 'Wave Effect (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Wave Effect";
-        } else {
-            waveEffectBtn.classList.remove('active');
-            waveEffectBtn.textContent = 'Wave Effect';
-        }
+# ——— عامل خلفي لمعالجة طابور الأنيميشن ———
+async def animation_worker():
+    global stop_requested, current_anim
+    while True:
+        if animation_queue:
+            with animation_lock:
+                req = animation_queue.popleft()
 
-        // rainbow_flow
-        if (animation === "rainbow_flow") {
-            isAnimationRunning = true;
-            rainbowFlowBtn.classList.add('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Rainbow Flow";
-        } else {
-            rainbowFlowBtn.classList.remove('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow';
-        }
+            stop_requested = False
+            current_anim = req.animation_type
 
-        // blinking_pattern
-        if (animation === "blinking_pattern") {
-            isAnimationRunning = true;
-            blinkingPatternBtn.classList.add('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Blinking Pattern";
-        } else {
-            blinkingPatternBtn.classList.remove('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern';
-        }
+            if req.animation_type == "light_one_by_one":
+                while not stop_requested:
+                    await light_up_one_by_one(req.color_index)
 
-        // meteor_shower (الجديد)
-        if (animation === "meteor_shower") {
-            isAnimationRunning = true;
-            meteorShowerBtn.classList.add('active');
-            meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Meteor Shower";
-        } else {
-            meteorShowerBtn.classList.remove('active');
-            meteorShowerBtn.textContent = 'Meteor Shower';
-        }
+            elif req.animation_type == "fade_colors":
+                await fade_colors_loop()
 
-    } catch (err) {
-        console.error("SSE onmessage parse error:", err);
-    }
-};
-/* ─── نهاية SSE ─── */
+            elif req.animation_type == "wave_effect":
+                await wave_effect_loop()
+
+            elif req.animation_type == "rainbow_flow":
+                await rainbow_flow_loop()
+
+            elif req.animation_type == "blinking_pattern":
+                await blinking_pattern_loop()
+
+            elif req.animation_type == "meteor_shower":
+                # ─── نستدعي دالة Meteor Shower مع اللون المختار
+                if req.hex_color:
+                    await meteor_shower_loop(req.hex_color)
+
+            elif req.animation_type == "solid_color":
+                # إذا طلب لون ثابت:
+                if req.hex_color:
+                    r = int(req.hex_color[1:3], 16)
+                    g = int(req.hex_color[3:5], 16)
+                    b = int(req.hex_color[5:7], 16)
+                    for i in range(NUM_LEDS):
+                        neo.set_led_color(i, r, g, b)
+                    neo.update_strip()
+                stop_requested = True
+
+        await asyncio.sleep(0.1)
+
+# عند بدء تشغيل التطبيق، نشغل عامل الخلفية
+@app.on_event("startup")
+async def on_startup():
+    asyncio.create_task(animation_worker())
+
+# ——— GET /state ———
+@app.get("/state")
+async def get_state():
+    return {"animation": current_anim, "color": current_hex}
+
+# ——— POST /animate ———
+@app.post("/animate")
+async def start_animation(req: AnimationRequest):
+    global current_hex, current_anim
+    with animation_lock:
+        animation_queue.clear()
+        animation_queue.append(req)
+
+    current_hex = None
+    current_anim = req.animation_type
+    return {"status": "queued", "animation": req.animation_type}
+
+# ——— POST /color ———
+@app.post("/color")
+async def set_color(req: ColorRequest):
+    global current_hex, current_anim, stop_requested
+    with animation_lock:
+        animation_queue.clear()
+        stop_requested = True
+        # ضع اللون الثابت
+        r = int(req.hex_color[1:3], 16)
+        g = int(req.hex_color[3:5], 16)
+        b = int(req.hex_color[5:7], 16)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+    current_anim = None
+    current_hex = req.hex_color
+    return {"status": "color_changed", "color": req.hex_color}
+
+# ——— POST /stop ———
+@app.post("/stop")
+async def stop_animation():
+    global current_hex, current_anim, stop_requested
+    with animation_lock:
+        animation_queue.clear()
+        stop_requested = True
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+
+    current_anim = None
+    current_hex = "#000000"
+    return {"status": "stopped"}
+
+# ───────────── START: نقطة نهاية SSE ─────────────
+from fastapi.responses import StreamingResponse
+
+async def event_generator():
+    """
+    ترسل الحالة الحالية كـ SSE كل ثانية
+    """
+    while True:
+        data = json.dumps({"animation": current_anim, "color": current_hex})
+        yield f"data: {data}\n\n"
+        await asyncio.sleep(1.0)
+
+@app.get("/stream")
+async def stream_state():
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+# ───────────── END: نقطة نهاية SSE ─────────────
