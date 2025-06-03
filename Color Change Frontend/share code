@@ -1,75 +1,84 @@
-/* ─────────────── Shooting Star CSS ─────────────── */
+// ─────────────── Shooting Star JS ───────────────
 
-/* 1. Base style for each shooting star */
-.shooting-star {
-  position: absolute;
-  width: 4px;               /* narrow leading flame tip */
-  height: 100px;            /* length of the flame trail */
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 0, 0, 1) 0%,         /* pure hell‑red at the front tip */
-    rgba(255, 80, 0, 0.8) 30%,     /* bright red-orange mid‑trail */
-    rgba(255, 200, 0, 0.6) 60%,    /* yellowish toward tail */
-    rgba(255, 0, 0, 0) 100%        /* fully transparent at the far end */
-  );
-  border-radius: 50% 50% 50% 50% /  20% 20% 80% 80%; 
-    /* a subtle flare shape, round at front and tapering into tail */
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.9),
-              0 0 40px rgba(255, 80, 0, 0.7);
-    /* hellish red glow around it */
-  will-change: transform, opacity;
-  pointer-events: none;    /* don’t block clicks */
-  z-index: 5;             /* above background shapes but below UI panels */
-  opacity: 0;             /* start invisible */
-  animation: shoot-across 1.2s ease-out forwards;
+// Helper to get a random integer between min (inclusive) and max (exclusive)
+function randBetween(min, max) {
+  return Math.random() * (max - min) + min;
 }
 
-/* 2. Create a tiny “scar” at the point where the comet’s head was */
-.shooting-star::after {
-  content: "";
-  position: absolute;
-  bottom: 0;              /* at the front tip’s original position */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
-  background: rgba(255, 100, 0, 0.8);
-    /* a small glowing dot, a fleeting mark of passage */
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(255, 100, 0, 0.6);
-  opacity: 0;
-  animation: leave-scar 0.6s ease-out 0.8s forwards;
-    /* appear briefly after the comet has moved on */
+// Function to spawn one shooting star
+function createShootingStar() {
+  const container = document.getElementById('shooting-stars');
+  if (!container) return;
+
+  // Create the element
+  const star = document.createElement('div');
+  star.classList.add('shooting-star');
+
+  // Choose a random edge for start: top, left, right, or bottom
+  const edge = Math.floor(randBetween(0, 4)); // 0=top, 1=right, 2=bottom, 3=left
+  let startX, startY, endX, endY, angleDeg;
+
+  const viewportWidth  = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  switch (edge) {
+    case 0: // start at random position along top edge
+      startX = randBetween(0, viewportWidth) + 'px';
+      startY = '-100px'; // just above the screen
+      // end somewhere near bottom (plus a bit outside)
+      endX = randBetween(0, viewportWidth) + 'px';
+      endY = (viewportHeight + 100) + 'px';
+      break;
+    case 1: // start at right edge
+      startX = (viewportWidth + 100) + 'px';
+      startY = randBetween(0, viewportHeight) + 'px';
+      // end near left
+      endX = '-100px';
+      endY = randBetween(0, viewportHeight) + 'px';
+      break;
+    case 2: // start at bottom edge
+      startX = randBetween(0, viewportWidth) + 'px';
+      startY = (viewportHeight + 100) + 'px';
+      // end near top
+      endX = randBetween(0, viewportWidth) + 'px';
+      endY = '-100px';
+      break;
+    case 3: // start at left edge
+      startX = '-100px';
+      startY = randBetween(0, viewportHeight) + 'px';
+      // end near right
+      endX = (viewportWidth + 100) + 'px';
+      endY = randBetween(0, viewportHeight) + 'px';
+      break;
+  }
+
+  // Calculate the angle in degrees so the comet “points” along its path
+  // We can find the angle of the vector from (startX, startY) to (endX, endY).
+  // First parse numbers (remove "px").
+  const sx = parseFloat(startX);
+  const sy = parseFloat(startY);
+  const ex = parseFloat(endX);
+  const ey = parseFloat(endY);
+  const dx = ex - sx;
+  const dy = ey - sy;
+  angleDeg = Math.atan2(dy, dx) * (180 / Math.PI) + 90; 
+    // +90 so that the 0° tip of our div points “forward”
+
+  // Assign CSS variables for positioning & angle
+  star.style.setProperty('--start-x', `${startX}`);
+  star.style.setProperty('--start-y', `${startY}`);
+  star.style.setProperty('--end-x', `${endX}`);
+  star.style.setProperty('--end-y', `${endY}`);
+  star.style.setProperty('--angle', `${angleDeg}deg`);
+
+  // Add to DOM
+  container.appendChild(star);
+
+  // Remove from DOM after the animation finishes (~1.2s)
+  setTimeout(() => {
+    star.remove();
+  }, 1400); // a little extra to let 'scar' animation finish
 }
 
-/* 3. Keyframes: send comet diagonally from random edge toward random destination */
-@keyframes shoot-across {
-  0% {
-    opacity: 1;
-    transform: translate(var(--start-x), var(--start-y)) rotate(var(--angle));
-  }
-  80% {
-    opacity: 1;
-    /* mid‑flight, still bright */
-  }
-  100% {
-    opacity: 0;
-    transform: translate(var(--end-x), var(--end-y)) rotate(var(--angle));
-  }
-}
-
-/* 4. Keyframes: flash the scar briefly */
-@keyframes leave-scar {
-  0% {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.5);
-  }
-  20% {
-    opacity: 1;
-    transform: translateX(-50%) scale(1.2);
-  }
-  100% {
-    opacity: 0;
-    transform: translateX(-50%) scale(0.8);
-  }
-}
+// Kick off a shooting star about once per second (adjust timing as you see fit)
+setInterval(createShootingStar, 1000);
