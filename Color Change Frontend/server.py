@@ -6,10 +6,9 @@ from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 import time
-import json  # ─── لإرسال بيانات JSON في SSE
-import colorsys  # ─── لتحويل الألوان من HSV إلى RGB
+import json
+import colorsys
 
-# تهيئة شريط الـLED: عدد المصابيح = 20
 NUM_LEDS = 20
 neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
 
@@ -22,28 +21,20 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# طابور الأنيميشن وقفل الوصول إليه
 animation_queue = deque()
 animation_lock = threading.Lock()
-
-# علم لإيقاف الحلقة الحالية
 stop_requested = False
-
-# الحالة الحالية: لون ثابت أو None
 current_hex: str | None = "#000000"
-# اسم الأنيميشن الجاري أو None
 current_anim: str | None = None
 
-# نماذج Pydantic
 class AnimationRequest(BaseModel):
-    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow" | "blinking_pattern" | "meteor_shower"
-    color_index: int = 0       # استخدم في light_one_by_one
-    hex_color: str | None = None  # استخدم في solid_color و meteor_shower
+    animation_type: str
+    color_index: int = 0
+    hex_color: str | None = None
 
 class ColorRequest(BaseModel):
     hex_color: str
 
-# ——— دالة Light One by One ———
 async def light_up_one_by_one(color_index: int, delay: float = 0.011):
     global stop_requested
     colors = [
@@ -68,21 +59,19 @@ async def light_up_one_by_one(color_index: int, delay: float = 0.011):
         neo.set_led_color(j, *color)
     neo.update_strip()
 
-# ——— دالة Fade Colors ———
 async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
     global stop_requested
     COLORS = [
-        (255, 255, 255),  # White
-        (255,   0,   0),  # Red
-        (0,     0, 255),  # Blue
-        (0,   255,   0),  # Green
-        (255, 255,   0),  # Yellow
-        (255,   0, 255),  # Magenta
-        (0,   255, 255),  # Cyan
+        (255, 255, 255),
+        (255,   0,   0),
+        (0,     0, 255),
+        (0,   255,   0),
+        (255, 255,   0),
+        (255,   0, 255),
+        (0,   255, 255),
     ]
     while not stop_requested:
         for (r_t, g_t, b_t) in COLORS:
-            # Fade-in
             for step in range(steps):
                 if stop_requested:
                     return
@@ -94,7 +83,6 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                     neo.set_led_color(i, r, g, b)
                 neo.update_strip()
                 await asyncio.sleep(delay)
-            # Fade-out
             for step in range(steps):
                 if stop_requested:
                     return
@@ -107,7 +95,6 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ——— دالة Wave Effect ———
 async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
     global stop_requested
     brightness = 0.5
@@ -130,7 +117,6 @@ async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-# ——— دالة Rainbow Flow ———
 async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
     global stop_requested
     step = 0
@@ -151,43 +137,26 @@ async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-# ——— دالة Blinking Pattern (ألوان متدرجة) ———
 async def blinking_pattern_loop(delay: float = 0.5):
-    """
-    يبدأ بالأبيض (255،255،255)، ثم ينتقل تدريجيًا إلى ألوان أخرى متقاربة:
-    1) أبيض
-    2) أصفر شاحب جدًا
-    3) أصفر شاحب
-    4) أصفر
-    5) برتقالي
-    6) أحمر
-    7) أرجواني
-    8) أزرق
-    9) سماوي
-    10) أخضر
-    وفي كل دورة ON يعرض اللون الحالي من القائمة، ثم OFF، ثم ينتقل للون التالي حلقيًا.
-    """
     global stop_requested
 
-    # قائمة الألوان المُختارة (RGB)
     color_steps = [
-        (255, 255, 255),  # White
-        (255, 255, 229),  # Very light yellow
-        (255, 255, 178),  # Light yellow
-        (255, 255,   0),  # Yellow
-        (255, 127,   0),  # Orange
-        (255,   0,   0),  # Red
-        (255,   0, 255),  # Magenta
-        (  0,   0, 255),  # Blue
-        (  0, 255, 255),  # Cyan
-        (  0, 255,   0)   # Green
+        (255, 255, 255),
+        (255, 255, 229),
+        (255, 255, 178),
+        (255, 255,   0),
+        (255, 127,   0),
+        (255,   0,   0),
+        (255,   0, 255),
+        (  0,   0, 255),
+        (  0, 255, 255),
+        (  0, 255,   0)
     ]
 
     idx = 0
     total = len(color_steps)
 
     while not stop_requested:
-        # ON: اعرض اللون الحالي
         r, g, b = color_steps[idx]
         for i in range(NUM_LEDS):
             neo.set_led_color(i, r, g, b)
@@ -197,67 +166,75 @@ async def blinking_pattern_loop(delay: float = 0.5):
         if stop_requested:
             break
 
-        # OFF: أطفئ جميع المصابيح
         for i in range(NUM_LEDS):
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
         await asyncio.sleep(delay)
 
-        # انتقل للون التالي (دائريًا)
         idx = (idx + 1) % total
 
-    # عند طلب الإيقاف، تأكد من إطفاء جميع المصابيح
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-# ——— دالة Meteor Shower (الجديد) ———
-async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.15, trail_length: int = 5):
+# ─── التعديل الرئيسي: دالة Meteor Shower المعدلة لتعمل بحركة سلسة مثل الأفعى ───
+async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.000001, trail_length: int = 12):
     """
-    شهاب يمر من LED رقم 19 إلى LED رقم 0 بلون متدرج:
-    - اللون الأساسي: hex_color (مثلاً #FF0000)
-    - الرأس (head) عند فهرس h يكون بلون كامل (factor = 1.0)
-    - اللاحقات (trail) تقل تدريجيًا في السطوع حتى تنتهي عند trail_length
-    - الكل يكرر حتى يُطلَب التوقف
+    حركة سلسة ومتناسقة تشبه حركة الأفعى:
+    - تبدأ من LED 19 وتتحرك بسلاسة نحو LED 0
+    - ذيل طويل يتلاشى تدريجياً يعطي إحساساً بحركة الشهاب الملتهب
+    - عند الوصول إلى LED 0، تعود إلى البداية بشكل سلس
+    - التأثير دائري ومستمر بدون انقطاع
     """
     global stop_requested
 
-    # استخراج RGB من النص السداسيّ:
+    # استخراج اللون الأساسي
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
-
+    
+    # مواقع بداية الشهب (نبدأ من النهاية)
+    head_position = NUM_LEDS - 1
+    
     while not stop_requested:
-        # نتحرك من النهاية (19) إلى البداية (0)
-        for head in range(NUM_LEDS - 1, -1, -1):
+        # نرسم الشهاب من الرأس إلى نهاية الذيل
+        for i in range(NUM_LEDS):
             if stop_requested:
                 break
-
-            # أولاً: إطفاء الكل
-            for i in range(NUM_LEDS):
-                neo.set_led_color(i, 0, 0, 0)
-
-            # نرسم الرأس والترايل
+            
+            # إطفاء جميع المصابيح
+            neo.clear_strip()
+            
+            # حساب موقع الرأس الحالي
+            current_head = (head_position - i) % NUM_LEDS
+            
+            # رسم الذيل خلف الرأس
             for t in range(trail_length):
-                idx = head + t
-                if idx < NUM_LEDS:
-                    factor = max((trail_length - t) / trail_length, 0)
-                    r = int(r_base * factor)
-                    g = int(g_base * factor)
-                    b = int(b_base * factor)
-                    neo.set_led_color(idx, r, g, b)
-
+                # حساب موقع LED في الذيل
+                tail_pos = (current_head + t) % NUM_LEDS
+                
+                # حساب شدة اللون (تتلاشى مع بعدها عن الرأس)
+                factor = max(0.0, 1.0 - t / trail_length)
+                
+                # تطبيق عامل التلاشي على اللون
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                
+                # تعيين اللون للمصباح
+                neo.set_led_color(tail_pos, r, g, b)
+            
+            # تحديث الشريط
             neo.update_strip()
             await asyncio.sleep(delay_per_step)
-
-        await asyncio.sleep(0.1)
-
-    # عند التوقف، نطفي جميع المصابيح
-    for i in range(NUM_LEDS):
-        neo.set_led_color(i, 0, 0, 0)
+        
+        # إعادة تعيين موقع البداية للدورة التالية
+        head_position = (head_position - 1) % NUM_LEDS
+    
+    # إطفاء المصابيح عند التوقف
+    neo.clear_strip()
     neo.update_strip()
 
-# ——— عامل خلفي لمعالجة طابور الأنيميشن ———
 async def animation_worker():
     global stop_requested, current_anim
     while True:
@@ -285,12 +262,10 @@ async def animation_worker():
                 await blinking_pattern_loop()
 
             elif req.animation_type == "meteor_shower":
-                # ─── نستدعي دالة Meteor Shower مع اللون المختار
                 if req.hex_color:
                     await meteor_shower_loop(req.hex_color)
 
             elif req.animation_type == "solid_color":
-                # إذا طلب لون ثابت:
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
                     g = int(req.hex_color[3:5], 16)
@@ -302,17 +277,14 @@ async def animation_worker():
 
         await asyncio.sleep(0.1)
 
-# عند بدء تشغيل التطبيق، نشغل عامل الخلفية
 @app.on_event("startup")
 async def on_startup():
     asyncio.create_task(animation_worker())
 
-# ——— GET /state ———
 @app.get("/state")
 async def get_state():
     return {"animation": current_anim, "color": current_hex}
 
-# ——— POST /animate ———
 @app.post("/animate")
 async def start_animation(req: AnimationRequest):
     global current_hex, current_anim
@@ -324,14 +296,12 @@ async def start_animation(req: AnimationRequest):
     current_anim = req.animation_type
     return {"status": "queued", "animation": req.animation_type}
 
-# ——— POST /color ———
 @app.post("/color")
 async def set_color(req: ColorRequest):
     global current_hex, current_anim, stop_requested
     with animation_lock:
         animation_queue.clear()
         stop_requested = True
-        # ضع اللون الثابت
         r = int(req.hex_color[1:3], 16)
         g = int(req.hex_color[3:5], 16)
         b = int(req.hex_color[5:7], 16)
@@ -343,7 +313,6 @@ async def set_color(req: ColorRequest):
     current_hex = req.hex_color
     return {"status": "color_changed", "color": req.hex_color}
 
-# ——— POST /stop ———
 @app.post("/stop")
 async def stop_animation():
     global current_hex, current_anim, stop_requested
@@ -358,13 +327,9 @@ async def stop_animation():
     current_hex = "#000000"
     return {"status": "stopped"}
 
-# ───────────── START: نقطة نهاية SSE ─────────────
 from fastapi.responses import StreamingResponse
 
 async def event_generator():
-    """
-    ترسل الحالة الحالية كـ SSE كل ثانية
-    """
     while True:
         data = json.dumps({"animation": current_anim, "color": current_hex})
         yield f"data: {data}\n\n"
@@ -373,4 +338,4 @@ async def event_generator():
 @app.get("/stream")
 async def stream_state():
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-# ───────────── END: نقطة نهاية SSE ─────────────
+
