@@ -1,7 +1,7 @@
 // في المدرسة كان:
-const API_BASE_URL = "http://10.220.1.123:8000";
+// const API_BASE_URL = "http://10.220.1.123:8000";
 // في البيت:
-// const API_BASE_URL = "http://192.168.1.247:8000";
+const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 const colorDisplay       = document.getElementById('colorDisplay');
