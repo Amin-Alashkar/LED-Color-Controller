@@ -1,23 +1,38 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const starsContainer = document.querySelector(".stars-container");
+/* ─── إضافة لمعان النجمة ─── */
+.star {
+    position: absolute;
+    font-size: 26px;          /* حجم النجمة كما كان */
+    color: #fff;              /* نغيّر اللون لأبيض ليظهر الهُج بوضوح */
+    opacity: 0;               /* يبقى الاختفاء/الظهور بالأنيميشن twinkle */
+    /* نضيف وهجاً حول النجمة بنص الظِل */
+    text-shadow: 
+        0 0 5px  rgba(255,255,255,0.8),
+        0 0 10px rgba(255,255,255,0.6),
+        0 0 20px rgba(255,255,255,0.4);
+    /* نركّب على الأنيميشن الأصلي twinkle أنيميشن جديد لـ “star-glow” */
+    animation: 
+        twinkle     3s infinite alternate,
+        star-glow   3s infinite alternate;
+}
 
-    for (let i = 0; i < 20; i++) {
-        let star = document.createElement("div");
-        star.classList.add("star");
-        star.innerHTML = "⋆"; // إضافة رمز النجمة الحقيقي
-
-        // وضع النجوم في أماكن عشوائية في البداية
-        star.style.left = Math.random() * window.innerWidth + "px";
-        star.style.top = Math.random() * window.innerHeight + "px";
-        star.style.animationDelay = Math.random() * 3 + "s";
-
-        // ─── إضافة لتحريك النجوم عشوائيًا عند انتهاء كل دورة أنيميشن ───
-        star.addEventListener("animationiteration", () => {
-            // بعد انتهاء الدورة الحالية للـ twinkle، نعيد توليد موقع عشوائي جديد
-            star.style.left = Math.random() * window.innerWidth + "px";
-            star.style.top = Math.random() * window.innerHeight + "px";
-        });
-
-        starsContainer.appendChild(star);
+/* تعريف Keyframes لأنيميشن “star-glow” ليزيد ويقلل الهُج تدريجياً */
+@keyframes star-glow {
+    0% {
+        text-shadow: 
+            0 0 5px  rgba(255,255,255,0.8),
+            0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
     }
-});
+    50% {
+        text-shadow:
+            0 0 15px rgba(255,255,255,1.0),
+            0 0 30px rgba(255,255,255,0.8),
+            0 0 60px rgba(255,255,255,0.6);
+    }
+    100% {
+        text-shadow: 
+            0 0 5px  rgba(255,255,255,0.8),
+            0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
+    }
+}
