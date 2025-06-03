@@ -1,8 +1,8 @@
 // at school
-const API_BASE_URL = "http://10.220.1.123:8000";
+// const API_BASE_URL = "http://10.220.1.123:8000";
 
 // at home
-// const API_BASE_URL = "http://192.168.1.247:8000";
+const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 // … (الكود الحالي لديك) …
