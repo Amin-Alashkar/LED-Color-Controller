@@ -346,19 +346,16 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ───── إضافة تأثير Fireworks Burst مستمر مع عشرة LED ثابتين وألوان متغيرة ─────
+# ───── إضافة تأثير Fireworks Burst مستمر مع عشرة LED عشوائية وألوان متغيرة ─────
 async def fireworks_burst_loop(delay: float = 0.1):
     """
     تأثير الألعاب النارية:
-    - عشرة مواقع ثابتة في الشريط
-    - كل دورة، تُضبط هذه المواقع بعشرة ألوان مختلفة من قائمة COLORS
+    - في كل دورة، نختار عشرة مواقع عشوائية من الشريط
+    - ثم نضبط هذه المواقع بعشرة ألوان مختلفة من قائمة COLORS
     - بعدها تساهم دورة تلاشي تدريجي في إفراغ تلك المواقع
     - التكرار لا يتوقف إلا عند توقف المستخدم
     """
     global stop_requested
-
-    # مصفوفة من عشرة مواقع ثابتة
-    fixed_positions = [19, 15, 2, 8, 5, 11, 1, 4, 7, 10]
 
     # قائمة ألوان مترابطة من 10 عناصر
     COLORS = [
@@ -377,7 +374,10 @@ async def fireworks_burst_loop(delay: float = 0.1):
     color_index = 0
 
     while not stop_requested:
-        # 1. نضيء العشرة مواقع بالألوان الحالية من قائمة COLORS (تتغير كل دورة)
+        # 1. نختار عشرة مواقع عشوائية مختلفة
+        fixed_positions = random.sample(range(NUM_LEDS), 10)
+
+        # 2. نضيء العشرة مواقع بالألوان الحالية من قائمة COLORS (تتغير كل دورة)
         neo.clear_strip()
         for idx, pos in enumerate(fixed_positions):
             r_base, g_base, b_base = COLORS[(color_index + idx) % len(COLORS)]
@@ -385,7 +385,7 @@ async def fireworks_burst_loop(delay: float = 0.1):
         neo.update_strip()
         await asyncio.sleep(delay)
 
-        # 2. نعمل تلاشي تدريجي لجميع هذه الألوان معًا
+        # 3. نعمل تلاشي تدريجي لجميع هذه الألوان معًا
         fade_steps = 10
         for step in range(fade_steps, -1, -1):
             if stop_requested:
@@ -403,10 +403,10 @@ async def fireworks_burst_loop(delay: float = 0.1):
             neo.update_strip()
             await asyncio.sleep(delay)
 
-        # 3. نستعد للدورة القادمة: ننقل المؤشر لتغيير ترتيب الألوان
+        # 4. نستعد للدورة القادمة: ننقل المؤشر لتغيير ترتيب الألوان
         color_index = (color_index + 1) % len(COLORS)
 
-        # 4. ننتظر قليلاً قبل البدء من جديد، طالما لم يوقف المستخدم
+        # 5. ننتظر قليلاً قبل البدء من جديد، طالما لم يوقف المستخدم
         await asyncio.sleep(delay)
 
     # عند طلب الإيقاف، نتأكد من إطفاء جميع المصابيح
