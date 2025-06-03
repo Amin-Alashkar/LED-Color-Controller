@@ -2884,3 +2884,121 @@ body { background: #000; overflow: hidden; position: relative; }
             0 0 20px rgba(255,255,255,0.4);
     }
 }
+
+
+/* ----------------------------------
+   16. استجابات للشاشات الصغيرة (موبايل)
+---------------------------------- */
+@media only screen and (max-width: 600px) {
+
+  /* 1. حذف المساحات الجانبية الكبيرة وإعطاء البطاقة عرضاً كاملاً */
+  body {
+    padding: 10px;
+  }
+
+  .card {
+    width: 100%;
+    padding: 20px;
+    border-radius: 12px;
+    max-height: none;
+    box-shadow: var(--shadow-glow-medium) var(--aura-color-1);
+  }
+
+  /* 2. حجم عنوان LED أصغر قليلاً ليناسب الموبايل */
+  .led-title,
+  .button-title {
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+  }
+
+  /* 3. تصغير حجم دوائر عرض اللون ومربعات الإدخال */
+  .color-display {
+    width: 120px;
+    height: 120px;
+    margin: 10px auto 20px auto;
+  }
+
+  .color-display span {
+    font-size: 1.2rem;
+  }
+
+  /* 4. تصغير حجم أزرار الألوان والأنيميشنات ووضعها في صفين إن لزم */
+  .button-container {
+    gap: 10px;
+  }
+
+  .button-container button {
+    padding: 10px 18px;
+    font-size: 14px;
+    margin: 6px 0;
+    flex: 1 1 40%;
+  }
+
+  /* 5. تصغير دائري اختيار اللون ليتناسب مع الشاشة الصغيرة */
+  .color-picker-wrapper {
+    width: 100px;
+    height: 100px;
+    margin: 15px auto;
+  }
+  #colorPicker {
+    width: 80px;
+    height: 80px;
+    top: 10px;
+    left: 10px;
+  }
+  .color-ring {
+    width: 100px;
+    height: 100px;
+  }
+
+  /* 6. تعديل حجم النجوم الخلفية قليلاً (بدون المساس بالأنيميشن) */
+  .star {
+    font-size: 16px;
+  }
+
+  /* 7. تقليل حجم الهالات والشكل العام للعناصر الخلفية */
+  :root {
+    --shadow-glow-small: 0 0 10px;
+    --shadow-glow-medium: 0 0 30px;
+    --shadow-glow-large: 0 0 60px;
+  }
+
+  /* 8. تكديس الواجهة عمودياً إذا ضاقت الشاشة */
+  body {
+    display: block;
+  }
+
+  /* 9. إبقاء كل العناصر المتحركة في الخلفية بالرغم من تغير الأبعاد */
+  #aura-shapes,
+  .background-particles,
+  .light-fog {
+    /* لا شيء يتغير هنا—الأنيميشن سيظل يعمل وكامل الأبعاد */
+  }
+
+  /* 10. ضبط ارتفاع البطاقة بحيث لا تختفي محتوياتها عند التمرير */
+  .card {
+    overflow-y: auto;
+  }
+
+  /* 11. إزالة أي هوامش إضافية قد تتسبب بظهور شريط تمرير أفقي */
+  html, body {
+    margin: 0;
+    overflow-x: hidden;
+  }
+}
+
+/* ----------------------------------
+   17. تغيير لون البطاقة وفق اللون الحالي
+   (يمكنك إبقاء الشيفرة كما هي إذا كان جافاسكربت يغير الخلفية دائماً)
+---------------------------------- */
+/* ملاحظة: لو أردت أن تتأكد من أن لون البطاقة يتبع لون العرض مباشرة،
+   يمكنك إضافة هذا الجزء: */
+.color-display {
+  background: var(--current-color, #000);
+  /* يفترض أن جافاسكربت يخزن اللون الحالي في متغير CSS --current-color */
+}
+
+/* مثال على ضبط المتغير من خلال JavaScript:
+   document.documentElement.style.setProperty('--current-color', '#ff0000');
+   حينها ستتغير خلفية العنصر .color-display تلقائياً.
+*/
