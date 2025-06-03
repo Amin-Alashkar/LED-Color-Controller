@@ -9,7 +9,7 @@ import time
 import json  # ─── لإرسال بيانات JSON في SSE
 import colorsys  # ─── لتحويل الألوان من HSV إلى RGB
 
-# تهيئة شريط الـLED: عدد المصابيح = 20
+# تهيئة شريط الـLED: عدد المصابيح = 20
 NUM_LEDS = 20
 neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
 
@@ -22,7 +22,7 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-# طابور الأنيميشن وقفل الوصول إليه
+# طابور الأنيميشن وقفل الوصول إليه
 animation_queue = deque()
 animation_lock = threading.Lock()
 
@@ -34,7 +34,7 @@ current_hex: str | None = "#000000"
 # اسم الأنيميشن الجاري أو None
 current_anim: str | None = None
 
-# نماذج Pydantic
+# نماذج Pydantic
 class AnimationRequest(BaseModel):
     animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow" | "blinking_pattern"
     color_index: int = 0       # استخدم في light_one_by_one
@@ -82,7 +82,7 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
     ]
     while not stop_requested:
         for (r_t, g_t, b_t) in COLORS:
-            # Fade‑in
+            # Fade-in
             for step in range(steps):
                 if stop_requested:
                     return
@@ -94,7 +94,7 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                     neo.set_led_color(i, r, g, b)
                 neo.update_strip()
                 await asyncio.sleep(delay)
-            # Fade‑out
+            # Fade-out
             for step in range(steps):
                 if stop_requested:
                     return
@@ -151,29 +151,62 @@ async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-# ——— دالة Blinking Pattern ———
+# ——— دالة Blinking Pattern (ألوان متدرجة) ———
 async def blinking_pattern_loop(delay: float = 0.5):
     """
-    يضيء الشريط بالكامل باللون الأبيض ثم يطفئه كل نصف ثانية
+    يبدأ بالأبيض (255،255،255)، ثم ينتقل تدريجيًا إلى ألوان أخرى متقاربة:
+    1) أبيض
+    2) أصفر شاحب جدًا
+    3) أصفر شاحب
+    4) أصفر
+    5) برتقالي
+    6) أحمر
+    7) أرجواني
+    8) أزرق
+    9) سماوي
+    10) أخضر
+    وفي كل دورة ON يعرض اللون الحالي من القائمة، ثم OFF، ثم ينتقل للون التالي حلقيًا.
     """
     global stop_requested
+
+    # قائمة الألوان المُختارة (RGB)
+    color_steps = [
+        (255, 255, 255),  # White
+        (255, 255, 229),  # Very light yellow
+        (255, 255, 178),  # Light yellow
+        (255, 255,   0),  # Yellow
+        (255, 127,   0),  # Orange
+        (255,   0,   0),  # Red
+        (255,   0, 255),  # Magenta
+        (  0,   0, 255),  # Blue
+        (  0, 255, 255),  # Cyan
+        (  0, 255,   0)   # Green
+    ]
+
+    idx = 0
+    total = len(color_steps)
+
     while not stop_requested:
-        # أشعل جميع المصابيح باللون الأبيض
+        # ON: اعرض اللون الحالي
+        r, g, b = color_steps[idx]
         for i in range(NUM_LEDS):
-            neo.set_led_color(i, 255, 255, 255)
+            neo.set_led_color(i, r, g, b)
         neo.update_strip()
         await asyncio.sleep(delay)
 
         if stop_requested:
             break
 
-        # أطفئ جميع المصابيح
+        # OFF: أطفئ جميع المصابيح
         for i in range(NUM_LEDS):
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
         await asyncio.sleep(delay)
 
-    # عند انتهاء الحلقة، نُطفئ جميع المصابيح
+        # انتقل للون التالي (دائريًا)
+        idx = (idx + 1) % total
+
+    # عند طلب الإيقاف، تأكد من إطفاء جميع المصابيح
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
@@ -218,7 +251,7 @@ async def animation_worker():
 
         await asyncio.sleep(0.1)
 
-# عند بدء تشغيل التطبيق، نشغل عامل الخلفية
+# عند بدء تشغيل التطبيق، نشغل عامل الخلفية
 @app.on_event("startup")
 async def on_startup():
     asyncio.create_task(animation_worker())
