@@ -235,6 +235,45 @@ async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.000001, t
     neo.clear_strip()
     neo.update_strip()
 
+# ─── إضافة أنيميشن Running Lights الجديد ───
+async def running_lights_loop(hex_color: str, delay: float = 0.05, spacing: int = 3):
+    """
+    حركة أضواء متتابعة تشبه حركة الأضواء على المدرج:
+    - مجموعة من الأضواء (3 بشكل افتراضي) تتحرك بشكل متتابع
+    - كل ضوء يتحرك بنفس السرية ويحافظ على المسافة بينهم
+    - يمكن اختيار اللون من خلال hex_color
+    - التأثير يعمل بشكل دائري مستمر
+    """
+    global stop_requested
+    
+    # استخراج اللون الأساسي
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+    
+    # تحديد مواقع الأضواء الأولى
+    positions = [i * (NUM_LEDS // spacing) for i in range(spacing)]
+    
+    while not stop_requested:
+        # إطفاء جميع المصابيح
+        neo.clear_strip()
+        
+        # إضاءة المصابيح في المواقع المحددة
+        for pos in positions:
+            neo.set_led_color(pos, r_base, g_base, b_base)
+        
+        # تحديث الشريط
+        neo.update_strip()
+        
+        # تحريك المواقع للأمام
+        positions = [(pos + 1) % NUM_LEDS for pos in positions]
+        
+        await asyncio.sleep(delay)
+    
+    # إطفاء المصابيح عند التوقف
+    neo.clear_strip()
+    neo.update_strip()
+
 async def animation_worker():
     global stop_requested, current_anim
     while True:
@@ -264,6 +303,10 @@ async def animation_worker():
             elif req.animation_type == "meteor_shower":
                 if req.hex_color:
                     await meteor_shower_loop(req.hex_color)
+
+            elif req.animation_type == "running_lights":
+                if req.hex_color:
+                    await running_lights_loop(req.hex_color)
 
             elif req.animation_type == "solid_color":
                 if req.hex_color:
@@ -338,4 +381,3 @@ async def event_generator():
 @app.get("/stream")
 async def stream_state():
     return StreamingResponse(event_generator(), media_type="text/event-stream")
-
