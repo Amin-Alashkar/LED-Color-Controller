@@ -36,9 +36,9 @@ current_anim: str | None = None
 
 # نماذج Pydantic
 class AnimationRequest(BaseModel):
-    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow" | "blinking_pattern"
+    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow" | "blinking_pattern" | "meteor_shower"
     color_index: int = 0       # استخدم في light_one_by_one
-    hex_color: str | None = None  # استخدم في solid_color
+    hex_color: str | None = None  # استخدم في solid_color و meteor_shower
 
 class ColorRequest(BaseModel):
     hex_color: str
@@ -211,6 +211,52 @@ async def blinking_pattern_loop(delay: float = 0.5):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
+# ——— دالة Meteor Shower (الجديد) ———
+async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.15, trail_length: int = 5):
+    """
+    شهاب يمر من LED رقم 19 إلى LED رقم 0 بلون متدرج:
+    - اللون الأساسي: hex_color (مثلاً #FF0000)
+    - الرأس (head) عند فهرس h يكون بلون كامل (factor = 1.0)
+    - اللاحقات (trail) تقل تدريجيًا في السطوع حتى تنتهي عند trail_length
+    - الكل يكرر حتى يُطلَب التوقف
+    """
+    global stop_requested
+
+    # استخراج RGB من النص السداسيّ:
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # نتحرك من النهاية (19) إلى البداية (0)
+        for head in range(NUM_LEDS - 1, -1, -1):
+            if stop_requested:
+                break
+
+            # أولاً: إطفاء الكل
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, 0, 0, 0)
+
+            # نرسم الرأس والترايل
+            for t in range(trail_length):
+                idx = head + t
+                if idx < NUM_LEDS:
+                    factor = max((trail_length - t) / trail_length, 0)
+                    r = int(r_base * factor)
+                    g = int(g_base * factor)
+                    b = int(b_base * factor)
+                    neo.set_led_color(idx, r, g, b)
+
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+        await asyncio.sleep(0.1)
+
+    # عند التوقف، نطفي جميع المصابيح
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
 # ——— عامل خلفي لمعالجة طابور الأنيميشن ———
 async def animation_worker():
     global stop_requested, current_anim
@@ -237,6 +283,11 @@ async def animation_worker():
 
             elif req.animation_type == "blinking_pattern":
                 await blinking_pattern_loop()
+
+            elif req.animation_type == "meteor_shower":
+                # ─── نستدعي دالة Meteor Shower مع اللون المختار
+                if req.hex_color:
+                    await meteor_shower_loop(req.hex_color)
 
             elif req.animation_type == "solid_color":
                 # إذا طلب لون ثابت:
