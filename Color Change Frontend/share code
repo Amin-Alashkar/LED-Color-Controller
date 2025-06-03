@@ -1,85 +1,75 @@
-/* 1. اجعل خلفية الصفحة داكنة تماماً */
-body {
-  background: #000;         /* أسود داكن */
-  position: relative;       /* مهم لطبقات الخلفية النسبية */
-  overflow: hidden;         /* لمنع ظهور أي سكرول عند تحريك النجوم */
+/* ─────────────── Shooting Star CSS ─────────────── */
+
+/* 1. Base style for each shooting star */
+.shooting-star {
+  position: absolute;
+  width: 4px;               /* narrow leading flame tip */
+  height: 100px;            /* length of the flame trail */
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 0, 0, 1) 0%,         /* pure hell‑red at the front tip */
+    rgba(255, 80, 0, 0.8) 30%,     /* bright red-orange mid‑trail */
+    rgba(255, 200, 0, 0.6) 60%,    /* yellowish toward tail */
+    rgba(255, 0, 0, 0) 100%        /* fully transparent at the far end */
+  );
+  border-radius: 50% 50% 50% 50% /  20% 20% 80% 80%; 
+    /* a subtle flare shape, round at front and tapering into tail */
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.9),
+              0 0 40px rgba(255, 80, 0, 0.7);
+    /* hellish red glow around it */
+  will-change: transform, opacity;
+  pointer-events: none;    /* don’t block clicks */
+  z-index: 5;             /* above background shapes but below UI panels */
+  opacity: 0;             /* start invisible */
+  animation: shoot-across 1.2s ease-out forwards;
 }
 
-/* 2. أضف طبقة ”نقاط بيضاء صغيرة“ عبر ::before لعنصر body */
-/*    هذه الطبقة ستكرر نقاطاً بيضاء دقيقة على كامل الشاشة */
-body::before {
+/* 2. Create a tiny “scar” at the point where the comet’s head was */
+.shooting-star::after {
   content: "";
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* 
-    هنا نستخدم تدرجاً دائرياً صغيراً (radial-gradient) ليرسم نقطة بيضاء بمقياس 1px 
-    ثم يجعل ما حولها شفافاً. بعد ذلك نُكرر هذا النمط عبر background-size.
-  */
-  background: 
-    radial-gradient(circle, white 1px, transparent 1px);
-  background-size: 20px 20px;  /* المسافة بين النقاط: كل 20px نقطة جديدة */
-  opacity: 0.4;                /* يمكنك تعديل الشفافية لتخفيف حدّة النقاط */
-  z-index: 0;                  /* تأكد أنها تحت باقي العناصر */
+  bottom: 0;              /* at the front tip’s original position */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 100, 0, 0.8);
+    /* a small glowing dot, a fleeting mark of passage */
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 100, 0, 0.6);
+  opacity: 0;
+  animation: leave-scar 0.6s ease-out 0.8s forwards;
+    /* appear briefly after the comet has moved on */
 }
 
-/* 3. ضمّن حاوية النجوم (stars-container) فوق طبقة النقاط */
-.stars-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  overflow: hidden;
-  z-index: 1;     /* أعلى من body::before */
-  pointer-events: none;
-}
-
-/* 4. تأكد أن النجوم نفسها تظهر فوق النقاط */
-/*    إذا لديك تعريف سابق للـ .star يضبط animation و text-shadow، يمكنك مثلاً: */
-.star {
-  position: absolute;
-  font-size: 20px;
-  color: #fff;
-  /* وهج النجمة حولها */
-  text-shadow: 
-    0 0 5px rgba(255,255,255,0.8),
-    0 0 10px rgba(255,255,255,0.6),
-    0 0 20px rgba(255,255,255,0.4);
-  /* أنيميشن twinkle لرؤية النجمة تختفي وتظهر بحجم مختلف */
-  animation: 
-    twinkle   3s infinite alternate,
-    star-glow 3s infinite alternate;
-  z-index: 2;  /* أعلى من النقاط وstars-container */
-}
-
-/* 5. أنيميشن twinkle لتذبذب ظهور واختفاء النجمة */
-@keyframes twinkle {
-  0%   { opacity: 0.2; transform: scale(0.8); }
-  50%  { opacity: 1;   transform: scale(1.2); }
-  100% { opacity: 0;   transform: scale(0.8); }
-}
-
-/* 6. أنيميشن star-glow لزيادة وهج النص ثم تقليله */
-@keyframes star-glow {
+/* 3. Keyframes: send comet diagonally from random edge toward random destination */
+@keyframes shoot-across {
   0% {
-    text-shadow: 
-      0 0 5px  rgba(255,255,255,0.8),
-      0 0 10px rgba(255,255,255,0.6),
-      0 0 20px rgba(255,255,255,0.4);
+    opacity: 1;
+    transform: translate(var(--start-x), var(--start-y)) rotate(var(--angle));
   }
-  50% {
-    text-shadow:
-      0 0 15px rgba(255,255,255,1.0),
-      0 0 30px rgba(255,255,255,0.8),
-      0 0 60px rgba(255,255,255,0.6);
+  80% {
+    opacity: 1;
+    /* mid‑flight, still bright */
   }
   100% {
-    text-shadow: 
-      0 0 5px  rgba(255,255,255,0.8),
-      0 0 10px rgba(255,255,255,0.6),
-      0 0 20px rgba(255,255,255,0.4);
+    opacity: 0;
+    transform: translate(var(--end-x), var(--end-y)) rotate(var(--angle));
+  }
+}
+
+/* 4. Keyframes: flash the scar briefly */
+@keyframes leave-scar {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.5);
+  }
+  20% {
+    opacity: 1;
+    transform: translateX(-50%) scale(1.2);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) scale(0.8);
   }
 }
