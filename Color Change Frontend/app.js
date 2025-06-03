@@ -1,21 +1,20 @@
-// ===== App.js (التعديلات لتمكين Rainbow Flow) =====
+// ===== App.js (إضافة Blinking Pattern بنفس الطريقة) =====
 
-// at school
-// const API_BASE_URL = "http://10.220.1.123:8000";
-
-// at home
+// في المدرسة كان: // const API_BASE_URL = "http://10.220.1.123:8000";
+// في البيت:
 const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
-const colorDisplay    = document.getElementById('colorDisplay');
-const lightOneBtn     = document.getElementById('lightOneBtn');
-const offBtn          = document.getElementById('offBtn');
-const off2Btn         = document.getElementById('off2Btn');
-const colorPicker     = document.getElementById('colorPicker');
+const colorDisplay       = document.getElementById('colorDisplay');
+const lightOneBtn        = document.getElementById('lightOneBtn');
+const offBtn             = document.getElementById('offBtn');
+const off2Btn            = document.getElementById('off2Btn');
+const colorPicker        = document.getElementById('colorPicker');
 
-// إضافة مرجع لزر Wave Effect و Rainbow Flow
-const waveEffectBtn   = document.getElementById('WaveEffectBtn');
-const rainbowFlowBtn  = document.getElementById('RainbowFlowBtn');
+// أزرار الأنيميشن
+const waveEffectBtn        = document.getElementById('WaveEffectBtn');
+const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
+const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
 
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
@@ -39,9 +38,7 @@ async function sendRequest(endpoint, data) {
 async function fetchAndApplyState() {
     try {
         const res = await fetch(`${API_BASE_URL}/state`);
-        if (!res.ok) {
-            throw new Error(`HTTP ${res.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const { animation, color } = await res.json();
 
         if (color) {
@@ -52,7 +49,7 @@ async function fetchAndApplyState() {
             cardElement.style.background = "";
         }
 
-        // ==== Fade Colors ====
+        // Fade Colors
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
@@ -65,7 +62,7 @@ async function fetchAndApplyState() {
             lightOneBtn.textContent = 'Fade Colors';
         }
 
-        // ==== Wave Effect ====
+        // Wave Effect
         if (animation === "wave_effect") {
             isAnimationRunning = true;
             waveEffectBtn.classList.add('active');
@@ -77,7 +74,7 @@ async function fetchAndApplyState() {
             waveEffectBtn.textContent = 'Wave Effect';
         }
 
-        // ==== Rainbow Flow ====
+        // Rainbow Flow
         if (animation === "rainbow_flow") {
             isAnimationRunning = true;
             rainbowFlowBtn.classList.add('active');
@@ -89,24 +86,38 @@ async function fetchAndApplyState() {
             rainbowFlowBtn.textContent = 'Rainbow Flow';
         }
 
+        // Blinking Pattern
+        if (animation === "blinking_pattern") {
+            isAnimationRunning = true;
+            blinkingPatternBtn.classList.add('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking Pattern";
+        } else {
+            blinkingPatternBtn.classList.remove('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern';
+        }
+
     } catch (err) {
         console.error("Error fetching state:", err);
         updateUI('#000000');
         isAnimationRunning = false;
 
-        // تأكد من إزالة أي حالة نشطة على الأزرار
+        // إزالة أي حالة نشطة على الأزرار
         lightOneBtn.classList.remove('active');
         lightOneBtn.textContent = 'Fade Colors';
         waveEffectBtn.classList.remove('active');
         waveEffectBtn.textContent = 'Wave Effect';
         rainbowFlowBtn.classList.remove('active');
         rainbowFlowBtn.textContent = 'Rainbow Flow';
+        blinkingPatternBtn.classList.remove('active');
+        blinkingPatternBtn.textContent = 'Blinking Pattern';
 
         cardElement.style.background = "";
     }
 }
 
-// ================================================================
+// ——————————————————————————————
 // دالة تغيير اللون الثابت
 async function changeColor(color) {
     if (isAnimationRunning) {
@@ -117,7 +128,7 @@ async function changeColor(color) {
     await sendRequest("/color", { hex_color: color });
 }
 
-// دالة إيقاف الأنيميشن (سترسل POST /stop)
+// دالة إيقاف الأنيميشن (POST /stop)
 async function stopAnimation() {
     isAnimationRunning = false;
     lightOneBtn.classList.remove('active');
@@ -126,16 +137,14 @@ async function stopAnimation() {
     waveEffectBtn.textContent = 'Wave Effect';
     rainbowFlowBtn.classList.remove('active');
     rainbowFlowBtn.textContent = 'Rainbow Flow';
+    blinkingPatternBtn.classList.remove('active');
+    blinkingPatternBtn.textContent = 'Blinking Pattern';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
 }
 
-/**
- * عند الضغط على زر "Fade Colors":
- * - لو أنيميشن جاري، نوقفه
- * - وإلا نبدأ fade_colors
- */
+// عند الضغط على زر Fade Colors
 async function startFadeAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -144,15 +153,12 @@ async function startFadeAnimation() {
     isAnimationRunning = true;
     lightOneBtn.classList.add('active');
     lightOneBtn.textContent = 'Fade Colors (Running)';
-    // غمّر البطاقة بالسواد وأرّخ الأنيميشن
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Fade Colors";
     await sendRequest("/animate", { animation_type: "fade_colors" });
 }
 
-/**
- * دالة بداية/إيقاف "Wave Effect"
- */
+// عند الضغط على زر Wave Effect
 async function startWaveAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -166,9 +172,7 @@ async function startWaveAnimation() {
     await sendRequest("/animate", { animation_type: "wave_effect" });
 }
 
-/**
- * دالة بداية/إيقاف "Rainbow Flow"
- */
+// عند الضغط على زر Rainbow Flow
 async function startRainbowAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -182,6 +186,20 @@ async function startRainbowAnimation() {
     await sendRequest("/animate", { animation_type: "rainbow_flow" });
 }
 
+// عند الضغط على زر Blinking Pattern
+async function startBlinkingPattern() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    blinkingPatternBtn.classList.add('active');
+    blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Blinking Pattern";
+    await sendRequest("/animate", { animation_type: "blinking_pattern" });
+}
+
 // دالة لتحديث واجهة المستخدم إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -191,52 +209,46 @@ function updateUI(color) {
     colorPicker.value                  = color;
 }
 
-// === ربط الأحداث ===
-lightOneBtn   .addEventListener("click", startFadeAnimation);
-waveEffectBtn .addEventListener("click", startWaveAnimation);
-rainbowFlowBtn.addEventListener("click", startRainbowAnimation);
-offBtn        .addEventListener("click", stopAnimation);
-off2Btn       .addEventListener("click", stopAnimation);
-colorPicker   .addEventListener("input", e => changeColor(e.target.value));
+// —=== ربط الأحداث ===—
+lightOneBtn        .addEventListener("click", startFadeAnimation);
+waveEffectBtn      .addEventListener("click", startWaveAnimation);
+rainbowFlowBtn     .addEventListener("click", startRainbowAnimation);
+blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
+offBtn             .addEventListener("click", stopAnimation);
+off2Btn            .addEventListener("click", stopAnimation);
+colorPicker        .addEventListener("input", e => changeColor(e.target.value));
 
 // عند تحميل الصفحة لأول مرة:
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchAndApplyState();
-    // إذا أردت دوريات لجلب الحالة دوريًا:
+    // دورية لجلب الحالة كل ثانيتين
     setInterval(fetchAndApplyState, 2000);
 });
 
+// تكويد النجوم المتوهجة كما كان
 document.addEventListener("DOMContentLoaded", function () {
     const starsContainer = document.querySelector(".stars-container");
-
     for (let i = 0; i < 20; i++) {
         let star = document.createElement("div");
         star.classList.add("star");
-        star.innerHTML = "⋆"; // إضافة رمز النجمة الحقيقي
-
-        // وضع النجوم في أماكن عشوائية في البداية
+        star.innerHTML = "⋆";
         star.style.left = Math.random() * window.innerWidth + "px";
         star.style.top = Math.random() * window.innerHeight + "px";
         star.style.animationDelay = Math.random() * 3 + "s";
-
-        // ─── إضافة لتحريك النجوم عشوائيًا عند انتهاء كل دورة أنيميشن ───
         star.addEventListener("animationiteration", () => {
-            // بعد انتهاء الدورة الحالية للـ twinkle، نعيد توليد موقع عشوائي جديد
             star.style.left = Math.random() * window.innerWidth + "px";
             star.style.top = Math.random() * window.innerHeight + "px";
         });
-
         starsContainer.appendChild(star);
     }
 });
 
-/* ─── START: إضافة SSE (Server‑Sent Events) لدفع الحالة تلقائيًا ─── */
+/* ─── SSE لدفع الحالة تلقائيًا ─── */
 const evtSource = new EventSource(`${API_BASE_URL}/stream`);
 evtSource.onmessage = e => {
     try {
         const { animation, color } = JSON.parse(e.data);
 
-        // نطبّق المنطق نفسه من fetchAndApplyState() ولكن اعتماداً على الرسالة الواردة
         if (color) {
             updateUI(color);
             cardElement.style.background = "";
@@ -281,8 +293,20 @@ evtSource.onmessage = e => {
             rainbowFlowBtn.textContent = 'Rainbow Flow';
         }
 
+        // blinking_pattern
+        if (animation === "blinking_pattern") {
+            isAnimationRunning = true;
+            blinkingPatternBtn.classList.add('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking Pattern";
+        } else {
+            blinkingPatternBtn.classList.remove('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern';
+        }
+
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
     }
 };
-/* ─── END: إضافة SSE ─── */
+/* ─── نهاية SSE ─── */
