@@ -5,23 +5,23 @@
 const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
+// … (الكود الحالي لديك) …
+
+// DOM Elements
 const colorDisplay    = document.getElementById('colorDisplay');
 const lightOneBtn     = document.getElementById('lightOneBtn');
 const offBtn          = document.getElementById('offBtn');
 const off2Btn         = document.getElementById('off2Btn');
 const colorPicker     = document.getElementById('colorPicker');
+
+// إضافة مرجع لزر Wave Effect
+const waveEffectBtn   = document.getElementById('WaveEffectBtn');
+
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
 
 let isAnimationRunning = false;
 
-/**
- * دالة مساعدة لإرسال طلب POST إلى الخادم.
- *
- * @param {string} endpoint  مسار الطلب (مثل "/animate" أو "/color" أو "/stop")
- * @param {object} data      جسم الطلب كـ JSON
- * @returns {Promise<object>}  يُرجع كائن JSON من الخادم أو كائن خطأ
- */
 async function sendRequest(endpoint, data) {
     try {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -36,99 +36,88 @@ async function sendRequest(endpoint, data) {
     }
 }
 
-/**
- * دالة لجلب الحالة الفعلية (اللون الحالي والأنيميشن الجاري) من الخادم.
- * تتواصل مع GET /state على الخادم وتُحدّث العرض المحليّ بناءً على الاستجابة.
- */
 async function fetchAndApplyState() {
     try {
-        // نرسل GET إلى الخادم للحصول على { animation, color }
         const res = await fetch(`${API_BASE_URL}/state`);
         if (!res.ok) {
             throw new Error(`HTTP ${res.status}`);
         }
         const { animation, color } = await res.json();
 
-        // إذا كان هناك لون ثابت (color ليس null)، نُحدّث العرض به
         if (color) {
             updateUI(color);
-            // نُعيد الخلفية الافتراضية للبطاقة
             cardElement.style.background = "";
         } else {
-            // لا لون ثابت: نظهر "Off" بالأسود
             updateUI('#000000');
             cardElement.style.background = "";
         }
 
-        // إذا كان هناك أنيميشن جارٍ مطابق لـ "fade_colors"
+        // لو الأنيميشن الجاري هو fade_colors
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
             lightOneBtn.textContent = 'Fade Colors (Running)';
-            // نضبط بطاقة الخلفية سوداء ويعرض اسم الأنيميشن
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Fade Colors";
         } else {
-            // لا أنيميشن جارٍ
             isAnimationRunning = false;
             lightOneBtn.classList.remove('active');
             lightOneBtn.textContent = 'Fade Colors';
         }
+
+        // لو الأنيميشن الجاري هو wave_effect
+        if (animation === "wave_effect") {
+            isAnimationRunning = true;
+            waveEffectBtn.classList.add('active');
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Wave Effect";
+        } else {
+            waveEffectBtn.classList.remove('active');
+            waveEffectBtn.textContent = 'Wave Effect';
+        }
+
+        
+
     } catch (err) {
         console.error("Error fetching state:", err);
-        // في حال فشل جلب الحالة (مثلاً الخادم متوقف)، نعرض Off
         updateUI('#000000');
         isAnimationRunning = false;
         lightOneBtn.classList.remove('active');
         lightOneBtn.textContent = 'Fade Colors';
+        waveEffectBtn.classList.remove('active');
+        waveEffectBtn.textContent = 'Wave Effect';
         cardElement.style.background = "";
     }
 }
 
-/**
- * عندما يضغط المستخدم على زر لون ثابت:
- * 1) إذا كان هناك أنيميشن جارٍ، نتوقّف عنه أولاً
- * 2) نحدّث العرض محليًا إلى اللون الجديد
- * 3) نرسل POST إلى /color مع { hex_color: color }
- */
+// ================================================================
+// دالة تغيير اللون الثابت
 async function changeColor(color) {
     if (isAnimationRunning) {
         await stopAnimation();
     }
     updateUI(color);
-    // نُعيد الخلفية الافتراضية للبطاقة بعد اختيار لون ثابت
     cardElement.style.background = "";
     await sendRequest("/color", { hex_color: color });
 }
 
-/**
- * دالة لإيقاف أي أنيميشن جارٍ:
- * 1) ترسل POST إلى /stop
- * 2) تغيّر المتغيرات المحليّة isAnimationRunning
- * 3) تُعيد نص الزر إلى "Fade Colors"
- * 4) تحدّث العرض إلى الأسود (#000000)
- * 5) تُعيد البطاقة إلى الخلفية الافتراضية
- */
+// دالة إيقاف الأنيميشن (سترسل POST /stop)
 async function stopAnimation() {
-    await sendRequest("/stop");
     isAnimationRunning = false;
     lightOneBtn.classList.remove('active');
     lightOneBtn.textContent = 'Fade Colors';
-    // نُعيد النص داخل colorDisplay إلى قيمة اللون الحالي (هنا صفر/أسود)
-    updateUI('#000000');
-    // نُعيد الخلفية الافتراضية للبطاقة
+    waveEffectBtn.classList.remove('active');
+    waveEffectBtn.textContent = 'Wave Effect';
+    colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
+    await sendRequest("/stop", {});
 }
 
 /**
  * عند الضغط على زر "Fade Colors":
- * - إذا كان أنيميشن جاريًا، نستدعي stopAnimation()
- * - غير ذلك:
- *   • نضبط isAnimationRunning = true
- *   • نضيف CSS class 'active' لكي يظهر التأثير البصري
- *   • نغّير نصّ الزرّ إلى 'Fade Colors (Running)'
- *   • نضبط البطاقة لتكون سوداء، ونُحدّث colorDisplay إلى اسم الأنيميشن
- *   • نرسل POST إلى /animate مع { animation_type: "fade_colors" }
+ * - لو أنيميشن جاري، نوقفه
+ * - وإلا نبدأ fade_colors
  */
 async function startFadeAnimation() {
     if (isAnimationRunning) {
@@ -138,20 +127,29 @@ async function startFadeAnimation() {
     isAnimationRunning = true;
     lightOneBtn.classList.add('active');
     lightOneBtn.textContent = 'Fade Colors (Running)';
-    // نجعل خلفية البطاقة سوداء
+    // غمّر البطاقة بالسواد وأرّخ الأنيميشن
     cardElement.style.background = "#000000";
-    // نعرض اسم الأنيميشن في colorDisplay
     colorDisplay.textContent = "Fade Colors";
     await sendRequest("/animate", { animation_type: "fade_colors" });
 }
 
 /**
- * دالة لتحديث واجهة المستخدم محليًا إلى اللون المعطى:
- *   - خلفية الصفحة
- *   - دائرة العرض المركزية (colorDisplay)
- *   - قيمة colorPicker
- *   - النص داخل colorDisplay هو قيمة الـ hex الكبيرة
+ * دالة بداية/إيقاف "Wave Effect"
  */
+async function startWaveAnimation() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    waveEffectBtn.classList.add('active');
+    waveEffectBtn.textContent = 'Wave Effect (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Wave Effect";
+    await sendRequest("/animate", { animation_type: "wave_effect" });
+}
+
+// دالة لتحديث واجهة المستخدم إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
     document.body.style.boxShadow      = `0 0 80px ${color}80 inset`;
@@ -161,13 +159,83 @@ function updateUI(color) {
 }
 
 // === ربط الأحداث ===
-lightOneBtn.addEventListener("click", startFadeAnimation);
-offBtn       .addEventListener("click", stopAnimation);
-off2Btn      .addEventListener("click", stopAnimation);
-colorPicker  .addEventListener("input", e => changeColor(e.target.value));
+lightOneBtn   .addEventListener("click", startFadeAnimation);
+waveEffectBtn .addEventListener("click", startWaveAnimation);
+offBtn        .addEventListener("click", stopAnimation);
+off2Btn       .addEventListener("click", stopAnimation);
+colorPicker   .addEventListener("input", e => changeColor(e.target.value));
 
 // عند تحميل الصفحة لأول مرة:
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1) نجلب الحالة الحقيقية من الخادم
     await fetchAndApplyState();
+    // إذا أردت دوريات لجلب الحالة دوريًا:
+    setInterval(fetchAndApplyState, 2000);
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const starsContainer = document.querySelector(".stars-container");
+
+    for (let i = 0; i < 20; i++) {
+        let star = document.createElement("div");
+        star.classList.add("star");
+        star.innerHTML = "⋆"; // إضافة رمز النجمة الحقيقي
+
+        // وضع النجوم في أماكن عشوائية في البداية
+        star.style.left = Math.random() * window.innerWidth + "px";
+        star.style.top = Math.random() * window.innerHeight + "px";
+        star.style.animationDelay = Math.random() * 3 + "s";
+
+        // ─── إضافة لتحريك النجوم عشوائيًا عند انتهاء كل دورة أنيميشن ───
+        star.addEventListener("animationiteration", () => {
+            // بعد انتهاء الدورة الحالية للـ twinkle، نعيد توليد موقع عشوائي جديد
+            star.style.left = Math.random() * window.innerWidth + "px";
+            star.style.top = Math.random() * window.innerHeight + "px";
+        });
+
+        starsContainer.appendChild(star);
+    }
+});
+
+/* ─── START: إضافة SSE (Server‑Sent Events) لدفع الحالة تلقائيًا ─── */
+const evtSource = new EventSource(`${API_BASE_URL}/stream`);
+evtSource.onmessage = e => {
+    try {
+        const { animation, color } = JSON.parse(e.data);
+
+        // نطبّق المنطق نفسه من fetchAndApplyState() ولكن اعتماداً على الرسالة الواردة
+        if (color) {
+            updateUI(color);
+            cardElement.style.background = "";
+        } else {
+            updateUI('#000000');
+            cardElement.style.background = "";
+        }
+
+        // fade_colors
+        if (animation === "fade_colors") {
+            isAnimationRunning = true;
+            lightOneBtn.classList.add('active');
+            lightOneBtn.textContent = 'Fade Colors (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors";
+        } else {
+            lightOneBtn.classList.remove('active');
+            lightOneBtn.textContent = 'Fade Colors';
+        }
+
+        // wave_effect
+        if (animation === "wave_effect") {
+            isAnimationRunning = true;
+            waveEffectBtn.classList.add('active');
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Wave Effect";
+        } else {
+            waveEffectBtn.classList.remove('active');
+            waveEffectBtn.textContent = 'Wave Effect';
+        }
+    } catch (err) {
+        console.error("SSE onmessage parse error:", err);
+    }
+};
+/* ─── END: إضافة SSE ─── */
