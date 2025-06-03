@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import threading
 import time
 import json  # ─── أضفنا هذا للاستفادة من JSON في SSE
+import colorsys  # ─── لإضافة دعم تحويل الألوان من HSV إلى RGB
 
 # تهيئة شريط الـLED: عدد المصابيح = 20
 NUM_LEDS = 20
@@ -35,7 +36,7 @@ current_anim: str | None = None
 
 # نماذج Pydantic
 class AnimationRequest(BaseModel):
-    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color"
+    animation_type: str        # "light_one_by_one" | "fade_colors" | "wave_effect" | "solid_color" | "rainbow_flow"
     color_index: int = 0       # استخدم في light_one_by_one
     hex_color: str | None = None  # استخدم في solid_color
 
@@ -106,31 +107,64 @@ async def fade_colors_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ——— دالة تشغيل حلقة “Wave Effect” ———
-async def wave_effect_loop(delay: float = 0.05):
+# ——— دالة تشغيل حلقة “Wave Effect” (محسّنة) ———
+async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
     """
-    يمرر موجة ضوئية من البداية للنهاية بشكل حلقي.
-    مثلاً: نشغل LED واحد باللون الأبيض عند كل خطوة، ثم ننقل للآتي.
+    تأثير موجة ألوان قوس قزح ينتقل عبر الشريط بسلاسة،
+    حيث يُحوّل موضع كل LED إلى درجة لونية بناءً على إزاحة متحركة.
     """
     global stop_requested
-    color = (80, 80, 255)  # يمكنك تغييره لكل لون تريده للـwave
-    off_color = (0, 0, 0)
+    # درجة السطوع الثابتة
+    brightness = 0.5
+    step = 0.0
 
     while not stop_requested:
-        for idx in range(NUM_LEDS):
-            if stop_requested:
-                break
-            # أطفئ جميع المصابيح أولاً
-            for i in range(NUM_LEDS):
-                neo.set_led_color(i, *off_color)
-            # أشعل الـLED الحالي
-            neo.set_led_color(idx, *color)
-            neo.update_strip()
-            await asyncio.sleep(delay)
-        # بعد الوصول للنهاية، تعود للمؤشر 0 تلقائيًا
-    # عندما ينتهي، نطفئ الكل
+        for i in range(NUM_LEDS):
+            # نحسب موضع Hue لكل LED كنسبة مئوية مضافة للإزاحة الزمنية
+            hue = (i / NUM_LEDS + step) % 1.0
+            # نحول من HSV إلى RGB (كل مكون بين 0 و1) ثم نضرب 255
+            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
+            r = int(r_f * 255)
+            g = int(g_f * 255)
+            b = int(b_f * 255)
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+        # نزيد الإزاحة لنحرك الموجة عبر الوقت
+        step = (step + wave_speed) % 1.0
+        await asyncio.sleep(delay)
+
+    # عند انتهاء الحلقة (عند طلب التوقف)، نُطفئ جميع المصابيح
     for i in range(NUM_LEDS):
-        neo.set_led_color(i, *off_color)
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+# ——— دالة تشغيل حلقة “Rainbow Flow” ———
+async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
+    """
+    تأثير تدفق ألوان قوس قزح بالكامل عبر الشريط:
+    يتغير لون الشريط بالكامل تدريجياً من الأحمر للأرجواني ثم يعود.
+    """
+    global stop_requested
+    step = 0
+    while not stop_requested:
+        # نحسب Hue كنسبة مئوية من الدورة
+        hue = (step % steps) / steps
+        # نحول من HSV إلى RGB (كل مكون بين 0 و1) ثم نضرب 255
+        r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        r = int(r_f * 255)
+        g = int(g_f * 255)
+        b = int(b_f * 255)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+        step += 1
+        await asyncio.sleep(delay)
+
+    # عند انتهاء الحلقة (عند طلب التوقف)، نُطفئ جميع المصابيح
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
 # ——— عامل خلفي لمعالجة طابور الأنيميشن ———
@@ -153,6 +187,9 @@ async def animation_worker():
 
             elif req.animation_type == "wave_effect":
                 await wave_effect_loop()
+
+            elif req.animation_type == "rainbow_flow":
+                await rainbow_flow_loop()
 
             elif req.animation_type == "solid_color":
                 # لو طلب color ثابت:
