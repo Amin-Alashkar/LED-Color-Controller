@@ -1,20 +1,85 @@
-.star {
-    position: absolute;
-    font-size: 26px;          /* حجم النجمة كما كان */
-    color: #fff;              /* نغيّر اللون لأبيض ليظهر الهُج بوضوح */
-    /* نضيف وهجاً حول النجمة بنص الظِل */
-    text-shadow: 
-        0 0 5px  rgba(255,255,255,0.8),
-        0 0 10px rgba(255,255,255,0.6),
-        0 0 20px rgba(255,255,255,0.4);
-    /* نركّب على الأنيميشن الأصلي twinkle أنيميشن جديد لـ “star-glow” */
-    animation: 
-        twinkle     3s infinite alternate,
-        star-glow   3s infinite alternate;
+/* 1. اجعل خلفية الصفحة داكنة تماماً */
+body {
+  background: #000;         /* أسود داكن */
+  position: relative;       /* مهم لطبقات الخلفية النسبية */
+  overflow: hidden;         /* لمنع ظهور أي سكرول عند تحريك النجوم */
 }
 
+/* 2. أضف طبقة ”نقاط بيضاء صغيرة“ عبر ::before لعنصر body */
+/*    هذه الطبقة ستكرر نقاطاً بيضاء دقيقة على كامل الشاشة */
+body::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 
+    هنا نستخدم تدرجاً دائرياً صغيراً (radial-gradient) ليرسم نقطة بيضاء بمقياس 1px 
+    ثم يجعل ما حولها شفافاً. بعد ذلك نُكرر هذا النمط عبر background-size.
+  */
+  background: 
+    radial-gradient(circle, white 1px, transparent 1px);
+  background-size: 20px 20px;  /* المسافة بين النقاط: كل 20px نقطة جديدة */
+  opacity: 0.4;                /* يمكنك تعديل الشفافية لتخفيف حدّة النقاط */
+  z-index: 0;                  /* تأكد أنها تحت باقي العناصر */
+}
+
+/* 3. ضمّن حاوية النجوم (stars-container) فوق طبقة النقاط */
+.stars-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1;     /* أعلى من body::before */
+  pointer-events: none;
+}
+
+/* 4. تأكد أن النجوم نفسها تظهر فوق النقاط */
+/*    إذا لديك تعريف سابق للـ .star يضبط animation و text-shadow، يمكنك مثلاً: */
+.star {
+  position: absolute;
+  font-size: 20px;
+  color: #fff;
+  /* وهج النجمة حولها */
+  text-shadow: 
+    0 0 5px rgba(255,255,255,0.8),
+    0 0 10px rgba(255,255,255,0.6),
+    0 0 20px rgba(255,255,255,0.4);
+  /* أنيميشن twinkle لرؤية النجمة تختفي وتظهر بحجم مختلف */
+  animation: 
+    twinkle   3s infinite alternate,
+    star-glow 3s infinite alternate;
+  z-index: 2;  /* أعلى من النقاط وstars-container */
+}
+
+/* 5. أنيميشن twinkle لتذبذب ظهور واختفاء النجمة */
 @keyframes twinkle {
-    0%   { opacity: 0.2; transform: scale(0.8); }
-    50%  { opacity: 1;   transform: scale(1.2); }
-    100% { opacity: 0;   transform: scale(0.8); }
+  0%   { opacity: 0.2; transform: scale(0.8); }
+  50%  { opacity: 1;   transform: scale(1.2); }
+  100% { opacity: 0;   transform: scale(0.8); }
+}
+
+/* 6. أنيميشن star-glow لزيادة وهج النص ثم تقليله */
+@keyframes star-glow {
+  0% {
+    text-shadow: 
+      0 0 5px  rgba(255,255,255,0.8),
+      0 0 10px rgba(255,255,255,0.6),
+      0 0 20px rgba(255,255,255,0.4);
+  }
+  50% {
+    text-shadow:
+      0 0 15px rgba(255,255,255,1.0),
+      0 0 30px rgba(255,255,255,0.8),
+      0 0 60px rgba(255,255,255,0.6);
+  }
+  100% {
+    text-shadow: 
+      0 0 5px  rgba(255,255,255,0.8),
+      0 0 10px rgba(255,255,255,0.6),
+      0 0 20px rgba(255,255,255,0.4);
+  }
 }
