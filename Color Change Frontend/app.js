@@ -1,5 +1,5 @@
 // في المدرسة كان:
- const API_BASE_URL = "http://10.220.1.123:8000";
+const API_BASE_URL = "http://10.220.1.123:8000";
 // في البيت:
 // const API_BASE_URL = "http://192.168.1.247:8000";
 
@@ -15,16 +15,17 @@ const waveEffectBtn        = document.getElementById('WaveEffectBtn');
 const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
 const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
 const meteorShowerBtn      = document.getElementById('MeteorShowerBtn');
-const runningLightsBtn     = document.getElementById('RunningLightsBtn'); // تمت الإضافة
+const runningLightsBtn     = document.getElementById('RunningLightsBtn');
+const breathingEffectBtn   = document.getElementById('BreathingEffectBtn');
 
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
 
 let isAnimationRunning = false;
 
-// علم لتحديد إذا كنا الآن نختار لون شهاب (ليمنع إرسال /color)
+// أعلام لتحديد حالة اختيار اللون للأنيميشنات الخاصة
 let isPickingMeteorColor = false;
-let isPickingRunningLightsColor = false; // تمت الإضافة
+let isPickingRunningLightsColor = false;
 
 async function sendRequest(endpoint, data) {
     try {
@@ -115,7 +116,7 @@ async function fetchAndApplyState() {
             meteorShowerBtn.textContent = 'Meteor Shower';
         }
 
-        // Running Lights (تمت الإضافة)
+        // Running Lights
         if (animation === "running_lights") {
             isAnimationRunning = true;
             runningLightsBtn.classList.add('active');
@@ -125,6 +126,18 @@ async function fetchAndApplyState() {
         } else {
             runningLightsBtn.classList.remove('active');
             runningLightsBtn.textContent = 'Running Lights';
+        }
+
+        // Breathing Effect
+        if (animation === "breathing_effect") {
+            isAnimationRunning = true;
+            breathingEffectBtn.classList.add('active');
+            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect";
+        } else {
+            breathingEffectBtn.classList.remove('active');
+            breathingEffectBtn.textContent = 'Breathing Effect';
         }
 
     } catch (err) {
@@ -143,14 +156,15 @@ async function fetchAndApplyState() {
         blinkingPatternBtn.textContent = 'Blinking Pattern';
         meteorShowerBtn.classList.remove('active');
         meteorShowerBtn.textContent = 'Meteor Shower';
-        runningLightsBtn.classList.remove('active'); // تمت الإضافة
-        runningLightsBtn.textContent = 'Running Lights'; // تمت الإضافة
+        runningLightsBtn.classList.remove('active');
+        runningLightsBtn.textContent = 'Running Lights';
+        breathingEffectBtn.classList.remove('active');
+        breathingEffectBtn.textContent = 'Breathing Effect';
 
         cardElement.style.background = "";
     }
 }
 
-// ——————————————————————————————
 // دالة تغيير اللون الثابت
 async function changeColor(color) {
     if (isAnimationRunning) {
@@ -174,8 +188,10 @@ async function stopAnimation() {
     blinkingPatternBtn.textContent = 'Blinking Pattern';
     meteorShowerBtn.classList.remove('active');
     meteorShowerBtn.textContent = 'Meteor Shower';
-    runningLightsBtn.classList.remove('active'); // تمت الإضافة
-    runningLightsBtn.textContent = 'Running Lights'; // تمت الإضافة
+    runningLightsBtn.classList.remove('active');
+    runningLightsBtn.textContent = 'Running Lights';
+    breathingEffectBtn.classList.remove('active');
+    breathingEffectBtn.textContent = 'Breathing Effect';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -237,43 +253,36 @@ async function startBlinkingPattern() {
     await sendRequest("/animate", { animation_type: "blinking_pattern" });
 }
 
-// —== حدث الضغط على زر Meteor Shower ==—
+// حدث الضغط على زر Meteor Shower
 async function startMeteorShower() {
     if (isAnimationRunning) {
         await stopAnimation();
         return;
     }
-    // نعين العلم حتى يعرف الملقِّي أن اللون لخاص بالشهاب
     isPickingMeteorColor = true;
-    // نفتح مُختار اللون
     colorPicker.click();
-    // نضيف مستمع لمرة واحدة لالتقاط اللون المختار
     const handler = async (e) => {
         const chosenColor = e.target.value;
-        isPickingMeteorColor = false; // نعيد ضمان أن مستمع اللون العادي يعمل بعد الانتهاء
+        isPickingMeteorColor = false;
         isAnimationRunning = true;
         meteorShowerBtn.classList.add('active');
         meteorShowerBtn.textContent = 'Meteor Shower (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Meteor Shower";
-        // نرسل طلب بدء الأنيميشن مع اللون المختار
         await sendRequest("/animate", { animation_type: "meteor_shower", hex_color: chosenColor });
         colorPicker.removeEventListener("input", handler);
     };
     colorPicker.addEventListener("input", handler);
 }
 
-// ─── إضافة دالة لتشغيل Running Lights ───
+// دالة لتشغيل Running Lights
 async function startRunningLights() {
     if (isAnimationRunning) {
         await stopAnimation();
         return;
     }
-    // نعين العلم حتى يعرف الملقِّي أن اللون خاص بـ Running Lights
     isPickingRunningLightsColor = true;
-    // نفتح مُختار اللون
     colorPicker.click();
-    // نضيف مستمع لمرة واحدة لالتقاط اللون المختار
     const handler = async (e) => {
         const chosenColor = e.target.value;
         isPickingRunningLightsColor = false;
@@ -282,11 +291,26 @@ async function startRunningLights() {
         runningLightsBtn.textContent = 'Running Lights (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Running Lights";
-        // نرسل طلب بدء الأنيميشن مع اللون المختار
         await sendRequest("/animate", { animation_type: "running_lights", hex_color: chosenColor });
         colorPicker.removeEventListener("input", handler);
     };
     colorPicker.addEventListener("input", handler);
+}
+
+// ─── تعديل دالة تأثير التنفس لتعمل تلقائيًا دون اختيار لون ───
+async function startBreathingAnimation() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    breathingEffectBtn.classList.add('active');
+    breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Breathing Effect";
+    await sendRequest("/animate", { 
+        animation_type: "breathing_effect"
+    });
 }
 
 // دالة لتحديث واجهة المستخدم إلى اللون المعطى
@@ -298,17 +322,18 @@ function updateUI(color) {
     colorPicker.value                  = color;
 }
 
-// —=== ربط الأحداث ===—
+// ربط الأحداث
 lightOneBtn        .addEventListener("click", startFadeAnimation);
 waveEffectBtn      .addEventListener("click", startWaveAnimation);
 rainbowFlowBtn     .addEventListener("click", startRainbowAnimation);
 blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
 meteorShowerBtn    .addEventListener("click", startMeteorShower);
-runningLightsBtn   .addEventListener("click", startRunningLights); // تمت الإضافة
+runningLightsBtn   .addEventListener("click", startRunningLights);
+breathingEffectBtn .addEventListener("click", startBreathingAnimation); // تم التعديل
 offBtn             .addEventListener("click", stopAnimation);
 off2Btn            .addEventListener("click", stopAnimation);
 
-// تعديل مستمع colorPicker العادي ليُرسِل لونًا ثابتًا فقط إذا لم نكن في وضع اختيار شهاب
+// تعديل مستمع colorPicker العادي
 colorPicker.addEventListener("input", e => {
     if (!isPickingMeteorColor && !isPickingRunningLightsColor) {
         changeColor(e.target.value);
@@ -318,11 +343,10 @@ colorPicker.addEventListener("input", e => {
 // عند تحميل الصفحة لأول مرة:
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchAndApplyState();
-    // دورية لجلب الحالة كل ثانيتين
     setInterval(fetchAndApplyState, 2000);
 });
 
-// تكويد النجوم المتوهجة كما كان
+// تكويد النجوم المتوهجة
 document.addEventListener("DOMContentLoaded", function () {
     const starsContainer = document.querySelector(".stars-container");
     for (let i = 0; i < 20; i++) {
@@ -340,7 +364,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-/* ─── SSE لدفع الحالة تلقائيًا ─── */
+/* SSE لدفع الحالة تلقائيًا */
 const evtSource = new EventSource(`${API_BASE_URL}/stream`);
 evtSource.onmessage = e => {
     try {
@@ -414,7 +438,7 @@ evtSource.onmessage = e => {
             meteorShowerBtn.textContent = 'Meteor Shower';
         }
 
-        // running_lights (تمت الإضافة)
+        // running_lights
         if (animation === "running_lights") {
             isAnimationRunning = true;
             runningLightsBtn.classList.add('active');
@@ -426,9 +450,20 @@ evtSource.onmessage = e => {
             runningLightsBtn.textContent = 'Running Lights';
         }
 
+        // breathing_effect
+        if (animation === "breathing_effect") {
+            isAnimationRunning = true;
+            breathingEffectBtn.classList.add('active');
+            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect";
+        } else {
+            breathingEffectBtn.classList.remove('active');
+            breathingEffectBtn.textContent = 'Breathing Effect';
+        }
+
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
     }
 };
-/* ─── نهاية SSE ─── */
-
+/* نهاية SSE */
