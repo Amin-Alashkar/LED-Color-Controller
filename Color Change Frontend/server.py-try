@@ -6,6 +6,7 @@ from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
 import threading
 import time
+import json  # ─── أضفنا هذا للاستفادة من JSON في SSE
 
 # تهيئة شريط الـLED: عدد المصابيح = 20
 NUM_LEDS = 20
@@ -221,3 +222,25 @@ async def stop_animation():
     current_anim = None
     current_hex = "#000000"
     return {"status": "stopped"}
+
+# ───────────── START: إضافة نقطة نهاية SSE ─────────────
+from fastapi.responses import StreamingResponse
+
+async def event_generator():
+    """
+    تُرسل بشكل دوري الحالة الحالية كـ SSE:
+      - بيانات JSON فيها animation و color
+    """
+    while True:
+        data = json.dumps({"animation": current_anim, "color": current_hex})
+        yield f"data: {data}\n\n"
+        await asyncio.sleep(1.0)  # نرسل كل ثانية
+
+@app.get("/stream")
+async def stream_state():
+    """
+    يعيد StreamingResponse بمحتوى text/event-stream
+    ليتم التقاطه عن طريق EventSource في الـClient.
+    """
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+# ───────────── END: إضافة نقطة نهاية SSE ─────────────
