@@ -1,3 +1,5 @@
+# Server.py
+
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
@@ -9,6 +11,7 @@ import time
 import json
 import colorsys
 import math
+import random  # لإنتاج الألوان والمواقع العشوائية
 
 NUM_LEDS = 20
 neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
@@ -343,6 +346,58 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
+# ───── إضافة تأثير Fireworks Burst ─────
+async def fireworks_burst_loop(delay: float = 0.05, bursts: int = 8, sparks_per_burst: int = 6):
+    """
+    تأثير الألعاب النارية:
+    - يحدث عدد من “الانفجارات” (bursts)
+    - في كل انفجار، يضيء عدد من الشرارات (sparks) بألوان عشوائية على مواضع عشوائية
+    - بعدها تتلاشى الشرارات تدريجيًا
+    """
+    global stop_requested
+
+    for _ in range(bursts):
+        if stop_requested:
+            break
+
+        # نختار مواضع الشرارات وألوانها عشوائيًا
+        spark_positions = [random.randint(0, NUM_LEDS - 1) for _ in range(sparks_per_burst)]
+        spark_colors = [
+            (random.randint(128, 255), random.randint(128, 255), random.randint(128, 255))
+            for _ in range(sparks_per_burst)
+        ]
+
+        # نعرض الشرارات بسطوع كامل
+        for pos, (r_base, g_base, b_base) in zip(spark_positions, spark_colors):
+            neo.set_led_color(pos, r_base, g_base, b_base)
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+        # نعمل تلاشي تدريجي للشرارات
+        fade_steps = 5
+        for step in range(fade_steps, 0, -1):
+            if stop_requested:
+                return
+            factor = step / fade_steps
+            neo.clear_strip()
+            for pos, (r_base, g_base, b_base) in zip(spark_positions, spark_colors):
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(pos, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+        # ننظف الشريط بعد الانفجار
+        neo.clear_strip()
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+    # في النهاية، نتأكد من إطفاء جميع المصابيح
+    neo.clear_strip()
+    neo.update_strip()
+# ────────────────────────────────────────────────────────────────────
+
 async def animation_worker():
     global stop_requested, current_anim
     while True:
@@ -382,6 +437,9 @@ async def animation_worker():
 
             elif req.animation_type == "breathing_effect":
                 await breathing_effect_loop()
+
+            elif req.animation_type == "fireworks_burst":
+                await fireworks_burst_loop()
 
             elif req.animation_type == "solid_color":
                 if req.hex_color:
