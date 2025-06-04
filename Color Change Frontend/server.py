@@ -387,74 +387,112 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-async def fireworks_burst_loop(delay: float = 0.05):
+async def fireworks_burst_realistic_loop(delay_per_step: float = 0.05, fade_steps: int = 10):
     """
-    تأثير الألعاب النارية المعدل:
-    - يبدأ بضوء واحد يتحرك من نهاية الشريط (LED 19)
-    - يتحرك خطوة بخطوة نحو البداية (LED 0)
-    - بعد 10 خطوات (عند LED 9)، تضيء جميع المصابيح باللون الحالي
-    - ثم تتلاشى جميع المصابيح تدريجياً
-    - تكرر العملية مع اللون التالي في القائمة
+    تأثير ألعاب نارية “صاروخ” حقيقي:
+    - ينطلق الصاروخ (نقطة مضيئة) من LED رقم 19 وصولاً إلى منتصف الشريط (LED رقم 9 أو 10)
+    - عند الوصول، ينفجر الصاروخ في “موجة” ضوئية: تضيء LEDs على الجانبين بألوان عشوائية
+    - ثم تتلاشى الأضواء المتفجرة تدريجياً
+    - نكرر الحلقة طالما لم يُطلَب الإيقاف
     """
     global stop_requested
+    mid = NUM_LEDS // 2  # منتصف الشريط (20/2 = 10)
+    trail_length = 3     # طول ذيل الصاروخ عند الإقلاع
+
     COLORS = [
-        (255,   0,   0),  # أحمر
-        (  0,   0, 255),  # أزرق
-        (  0, 255,   0),  # أخضر
-        (255, 255,   0),  # أصفر
-        (255,   0, 255),  # أرجواني
-        (  0, 255, 255),  # سماوي
-        (255, 165,   0),  # برتقالي
-        (255, 192, 203),  # وردي
-        (138,  43, 226),  # أزرق بنفسجي
-        ( 50, 205,  50)   # أخضر ليموني
+        (255,  50,  50),  # أحمر خفيف
+        (255, 255,  50),  # أصفر
+        ( 50, 255,  50),  # أخضر فاتح
+        ( 50, 255, 255),  # سماوي فاتح
+        ( 50,  50, 255),  # أزرق فاتح
+        (255,  50, 255),  # وردي
+        (255, 150,   0),  # برتقالي
     ]
-    
-    FADE_STEPS = 20  # خطوات التلاشي
-    
+
     while not stop_requested:
-        for color in COLORS:
+        # 1) مرحلة الانطلاق: نقطة مضيئة تتحرك من LED 19 إلى منتصف الشريط
+        color = random.choice(COLORS)
+        for pos in range(NUM_LEDS - 1, mid - 1, -1):
             if stop_requested:
                 break
-                
-            # المرحلة 1: تحريك الضوء الواحد من النهاية إلى البداية
-            for pos in range(NUM_LEDS-1, -1, -1):  # من 19 إلى 0
-                if stop_requested:
-                    break
-                    
-                neo.clear_strip()
-                neo.set_led_color(pos, *color)  # إضاءة LED الحالي فقط
-                neo.update_strip()
-                await asyncio.sleep(3)
-                
-                # عندما يصل إلى LED 9 (بعد 10 خطوات من 19)
-                if pos == 9:
-                    # المرحلة 2: إضاءة جميع المصابيح باللون الحالي
-                    for i in range(NUM_LEDS):
-                        neo.set_led_color(i, *color)
-                    neo.update_strip()
-                    await asyncio.sleep(delay * 5)  # بقاء مضاءً قليلاً
-                    
-                    # المرحلة 3: التلاشي التدريجي
-                    for step in range(FADE_STEPS):
-                        if stop_requested:
-                            break
-                        factor = 1 - (step / (FADE_STEPS - 1))
-                        r = int(color[0] * factor)
-                        g = int(color[1] * factor)
-                        b = int(color[2] * factor)
-                        
-                        for i in range(NUM_LEDS):
-                            neo.set_led_color(i, r, g, b)
-                        neo.update_strip()
-                        await asyncio.sleep(delay / 2)
-                    
-                    break  # نهاية دورة هذا اللون
-    
-    # تنظيف الشريط عند التوقف
+
+            neo.clear_strip()
+            # نرسم ذيل الصاروخ بإضاءة تدريجية إلى أنفه
+            for t in range(trail_length):
+                trail_pos = pos + t
+                if 0 <= trail_pos < NUM_LEDS:
+                    factor = max(0.2, 1 - (t / trail_length))  # الذيل أهدأ تدريجياً
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(trail_pos, r, g, b)
+
+            # الرأس (الأقوى ضوءاً)
+            if 0 <= pos < NUM_LEDS:
+                neo.set_led_color(pos, *color)
+
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+        if stop_requested:
+            break
+
+        # 2) مرحلة الانفجار عند منتصف الشريط
+        # نحدد مجموعة من “جزيئات” الانفجار: إضاءة تدريجية للخارج
+        explosion_colors = [random.choice(COLORS) for _ in range(mid)]
+        # نضيء الموجة المركزية أولاً
+        for offset in range(mid + 1):
+            if stop_requested:
+                break
+
+            neo.clear_strip()
+            # نضيء كل مواضع الانفجار حتى الإزاحة الحالية
+            for d in range(offset + 1):
+                left = mid - d
+                right = mid + d - 1  # لأن mid =10 يؤشر لـ LED 10، نسوي -1 علشان 0- based
+                c = explosion_colors[d % len(explosion_colors)]
+                if 0 <= left < NUM_LEDS:
+                    neo.set_led_color(left, *c)
+                if 0 <= right < NUM_LEDS and right != left:
+                    neo.set_led_color(right, *c)
+
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+        if stop_requested:
+            break
+
+        # 3) مرحلة التلاشي التدريجي لموجة الانفجار
+        # نُخزن ألوان الانفجار الحالية لكي نُخفتها خطوة بخطوة
+        current_colors = []
+        for i in range(NUM_LEDS):
+            r, g, b = neo.strip[i]  # بافتراض أنّ Pi5Neo يتيح الوصول للمصفوفة حالياً
+            current_colors.append((r, g, b))
+
+        # إذا مكتوبٌ عندك مكتبة NeoNative لا تسمح بالوصول لـ strip، حِلها بتحويل r,g,b لـ array عند رسمك سابقاً
+
+        for fade_step in range(fade_steps):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            factor = 1 - (fade_step / (fade_steps - 1))
+            for i in range(NUM_LEDS):
+                r_base, g_base, b_base = current_colors[i]
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step / 2)
+
+        # نستريح شريط الإضاءة (السلام عليك يا أضوية 😉)
+        neo.clear_strip()
+        neo.update_strip()
+        await asyncio.sleep(delay_per_step * 5)  # وقت راحة قصير قبل الإطلاق التالي
+
+    # عند طلب التوقف نطفي الشريط نهائياً
     neo.clear_strip()
     neo.update_strip()
-
 
 async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
     """
