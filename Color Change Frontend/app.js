@@ -309,20 +309,12 @@ async function startMeteorShower() {
         await stopAnimation();
         return;
     }
-    isPickingMeteorColor = true;
-    colorPicker.click();
-    const handler = async (e) => {
-        const chosenColor = e.target.value;
-        isPickingMeteorColor = false;
-        isAnimationRunning = true;
-        meteorShowerBtn.classList.add('active');
-        meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-        cardElement.style.background = "#000000";
-        colorDisplay.textContent = "Meteor Shower";
-        await sendRequest("/animate", { animation_type: "meteor_shower", hex_color: chosenColor });
-        colorPicker.removeEventListener("input", handler);
-    };
-    colorPicker.addEventListener("input", handler);
+    isAnimationRunning = true;
+    meteorShowerBtn.classList.add('active');
+    meteorShowerBtn.textContent = 'Meteor Shower (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Meteor Shower";
+    await sendRequest("/animate", { animation_type: "meteor_shower" });
 }
 
 // دالة لتشغيل Running Lights
@@ -331,20 +323,12 @@ async function startRunningLights() {
         await stopAnimation();
         return;
     }
-    isPickingRunningLightsColor = true;
-    colorPicker.click();
-    const handler = async (e) => {
-        const chosenColor = e.target.value;
-        isPickingRunningLightsColor = false;
-        isAnimationRunning = true;
-        runningLightsBtn.classList.add('active');
-        runningLightsBtn.textContent = 'Running Lights (Running)';
-        cardElement.style.background = "#000000";
-        colorDisplay.textContent = "Running Lights";
-        await sendRequest("/animate", { animation_type: "running_lights", hex_color: chosenColor });
-        colorPicker.removeEventListener("input", handler);
-    };
-    colorPicker.addEventListener("input", handler);
+    isAnimationRunning = true;
+    runningLightsBtn.classList.add('active');
+    runningLightsBtn.textContent = 'Running Lights (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Running Lights";
+    await sendRequest("/animate", { animation_type: "running_lights" });
 }
 
 // ─── تعديل دالة تأثير التنفس لتعمل تلقائيًا دون اختيار لون ───
