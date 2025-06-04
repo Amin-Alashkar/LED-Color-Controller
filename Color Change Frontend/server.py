@@ -387,49 +387,57 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-async def fireworks_burst_realistic_loop(delay_per_step: float = 0.05, fade_steps: int = 10):
+
+       async def fireworks_burst_realistic_loop(delay_per_step: float = 0.02, fade_steps: int = 12):
     """
-    تأثير ألعاب نارية “صاروخ” حقيقي:
-    - ينطلق الصاروخ (نقطة مضيئة) من LED رقم 19 وصولاً إلى منتصف الشريط (LED رقم 9 أو 10)
-    - عند الوصول، ينفجر الصاروخ في “موجة” ضوئية: تضيء LEDs على الجانبين بألوان عشوائية
-    - ثم تتلاشى الأضواء المتفجرة تدريجياً
-    - نكرر الحلقة طالما لم يُطلَب الإيقاف
+    تأثير ألعاب نارية “صاروخ حقيقي” بسرعة سلسة وذيل من 5 نقاط:
+    - الصاروخ (نقطة) يبدأ من LED رقم 19 وينطلق بخمسة أضواء متدرجة (ذيل).
+    - يصل إلى منتصف الشريط (نقطة 9 أو 10) بسرعة أعلى.
+    - عند الوصول، ينتشر الانفجار من المنتصف إلى الأطراف بخمسة مستويات من الألوان.
+    - بعدها تتلاشى الألوان تدريجيًا في fade_steps خطوات.
     """
     global stop_requested
-    mid = NUM_LEDS // 2  # منتصف الشريط (20/2 = 10)
-    trail_length = 3     # طول ذيل الصاروخ عند الإقلاع
 
+    # 1. إعداد بعض المتغيرات
+    total_leds = NUM_LEDS
+    mid = (total_leds - 1) // 2     # وسط الشريط (لعشرين LED، mid=9)
+    trail_length = 5                # عدد النقاط في ذيل الصاروخ
     COLORS = [
-        (255,  50,  50),  # أحمر خفيف
-        (255, 255,  50),  # أصفر
-        ( 50, 255,  50),  # أخضر فاتح
-        ( 50, 255, 255),  # سماوي فاتح
-        ( 50,  50, 255),  # أزرق فاتح
-        (255,  50, 255),  # وردي
-        (255, 150,   0),  # برتقالي
+        (255,  50,  50),   # أحمر خفيف
+        (255, 255,  50),   # أصفر
+        ( 50, 255,  50),   # أخضر فاتح
+        ( 50, 255, 255),   # سماوي فاتح
+        ( 50,  50, 255),   # أزرق فاتح
+        (255,  50, 255),   # وردي
+        (255, 150,   0),   # برتقالي
     ]
 
     while not stop_requested:
-        # 1) مرحلة الانطلاق: نقطة مضيئة تتحرك من LED 19 إلى منتصف الشريط
-        color = random.choice(COLORS)
-        for pos in range(NUM_LEDS - 1, mid - 1, -1):
+        # =========================
+        # مرحلة 1: إطلاق الصاروخ
+        # =========================
+        launch_color = random.choice(COLORS)
+        # من LED 19 نزولًا حتى LED mid
+        for pos in range(total_leds - 1, mid - 1, -1):
             if stop_requested:
                 break
 
             neo.clear_strip()
-            # نرسم ذيل الصاروخ بإضاءة تدريجية إلى أنفه
+
+            # رسم ذيل الصاروخ (خمسة أضواء متدرجة)
             for t in range(trail_length):
                 trail_pos = pos + t
-                if 0 <= trail_pos < NUM_LEDS:
-                    factor = max(0.2, 1 - (t / trail_length))  # الذيل أهدأ تدريجياً
-                    r = int(color[0] * factor)
-                    g = int(color[1] * factor)
-                    b = int(color[2] * factor)
+                if 0 <= trail_pos < total_leds:
+                    # كل نقطة في الذيل يكون سطوعها factor = 1 - t/trail_length
+                    factor = 1.0 - (t / trail_length)
+                    r = int(launch_color[0] * factor)
+                    g = int(launch_color[1] * factor)
+                    b = int(launch_color[2] * factor)
                     neo.set_led_color(trail_pos, r, g, b)
 
-            # الرأس (الأقوى ضوءاً)
-            if 0 <= pos < NUM_LEDS:
-                neo.set_led_color(pos, *color)
+            # الرأس (أشد ضوءًا) عند موقع pos
+            if 0 <= pos < total_leds:
+                neo.set_led_color(pos, *launch_color)
 
             neo.update_strip()
             await asyncio.sleep(delay_per_step)
@@ -437,47 +445,49 @@ async def fireworks_burst_realistic_loop(delay_per_step: float = 0.05, fade_step
         if stop_requested:
             break
 
-        # 2) مرحلة الانفجار عند منتصف الشريط
-        # نحدد مجموعة من “جزيئات” الانفجار: إضاءة تدريجية للخارج
-        explosion_colors = [random.choice(COLORS) for _ in range(mid)]
-        # نضيء الموجة المركزية أولاً
-        for offset in range(mid + 1):
+        # حفظ لون كل LED في مصفوفة حتى نستخدمها للتلاشي لاحقًا
+        explosion_state = [(0, 0, 0)] * total_leds
+
+        # =========================
+        # مرحلة 2: انفجار الصاروخ
+        # =========================
+        # نقوم بخمسة “دوائر” انفجار، كل دائرة تضيء LED واحد على اليمين واليسار
+        for d in range(trail_length):
             if stop_requested:
                 break
 
-            neo.clear_strip()
-            # نضيء كل مواضع الانفجار حتى الإزاحة الحالية
-            for d in range(offset + 1):
-                left = mid - d
-                right = mid + d - 1  # لأن mid =10 يؤشر لـ LED 10، نسوي -1 علشان 0- based
-                c = explosion_colors[d % len(explosion_colors)]
-                if 0 <= left < NUM_LEDS:
-                    neo.set_led_color(left, *c)
-                if 0 <= right < NUM_LEDS and right != left:
-                    neo.set_led_color(right, *c)
+            # نختار لون عشوائي لكل حلقة انفجار
+            c = random.choice(COLORS)
 
+            left_idx = mid - d
+            right_idx = mid + 1 + d  # mid=9 -> أول “انفجار” يكون عند 9 و10
+
+            if 0 <= left_idx < total_leds:
+                explosion_state[left_idx] = c
+            if 0 <= right_idx < total_leds:
+                explosion_state[right_idx] = c
+
+            # نرسم الحالة الحالية للانفجار
+            neo.clear_strip()
+            for i, (r0, g0, b0) in enumerate(explosion_state):
+                neo.set_led_color(i, r0, g0, b0)
             neo.update_strip()
             await asyncio.sleep(delay_per_step)
 
         if stop_requested:
             break
 
-        # 3) مرحلة التلاشي التدريجي لموجة الانفجار
-        # نُخزن ألوان الانفجار الحالية لكي نُخفتها خطوة بخطوة
-        current_colors = []
-        for i in range(NUM_LEDS):
-            r, g, b = neo.strip[i]  # بافتراض أنّ Pi5Neo يتيح الوصول للمصفوفة حالياً
-            current_colors.append((r, g, b))
-
-        # إذا مكتوبٌ عندك مكتبة NeoNative لا تسمح بالوصول لـ strip، حِلها بتحويل r,g,b لـ array عند رسمك سابقاً
-
-        for fade_step in range(fade_steps):
+        # =========================
+        # مرحلة 3: تلاشي الانفجار
+        # =========================
+        # نطبق fade خفيف على كل LED بناءً على explosion_state
+        for fs in range(fade_steps):
             if stop_requested:
                 break
+
+            factor = 1.0 - (fs / (fade_steps - 1))
             neo.clear_strip()
-            factor = 1 - (fade_step / (fade_steps - 1))
-            for i in range(NUM_LEDS):
-                r_base, g_base, b_base = current_colors[i]
+            for i, (r_base, g_base, b_base) in enumerate(explosion_state):
                 r = int(r_base * factor)
                 g = int(g_base * factor)
                 b = int(b_base * factor)
@@ -485,12 +495,12 @@ async def fireworks_burst_realistic_loop(delay_per_step: float = 0.05, fade_step
             neo.update_strip()
             await asyncio.sleep(delay_per_step / 2)
 
-        # نستريح شريط الإضاءة (السلام عليك يا أضوية 😉)
+        # ننظف الشريط قبل الدورة التالية
         neo.clear_strip()
         neo.update_strip()
-        await asyncio.sleep(delay_per_step * 5)  # وقت راحة قصير قبل الإطلاق التالي
+        await asyncio.sleep(delay_per_step * 3)  # راحة قصيرة قبل الإطلاق التالي
 
-    # عند طلب التوقف نطفي الشريط نهائياً
+    # عند طلب التوقف نهائيًا
     neo.clear_strip()
     neo.update_strip()
 
