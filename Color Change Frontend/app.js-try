@@ -1,9 +1,9 @@
 // App.js
 
 // في المدرسة كان:
-// const API_BASE_URL = "http://10.220.1.123:8000";
+const API_BASE_URL = "http://10.220.1.123:8000";
 // في البيت:
-const API_BASE_URL = "http://192.168.1.247:8000";
+// const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
 const colorDisplay       = document.getElementById('colorDisplay');
@@ -21,7 +21,6 @@ const runningLightsBtn     = document.getElementById('RunningLightsBtn');
 const breathingEffectBtn   = document.getElementById('BreathingEffectBtn');
 const pulseSyncBtn         = document.getElementById('PulseSyncBtn');
 const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn'); // الزر الجديد
-const glitchFlashBtn       = document.getElementById('GlitchFlashBtn');    // تم إضافة هذا الزر
 
 // العنصر الخاص بالبطاقة
 const cardElement     = document.querySelector('.card');
@@ -68,6 +67,7 @@ async function fetchAndApplyState() {
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Fade Colors";
         } else {
+            isAnimationRunning = false;
             lightOneBtn.classList.remove('active');
             lightOneBtn.textContent = 'Fade Colors';
         }
@@ -168,18 +168,6 @@ async function fetchAndApplyState() {
             fireworksBurstBtn.textContent = 'Fireworks Burst';
         }
 
-        // Glitch Flash
-        if (animation === "glitch_flash") {
-            isAnimationRunning = true;
-            glitchFlashBtn.classList.add('active');
-            glitchFlashBtn.textContent = 'Glitch Flash (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Glitch Flash";
-        } else {
-            glitchFlashBtn.classList.remove('active');
-            glitchFlashBtn.textContent = 'Glitch Flash';
-        }
-
     } catch (err) {
         console.error("Error fetching state:", err);
         updateUI('#000000');
@@ -204,8 +192,6 @@ async function fetchAndApplyState() {
         breathingEffectBtn.textContent = 'Breathing Effect';
         fireworksBurstBtn.classList.remove('active');
         fireworksBurstBtn.textContent = 'Fireworks Burst';
-        glitchFlashBtn.classList.remove('active');
-        glitchFlashBtn.textContent = 'Glitch Flash';
 
         cardElement.style.background = "";
     }
@@ -242,8 +228,6 @@ async function stopAnimation() {
     breathingEffectBtn.textContent = 'Breathing Effect';
     fireworksBurstBtn.classList.remove('active');
     fireworksBurstBtn.textContent = 'Fireworks Burst';
-    glitchFlashBtn.classList.remove('active');
-    glitchFlashBtn.textContent = 'Glitch Flash';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -347,7 +331,7 @@ async function startRunningLights() {
     await sendRequest("/animate", { animation_type: "running_lights" });
 }
 
-// تعديل دالة تأثير التنفس لتعمل تلقائيًا دون اختيار لون
+// ─── تعديل دالة تأثير التنفس لتعمل تلقائيًا دون اختيار لون ───
 async function startBreathingAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -358,7 +342,9 @@ async function startBreathingAnimation() {
     breathingEffectBtn.textContent = 'Breathing Effect (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Breathing Effect";
-    await sendRequest("/animate", { animation_type: "breathing_effect" });
+    await sendRequest("/animate", { 
+        animation_type: "breathing_effect"
+    });
 }
 
 // دالة لتشغيل Fireworks Burst
@@ -373,20 +359,6 @@ async function startFireworksBurst() {
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Fireworks Burst";
     await sendRequest("/animate", { animation_type: "fireworks_burst" });
-}
-
-// Glitch Flash
-async function startGlitchFlash() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    glitchFlashBtn.classList.add('active');
-    glitchFlashBtn.textContent = 'Glitch Flash (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Glitch Flash";
-    await sendRequest("/animate", { animation_type: "glitch_flash", hex_color: colorPicker.value });
 }
 
 // دالة لتحديث واجهة المستخدم إلى اللون المعطى
@@ -407,8 +379,7 @@ blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
 meteorShowerBtn    .addEventListener("click", startMeteorShower);
 runningLightsBtn   .addEventListener("click", startRunningLights);
 breathingEffectBtn .addEventListener("click", startBreathingAnimation);
-fireworksBurstBtn  .addEventListener("click", startFireworksBurst);
-glitchFlashBtn     .addEventListener("click", startGlitchFlash); // تم التعديل
+fireworksBurstBtn  .addEventListener("click", startFireworksBurst); // تم التعديل
 offBtn             .addEventListener("click", stopAnimation);
 off2Btn            .addEventListener("click", stopAnimation);
 
@@ -563,18 +534,6 @@ evtSource.onmessage = e => {
         } else {
             fireworksBurstBtn.classList.remove('active');
             fireworksBurstBtn.textContent = 'Fireworks Burst';
-        }
-
-        // glitch_flash
-        if (animation === "glitch_flash") {
-            isAnimationRunning = true;
-            glitchFlashBtn.classList.add('active');
-            glitchFlashBtn.textContent = 'Glitch Flash (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Glitch Flash";
-        } else {
-            glitchFlashBtn.classList.remove('active');
-            glitchFlashBtn.textContent = 'Glitch Flash';
         }
 
     } catch (err) {
