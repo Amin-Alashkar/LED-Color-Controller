@@ -222,6 +222,7 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
     تأثير الشهاب (تأثير "الأفعى") مع عشرة أفاعي مختلفة الألوان:
     - كل أفعى طولها 12 LED بتدريج من الفاتح إلى الداكن
     - تتحرك كل أفعى من LED رقم 19 إلى LED رقم 0
+    - بين كل أفعى وأفعى مسافة 3 أضواء سوداء
     - في كل دورة نحافظ على تشغيل ثلاث أفاعي في آنٍ واحد حتى ننتهي من إطلاق العشر أفاعي
     - بعد انتهاء العشر أفاعي، نعيد الدورة من جديد طالما لم يُطلَب الإيقاف
     """
@@ -242,12 +243,11 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
     ]
 
     total_snakes = len(SNAKE_COLORS)
-    # مدة حركة الأفعى الواحدة بالخطوات: 
-    # الرأس يبدأ عند 19 وينتهي عند -trail_length
-    frames_per_snake = NUM_LEDS + trail_length  
+    # مدة حركة الأفعى الواحدة بالخطوات:
+    frames_per_snake = NUM_LEDS + trail_length  # الرأس يبدأ عند 19 وينتهي عند -trail_length
 
-    # فاصلة إطلاق الأفاعي (بناءً على الرغبة في تشغيل 3 أفاعي في آنٍ واحد)
-    spawn_interval = frames_per_snake // 3  # تقريبًا
+    # نضبط الفاصل الزمني لإطلاق الأفاعي بحيث يبقى بين كل رأس وآخر 3 أضواء سوداء
+    spawn_interval = trail_length + 3  # 12 + 3 = 15
 
     while not stop_requested:
         # قائمة تمثل الأفاعي النشطة حاليًّا
@@ -273,7 +273,7 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
             # نمسح الشريط
             neo.clear_strip()
 
-            # نحدِّث كل أفعى
+            # نحدّث كل أفعى
             for snake in active_snakes[:]:
                 sid = snake['id']
                 color_base = SNAKE_COLORS[sid]
