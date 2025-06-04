@@ -2842,18 +2842,46 @@ body { background: #000; overflow: hidden; position: relative; }
     height: 100vh;
     overflow: hidden;
 }
-
+/* ─── إضافة لمعان النجمة ─── */
 .star {
     position: absolute;
-    font-size: 26px; /* Star size */
-    color: silver; /* Star color */
-    opacity: 0;
-    animation: twinkle 3s infinite alternate;
+    font-size: 20px;          /* حجم النجمة كما كان */
+    color: #fff;              /* نغيّر اللون لأبيض ليظهر الهُج بوضوح */
+    /* نضيف وهجاً حول النجمة بنص الظِل */
+    text-shadow: 
+        0 0 5px  rgba(255,255,255,0.8),
+        0 0 10px rgba(255,255,255,0.6),
+        0 0 20px rgba(255,255,255,0.4);
+    /* نركّب على الأنيميشن الأصلي twinkle أنيميشن جديد لـ “star-glow” */
+    animation: 
+        twinkle     3s infinite alternate,
+        star-glow   3s infinite alternate;
 }
 
-/* Twinkling Effect */
 @keyframes twinkle {
-    0% { opacity: 0.2; transform: scale(0.8); }
-    50% { opacity: 1; transform: scale(1.2); }
-    100% { opacity: 0; transform: scale(0.8); }
+    0%   { opacity: 0.2; transform: scale(0.8); }
+    50%  { opacity: 1;   transform: scale(1.2); }
+    100% { opacity: 0;   transform: scale(0.8); }
 }
+/* تعريف Keyframes لأنيميشن “star-glow” ليزيد ويقلل الهُج تدريجياً */
+@keyframes star-glow {
+    0% {
+        text-shadow: 
+            0 0 5px  rgba(255,255,255,0.8),
+            0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
+    }
+    50% {
+        text-shadow:
+            0 0 15px rgba(255,255,255,1.0),
+            0 0 30px rgba(255,255,255,0.8),
+            0 0 60px rgba(255,255,255,0.6);
+    }
+    100% {
+        text-shadow: 
+            0 0 5px  rgba(255,255,255,0.8),
+            0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
+    }
+}
+
