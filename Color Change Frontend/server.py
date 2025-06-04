@@ -126,11 +126,8 @@ async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
     color_index = 0
 
     while not stop_requested:
-        # اللون الأساسي للرأس الحالي
         r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
         neo.clear_strip()
-
-        # رسم الذيل: تتلاشى ألوان الذيل تدريجيًا
         for t in range(trail_length):
             pos = position - (t * direction)
             if 0 <= pos < NUM_LEDS:
@@ -139,17 +136,12 @@ async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
                 g = int(g_base * factor)
                 b = int(b_base * factor)
                 neo.set_led_color(pos, r, g, b)
-
         neo.update_strip()
         await asyncio.sleep(delay)
-
-        # تحديث الموضع والاتجاه
         position += direction
         if position >= NUM_LEDS - 1 or position <= 0:
             direction *= -1
-            color_index += 1  # انتقل للون التالي عند الوصول لنهاية
-
-    # عند طلب الإيقاف، قم بمسح الشريط
+            color_index += 1
     neo.clear_strip()
     neo.update_strip()
 # ────────────────────────────────────────────────────────────────────
@@ -168,10 +160,8 @@ async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
             b = int(b_f * 255)
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
-
         step = (step + wave_speed) % 1.0
         await asyncio.sleep(delay)
-
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
@@ -188,17 +178,14 @@ async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
         for i in range(NUM_LEDS):
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
-
         step += 1
         await asyncio.sleep(delay)
-
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
 async def blinking_pattern_loop(delay: float = 0.5):
     global stop_requested
-
     color_steps = [
         (255, 255, 255),
         (255, 255, 229),
@@ -211,88 +198,148 @@ async def blinking_pattern_loop(delay: float = 0.5):
         (  0, 255, 255),
         (  0, 255,   0)
     ]
-
     idx = 0
     total = len(color_steps)
-
     while not stop_requested:
         r, g, b = color_steps[idx]
         for i in range(NUM_LEDS):
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
         await asyncio.sleep(delay)
-
         if stop_requested:
             break
-
         for i in range(NUM_LEDS):
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
         await asyncio.sleep(delay)
-
         idx = (idx + 1) % total
-
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-async def meteor_shower_loop(hex_color: str, delay_per_step: float = 0.000001, trail_length: int = 12):
+async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 12):
+    """
+    تأثير الشهاب (تأثير "الأفعى") مع عشرة أفاعي مختلفة الألوان:
+    - كل أفعى طولها 12 LED بتدريج من الفاتح إلى الداكن
+    - تتحرك كل أفعى من LED رقم 19 إلى LED رقم 0
+    - بين كل أفعى وأفعى مسافة 5 أضواء سوداء
+    - في كل دورة نحافظ على تشغيل ثلاث أفاعي في آنٍ واحد حتى ننتهي من إطلاق العشر أفاعي
+    - بعد انتهاء العشر أفاعي، نعيد الدورة من جديد طالما لم يُطلَب الإيقاف
+    """
     global stop_requested
 
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
-    
-    head_position = NUM_LEDS - 1
-    
+    # نعرّف عشرة ألوان ثابتة للأفاعي (كل أفعى لون مختلف)
+    SNAKE_COLORS = [
+        (255,   0,   0),   # أحمر
+        (  0,   0, 255),   # أزرق
+        (  0, 255,   0),   # أخضر
+        (255, 255,   0),   # أصفر
+        (255,   0, 255),   # أرجواني
+        (  0, 255, 255),   # سماوي
+        (255, 165,   0),   # برتقالي
+        (255, 192, 203),   # وردي
+        (138,  43, 226),   # بنفسجي
+        ( 50, 205,  50)    # أخضر ليموني
+    ]
+
+    total_snakes = len(SNAKE_COLORS)
+    # مدة حركة الأفعى الواحدة بالخطوات:
+    frames_per_snake = NUM_LEDS + trail_length  # الرأس يبدأ عند 19 وينتهي عند -trail_length
+
+    # نضبط الفاصل الزمني لإطلاق الأفاعي بحيث يبقى بين كل رأس وآخر 5 أضواء سوداء
+    spawn_interval = trail_length + 5  # 12 + 5 = 17
+
     while not stop_requested:
-        neo.clear_strip()
-        
-        for i in range(NUM_LEDS):
-            if stop_requested:
+        # قائمة تمثل الأفاعي النشطة حاليًّا
+        active_snakes = []
+        global_frame = 0
+        snake_index = 0
+
+        # نطلق الأفاعي الواحدة تلو الأخرى بانتظام
+        while not stop_requested:
+            # إذا حان وقت إطلاق أفعى جديدة
+            if snake_index < total_snakes and global_frame >= snake_index * spawn_interval:
+                # نضيف الأفعى إلى القائمة (مع حالة التقدّم بدايةً 0)
+                active_snakes.append({
+                    'id': snake_index,
+                    'progress': 0  # رقم الإطار داخل الأفعى
+                })
+                snake_index += 1
+
+            # إذا لم يبقَ أفعى ضمن النطاق أو انتهت كل الأفاعي من الحركة، نكسر
+            if snake_index >= total_snakes and not active_snakes:
                 break
-            
+
+            # نمسح الشريط
             neo.clear_strip()
-            
-            current_head = (head_position - i) % NUM_LEDS
-            
-            for t in range(trail_length):
-                tail_pos = (current_head + t) % NUM_LEDS
-                factor = max(0.0, 1.0 - t / trail_length)
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(tail_pos, r, g, b)
-            
+
+            # نحدّث كل أفعى
+            for snake in active_snakes[:]:
+                sid = snake['id']
+                color_base = SNAKE_COLORS[sid]
+                prog = snake['progress']
+                head_pos = 19 - prog
+
+                # نرسم ذيل الأفعى بطول trail_length
+                for t in range(trail_length):
+                    pos = head_pos + t
+                    if 0 <= pos < NUM_LEDS:
+                        # حساب التدريج (فاتح في الرأس، داكن في الذيل)
+                        factor = (trail_length - t) / trail_length
+                        r = int(color_base[0] * factor)
+                        g = int(color_base[1] * factor)
+                        b = int(color_base[2] * factor)
+                        neo.set_led_color(pos, r, g, b)
+
+                # نزيح الأفعى خطوة لاحقًا
+                snake['progress'] += 1
+                # إذا تجاوزت الأفعى المسار كاملاً
+                if snake['progress'] > frames_per_snake:
+                    active_snakes.remove(snake)
+
+            # نطبّق التحديث على الشريط
             neo.update_strip()
             await asyncio.sleep(delay_per_step)
-        
-        head_position = (head_position - 1) % NUM_LEDS
-    
+
+            global_frame += 1
+            # إذا انتهى جميع الإطارات لكل الأفاعي وأفرغت القائمة
+            if snake_index >= total_snakes and not active_snakes:
+                break
+
+        # بعد إنهاء عشر أفاعي، نعيد الدورة تلقائيًّا
     neo.clear_strip()
     neo.update_strip()
 
-async def running_lights_loop(hex_color: str, delay: float = 0.05, spacing: int = 3):
+async def running_lights_loop(delay: float = 0.05):
+    """
+    تأثير أضواء متحركة بألوان عشوائية:
+    - لدينا سبع نقاط انطلاق: 19,16,13,10,7,4,1
+    - لكل نقطة، نختار لونًا عشوائيًا ثم نحركه إلى الأسفل حتى الصفر
+    - عندما يصل إلى ما دون 0، نعيد تهيئته بلون جديد عند موقع الانطلاق الأصلي
+    - يستمر هذا التكرار باستمرار طالما لم يُطلَب الإيقاف
+    """
     global stop_requested
-    
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
-    
-    positions = [i * (NUM_LEDS // spacing) for i in range(spacing)]
-    
+    spawn_positions = list(range(19, -1, -3))  # [19,16,13,10,7,4,1]
+    # نهيئ الشرارات الثلاث في المواقع الأصلية
+    sparks = []
+    for p in spawn_positions:
+        color = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+        sparks.append({'start': p, 'pos': p, 'color': color})
+
     while not stop_requested:
         neo.clear_strip()
-        
-        for pos in positions:
-            neo.set_led_color(pos, r_base, g_base, b_base)
-        
+        # رسم كل شرارة في موقعها الحالي
+        for s in sparks:
+            if 0 <= s['pos'] < NUM_LEDS:
+                neo.set_led_color(s['pos'], *s['color'])
         neo.update_strip()
-        
-        positions = [(pos + 1) % NUM_LEDS for pos in positions]
-        
         await asyncio.sleep(delay)
-    
+        # تحديث كل شرارة: نقلها خطوة لأسفل أو إعادة تهيئتها
+        for s in sparks:
+            s['pos'] -= 1
+            if s['pos'] < 0:
+                s['pos'] = s['start']
+                s['color'] = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
     neo.clear_strip()
     neo.update_strip()
 
@@ -304,8 +351,6 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
     - يعطي إحساساً بالتنفس مع تغير الألوان
     """
     global stop_requested
-    
-    # مجموعة الألوان للتنفس
     COLORS = [
         (255, 0, 0),    # أحمر
         (0, 255, 0),    # أخضر
@@ -317,10 +362,8 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
         (128, 0, 128),  # بنفسجي
         (255, 192, 203) # وردي
     ]
-    
     while not stop_requested:
         for (r_base, g_base, b_base) in COLORS:
-            # زيادة الشدة (التنفس للداخل)
             for step in range(steps):
                 if stop_requested:
                     return
@@ -332,8 +375,6 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                     neo.set_led_color(i, r, g, b)
                 neo.update_strip()
                 await asyncio.sleep(delay)
-            
-            # تقليل الشدة (التنفس للخارج)
             for step in range(steps):
                 if stop_requested:
                     return
@@ -356,8 +397,6 @@ async def fireworks_burst_loop(delay: float = 0.1):
     - التكرار لا يتوقف إلا عند توقف المستخدم
     """
     global stop_requested
-
-    # قائمة ألوان مترابطة من 10 عناصر
     COLORS = [
         (255,   0,   0),  # أحمر
         (  0,   0, 255),  # أزرق
@@ -370,22 +409,15 @@ async def fireworks_burst_loop(delay: float = 0.1):
         (138,  43, 226),  # أزرق بنفسجي
         ( 50, 205,  50)   # أخضر ليموني
     ]
-
     color_index = 0
-
     while not stop_requested:
-        # 1. نختار عشرة مواقع عشوائية مختلفة
         fixed_positions = random.sample(range(NUM_LEDS), 10)
-
-        # 2. نضيء العشرة مواقع بالألوان الحالية من قائمة COLORS (تتغير كل دورة)
         neo.clear_strip()
         for idx, pos in enumerate(fixed_positions):
             r_base, g_base, b_base = COLORS[(color_index + idx) % len(COLORS)]
             neo.set_led_color(pos, r_base, g_base, b_base)
         neo.update_strip()
         await asyncio.sleep(delay)
-
-        # 3. نعمل تلاشي تدريجي لجميع هذه الألوان معًا
         fade_steps = 10
         for step in range(fade_steps, -1, -1):
             if stop_requested:
@@ -402,14 +434,8 @@ async def fireworks_burst_loop(delay: float = 0.1):
                 neo.set_led_color(pos, r, g, b)
             neo.update_strip()
             await asyncio.sleep(delay)
-
-        # 4. نستعد للدورة القادمة: ننقل المؤشر لتغيير ترتيب الألوان
         color_index = (color_index + 1) % len(COLORS)
-
-        # 5. ننتظر قليلاً قبل البدء من جديد، طالما لم يوقف المستخدم
         await asyncio.sleep(delay)
-
-    # عند طلب الإيقاف، نتأكد من إطفاء جميع المصابيح
     neo.clear_strip()
     neo.update_strip()
 # ────────────────────────────────────────────────────────────────────
@@ -420,43 +446,29 @@ async def animation_worker():
         if animation_queue:
             with animation_lock:
                 req = animation_queue.popleft()
-
             stop_requested = False
             current_anim = req.animation_type
-
             if req.animation_type == "light_one_by_one":
                 while not stop_requested:
                     await light_up_one_by_one(req.color_index)
-
             elif req.animation_type == "fade_colors":
                 await fade_colors_loop()
-
             elif req.animation_type == "pulse_sync":
                 await pulse_sync_loop()
-
             elif req.animation_type == "wave_effect":
                 await wave_effect_loop()
-
             elif req.animation_type == "rainbow_flow":
                 await rainbow_flow_loop()
-
             elif req.animation_type == "blinking_pattern":
                 await blinking_pattern_loop()
-
             elif req.animation_type == "meteor_shower":
-                if req.hex_color:
-                    await meteor_shower_loop(req.hex_color)
-
+                await meteor_shower_loop()
             elif req.animation_type == "running_lights":
-                if req.hex_color:
-                    await running_lights_loop(req.hex_color)
-
+                await running_lights_loop()
             elif req.animation_type == "breathing_effect":
                 await breathing_effect_loop()
-
             elif req.animation_type == "fireworks_burst":
                 await fireworks_burst_loop()
-
             elif req.animation_type == "solid_color":
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
@@ -466,7 +478,6 @@ async def animation_worker():
                         neo.set_led_color(i, r, g, b)
                     neo.update_strip()
                 stop_requested = True
-
         await asyncio.sleep(0.1)
 
 @app.on_event("startup")
@@ -483,7 +494,6 @@ async def start_animation(req: AnimationRequest):
     with animation_lock:
         animation_queue.clear()
         animation_queue.append(req)
-
     current_hex = None
     current_anim = req.animation_type
     return {"status": "queued", "animation": req.animation_type}
@@ -500,7 +510,6 @@ async def set_color(req: ColorRequest):
         for i in range(NUM_LEDS):
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
-
     current_anim = None
     current_hex = req.hex_color
     return {"status": "color_changed", "color": req.hex_color}
@@ -514,7 +523,6 @@ async def stop_animation():
         for i in range(NUM_LEDS):
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
-
     current_anim = None
     current_hex = "#000000"
     return {"status": "stopped"}
