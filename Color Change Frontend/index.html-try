@@ -16,15 +16,15 @@
         <h2 class="button-title">Colors</h2>
         <div class="button-container">
             <button id="redBtn"    onclick="changeColor('#ff0000')">Red</button>
-            <button id="greenBtn"  onclick="changeColor('#00ff00')">Green</button>
             <button id="blueBtn"   onclick="changeColor('#0000ff')">Blue</button>
+            <button id="greenBtn"  onclick="changeColor('#00ff00')">Green</button>
             <button id="orangeBtn" onclick="changeColor('#FFA500')">Orange</button>
             <button id="yellowBtn" onclick="changeColor('#FFFF00')">Yellow</button>
             <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple</button>
-            <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button>
+            <!-- <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button> -->
             <button id="whiteBtn"  onclick="changeColor('#FFFFFF')">White</button>
-            <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button>
-            <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button>
+            <!-- <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button> -->
+            <!-- <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button> -->
             <br>
             <button id="offBtn" onclick="changeColor('#000000')">Off</button>
         </div>
@@ -44,11 +44,11 @@
             <button id="BreathingEffectBtn">Breathing Effect</button>
             <button id="MeteorShowerBtn">Meteor Shower</button>
             <button id="PulseSyncBtn">Pulse Sync</button>
-            <button id="FireworksBurstBtn">Fireworks Burst</button>
-            <button id="GlitchFlashBtn">Glitch Flash</button> <!-- تم إضافة هذا الزر -->
+            <button id="FireworksBurstBtn">Fireworks Burst</button> <!-- تم تعديل هذا السطر -->
             <br>
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
         </div>
+        <h2 class="button-title">Create Your Own</h2>
     </div>
 
     <div id="aura-shapes">
