@@ -217,7 +217,7 @@ async def blinking_pattern_loop(delay: float = 0.5):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
-async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 12):
+async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 15):
     """
     تأثير الشهاب (تأثير "الأفعى") مع عشرة أفاعي مختلفة الألوان:
     - كل أفعى طولها 12 LED بتدريج من الفاتح إلى الداكن
@@ -247,7 +247,7 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
     frames_per_snake = NUM_LEDS + trail_length  # الرأس يبدأ عند 19 وينتهي عند -trail_length
 
     # نضبط الفاصل الزمني لإطلاق الأفاعي بحيث يبقى بين كل رأس وآخر 5 أضواء سوداء
-    spawn_interval = trail_length + 5  # 12 + 5 = 17
+    spawn_interval = trail_length + 30  # 12 + 5 = 17
 
     while not stop_requested:
         # قائمة تمثل الأفاعي النشطة حاليًّا
@@ -278,7 +278,7 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
                 sid = snake['id']
                 color_base = SNAKE_COLORS[sid]
                 prog = snake['progress']
-                head_pos = 19 - prog
+                head_pos = NUM_LEDS - prog
 
                 # نرسم ذيل الأفعى بطول trail_length
                 for t in range(trail_length):
@@ -387,14 +387,14 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-# ───── إضافة تأثير Fireworks Burst مستمر مع عشرة LED عشوائية وألوان متغيرة ─────
-async def fireworks_burst_loop(delay: float = 0.1):
+async def fireworks_burst_loop(delay: float = 0.05):
     """
-    تأثير الألعاب النارية:
-    - في كل دورة، نختار عشرة مواقع عشوائية من الشريط
-    - ثم نضبط هذه المواقع بعشرة ألوان مختلفة من قائمة COLORS
-    - بعدها تساهم دورة تلاشي تدريجي في إفراغ تلك المواقع
-    - التكرار لا يتوقف إلا عند توقف المستخدم
+    تأثير الألعاب النارية المعدل:
+    - يبدأ بضوء واحد يتحرك من نهاية الشريط (LED 19)
+    - يتحرك خطوة بخطوة نحو البداية (LED 0)
+    - بعد 10 خطوات (عند LED 9)، تضيء جميع المصابيح باللون الحالي
+    - ثم تتلاشى جميع المصابيح تدريجياً
+    - تكرر العملية مع اللون التالي في القائمة
     """
     global stop_requested
     COLORS = [
@@ -409,35 +409,109 @@ async def fireworks_burst_loop(delay: float = 0.1):
         (138,  43, 226),  # أزرق بنفسجي
         ( 50, 205,  50)   # أخضر ليموني
     ]
-    color_index = 0
+    
+    FADE_STEPS = 20  # خطوات التلاشي
+    
     while not stop_requested:
-        fixed_positions = random.sample(range(NUM_LEDS), 10)
-        neo.clear_strip()
-        for idx, pos in enumerate(fixed_positions):
-            r_base, g_base, b_base = COLORS[(color_index + idx) % len(COLORS)]
-            neo.set_led_color(pos, r_base, g_base, b_base)
-        neo.update_strip()
-        await asyncio.sleep(delay)
-        fade_steps = 10
-        for step in range(fade_steps, -1, -1):
+        for color in COLORS:
             if stop_requested:
+                break
+                
+            # المرحلة 1: تحريك الضوء الواحد من النهاية إلى البداية
+            for pos in range(NUM_LEDS-1, -1, -1):  # من 19 إلى 0
+                if stop_requested:
+                    break
+                    
                 neo.clear_strip()
+                neo.set_led_color(pos, *color)  # إضاءة LED الحالي فقط
                 neo.update_strip()
-                return
-            factor = step / fade_steps
-            neo.clear_strip()
-            for idx, pos in enumerate(fixed_positions):
-                r_base, g_base, b_base = COLORS[(color_index + idx) % len(COLORS)]
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(pos, r, g, b)
-            neo.update_strip()
-            await asyncio.sleep(delay)
-        color_index = (color_index + 1) % len(COLORS)
-        await asyncio.sleep(delay)
+                await asyncio.sleep(3)
+                
+                # عندما يصل إلى LED 9 (بعد 10 خطوات من 19)
+                if pos == 9:
+                    # المرحلة 2: إضاءة جميع المصابيح باللون الحالي
+                    for i in range(NUM_LEDS):
+                        neo.set_led_color(i, *color)
+                    neo.update_strip()
+                    await asyncio.sleep(delay * 5)  # بقاء مضاءً قليلاً
+                    
+                    # المرحلة 3: التلاشي التدريجي
+                    for step in range(FADE_STEPS):
+                        if stop_requested:
+                            break
+                        factor = 1 - (step / (FADE_STEPS - 1))
+                        r = int(color[0] * factor)
+                        g = int(color[1] * factor)
+                        b = int(color[2] * factor)
+                        
+                        for i in range(NUM_LEDS):
+                            neo.set_led_color(i, r, g, b)
+                        neo.update_strip()
+                        await asyncio.sleep(delay / 2)
+                    
+                    break  # نهاية دورة هذا اللون
+    
+    # تنظيف الشريط عند التوقف
     neo.clear_strip()
     neo.update_strip()
+
+
+async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
+    """
+    تأثير الشهاب المعدل - أسرع وأطول مع ذيل متوهج
+    - طول الشهاب: 17 LED
+    - سرعة أعلى بـ 40% من الإصدار الأصلي
+    - ذيل متدرج الشدة مع توهج إضافي
+    """
+    global stop_requested
+    trail_length = 17
+    fade_steps = 5
+    
+    while not stop_requested:
+        # توليد مواقع بداية عشوائية
+        start_pos = random.randint(15, NUM_LEDS + trail_length)
+        color = (
+            random.randint(150, 255),  # أحمر
+            random.randint(150, 255),  # أخضر
+            random.randint(200, 255)   # أزرق
+        )
+        
+        for pos in range(start_pos, -trail_length, -1):
+            if stop_requested:
+                break
+            
+            neo.clear_strip()
+            
+            # رسم الشهاب مع ذيل متدرج
+            for i in range(trail_length):
+                led_pos = pos - i
+                if 0 <= led_pos < NUM_LEDS:
+                    # حساب شدة الإضاءة (تتلاشى مع بعدها عن الرأس)
+                    intensity = 1.0 - (i / trail_length)
+                    
+                    # تطبيق تأثير التوهج
+                    glow_intensity = intensity * 0.7
+                    r = int(color[0] * intensity)
+                    g = int(color[1] * intensity)
+                    b = int(color[2] * intensity)
+                    
+                    # إضافة لون التوهج (أزرق-أبيض)
+                    r = min(r + int(100 * glow_intensity), 255)
+                    g = min(g + int(100 * glow_intensity), 255)
+                    b = min(b + int(255 * glow_intensity), 255)
+                    
+                    neo.set_led_color(led_pos, r, g, b)
+            
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+    
+    neo.clear_strip()
+    neo.update_strip()
+
+
+
+
+
 # ────────────────────────────────────────────────────────────────────
 
 async def animation_worker():
@@ -469,6 +543,8 @@ async def animation_worker():
                 await breathing_effect_loop()
             elif req.animation_type == "fireworks_burst":
                 await fireworks_burst_loop()
+            elif req.animation_type == "meteor_shower_modified":
+                await meteor_shower_modified_loop()
             elif req.animation_type == "solid_color":
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
@@ -478,6 +554,7 @@ async def animation_worker():
                         neo.set_led_color(i, r, g, b)
                     neo.update_strip()
                 stop_requested = True
+                
         await asyncio.sleep(0.1)
 
 @app.on_event("startup")
