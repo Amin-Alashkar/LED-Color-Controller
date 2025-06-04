@@ -45,27 +45,9 @@
             <button id="MeteorShowerBtn">Meteor Shower</button>
             <button id="PulseSyncBtn">Pulse Sync</button>
             <button id="FireworksBurstBtn">Fireworks Burst</button>
+            <button id="GlitchFlashBtn">Glitch Flash</button> <!-- تم إضافة هذا الزر -->
             <br>
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
-        </div>
-
-        <h2 class="button-title">Create Your Own</h2>
-        <div class="button-container">
-            <button id="GlitchFlashBtn">Glitch Flash</button>
-            <button id="HeartBeatBtn">Heart Beat</button>
-            <button id="TunnelEffectBtn">Tunnel Effect</button>
-            <button id="LaserShotBtn">Laser Shot</button>
-            <button id="SparklingStarsBtn">Sparkling Stars</button>
-            <button id="StrobeFlashBtn">Strobe Flash</button>
-            <button id="KnightRiderBtn">Knight Rider</button>
-            <button id="BounceBackBtn">Bounce Back</button>
-            <button id="RippleTouchBtn">Ripple Touch</button>
-            <button id="FireFlickerBtn">Fire Flicker</button>
-            <button id="ColorWipeBtn">Color Wipe</button>
-            <button id="StaticGlowBtn">Static Glow</button>
-            <button id="ColorEchoBtn">Color Echo</button>
-            <button id="TimeWarpBtn">Time Warp</button>
-            <button id="QuantumFlickerBtn">Quantum Flicker</button>
         </div>
     </div>
 
