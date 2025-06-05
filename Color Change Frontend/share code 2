@@ -1,7 +1,7 @@
 async def fireworks_burst_loop(delay: float = 0.05):
     """
     تأثير الألعاب النارية المعدل:
-    1. “الصاروخ” (ثلاثة أضواء) يتحرك من أسفل الشريط إلى منتصفه:
+    1. “الصاروخ” (ثلاثة أضواء) يبدأ من نهاية الشريط (أعلى مؤشر) ويتحرك بسرعة أكبر نحو منتصفه:
        - الرأس يكون بسطوع متوسط (~50%)
        - الضوء الثاني خلف الرأس بسطوع أقل (~30%)
        - الضوء الثالث خلف الثاني بسطوع أقل (~10%)
@@ -30,8 +30,7 @@ async def fireworks_burst_loop(delay: float = 0.05):
     # عدد خطوات التلاشي بعد الانفجار
     FADE_STEPS = 20             
 
-    # نحسب منتصف عدد الـ LEDs. 
-    # إذا NUM_LEDS = 20، فـ midpoint = 20 // 2 = 10 (أي الـ LED عند الفهرس 10).
+    # نحسب منتصف عدد الـ LEDs.
     midpoint = NUM_LEDS // 2
 
     while not stop_requested:
@@ -40,20 +39,21 @@ async def fireworks_burst_loop(delay: float = 0.05):
                 break
 
             # -------------------------
-            # 1. حركة “الصاروخ” حتى منتصف الشريط
+            # 1. حركة “الصاروخ” من نهاية الشريط (أقصى فهرس) إلى منتصفه، بسرعة أكبر
             # -------------------------
-            for head_pos in range(NUM_LEDS):
+            for head_pos in range(NUM_LEDS - 1, -1, -1):
                 if stop_requested:
                     break
 
-                # إذا وصل الرأس للمنتصف، ننتقل لمرحلة الانفجار فورًا
+                # إذا وصل الرأس إلى منتصف الشريط، ننتقل فورًا لمرحلة الانفجار
                 if head_pos == midpoint:
                     break
 
                 neo.clear_strip()
-                # نرسم ثلاث نقاط: الرأس وتاليه وخلف
+                # نرسم ثلاث نقاط: الرأس وتاليه وخلفه بسطوع متناقص
                 for idx in range(3):
-                    led_pos = head_pos - idx
+                    led_pos = head_pos + idx  # نتحرك لأسفل من نقطة البداية (النهاية)
+                    # لأن البداية كانت من الأعلى، الضوء الثاني سيكون تحت الرأس، وهكذا
                     if 0 <= led_pos < NUM_LEDS:
                         factor = ROCKET_BRIGHTNESSES[idx]
                         r = int(color[0] * factor)
@@ -62,8 +62,8 @@ async def fireworks_burst_loop(delay: float = 0.05):
                         neo.set_led_color(led_pos, r, g, b)
 
                 neo.update_strip()
-                # نضاعف التأخير قليلًا لنرى حركة الصاروخ بوضوح
-                await asyncio.sleep(delay * 2)
+                # جعلنا الحركة أسرع عبر استخدام delay فقط بدون مضاعفة
+                await asyncio.sleep(delay)
 
             if stop_requested:
                 break
