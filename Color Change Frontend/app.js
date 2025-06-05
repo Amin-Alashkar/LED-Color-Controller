@@ -37,6 +37,11 @@ let currentAnim = null;
 const customFadeBtn       = document.getElementById('customFadeBtn');
 
 
+// ─── NEW: زرّ “Blinking Pattern (Custom)” ───
+const customBlinkBtn = document.getElementById('customBlinkBtn');
+
+
+
 // نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
     try {
@@ -210,6 +215,20 @@ async function fetchAndApplyState() {
             customFadeBtn.classList.remove('active');
             customFadeBtn.textContent = 'Fade Colors - Custom';
         }
+
+        // ──── NEW: حالة “custom_blink” ────
+        if (animation === "custom_blink") {
+            isAnimationRunning = true;
+            currentAnim = "custom_blink";
+            customBlinkBtn.classList.add('active');
+            customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking - Custom";
+        } else {
+            customBlinkBtn.classList.remove('active');
+            customBlinkBtn.textContent = 'Blinking - Custom';
+        }
+
 
     } catch (err) {
         console.error("Error fetching state:", err);
@@ -522,6 +541,39 @@ async function startCustomFadeAnimation() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
+async function startCustomBlinkAnimation() {
+    if (isAnimationRunning && currentAnim === "custom_blink") {
+        await stopAnimation();
+        return;
+    }
+
+    if (isAnimationRunning && currentAnim !== "custom_blink") {
+        await stopAnimation();
+    }
+
+    customBlinkBtn.textContent = "Choose color…";
+    colorPicker.click();  
+
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        
+        isAnimationRunning = true;
+        currentAnim = "custom_blink";
+        customBlinkBtn.classList.add('active');
+        customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Blinking - Custom";
+
+        await sendRequest("/animate", {
+            animation_type: "custom_blink",
+            hex_color: chosenColor
+        });
+    };
+
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
 // تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -549,6 +601,8 @@ off2Btn              .addEventListener("click", stopAnimation);
 
 // ──── NEW: ربط زرّ “Fade Colors (Custom)” ────
 customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
+
+customBlinkBtn.addEventListener("click", startCustomBlinkAnimation);
 
 // عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
