@@ -1065,7 +1065,7 @@ button:hover {
     }
 }
 
-/* تأثير خاص لزر Light One by One */
+
 #MeteorShowerBtn {
     background: linear-gradient(135deg, #ff0000, #ff8c00);
     color: white;
@@ -1357,6 +1357,19 @@ button:hover {
 
 
 
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
 /*==================================================================
   1. متغيرات عامة (CSS Variables) للـ Aura
 ==================================================================*/
@@ -2890,22 +2903,15 @@ body { background: #000; overflow: hidden; position: relative; }
 
 
 /* 1) الشكل الأساسي للزر (خلفية متدرجة + لون نص أبيض) */
+
+
 #MeteorShowerNewBtn {
     background: linear-gradient(135deg, #ff0000, #ff8c00);
     color: white;
     position: relative;
     overflow: hidden;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 25px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
 }
 
-/* 2) تأثير الـ “shine” عند مرور الماوس */
 #MeteorShowerNewBtn::before {
     content: '';
     position: absolute;
@@ -2920,24 +2926,24 @@ body { background: #000; overflow: hidden; position: relative; }
     );
     transform: rotate(45deg);
     transition: all 0.3s ease;
-    z-index: 1;
 }
 
 #MeteorShowerNewBtn:hover::before {
     animation: shine 1.5s infinite;
 }
 
-/* 3) تغيير ظل الزر وحجمه الخفيف عند المرور */
-#MeteorShowerNewBtn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 14px rgba(0,0,0,0.2);
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
 }
 
-/* 4) الحالة النشطة "active" للزر: توهج داخلي وPulse */
 #MeteorShowerNewBtn.active {
     background: linear-gradient(135deg, #ff0000, #ff2a00);
-    animation: none; /* نلغي أي shine خارجي عندما يكون نشطًا */
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: none;
 }
 
 #MeteorShowerNewBtn.active::after {
@@ -2950,19 +2956,6 @@ body { background: #000; overflow: hidden; position: relative; }
     background: rgba(255, 255, 255, 0.2);
     border-radius: 8px;
     animation: ripple 1.5s infinite;
-    z-index: 2;
-}
-
-/* 5) keyframes مشتركة: Ripple و Shine و Pulse */
-/* (إذا كانت موجودة مسبقًا لا حاجة لإعادة تعريفها، لكن إن لم تكن فهذه نسخة مبسطة) */
-
-@keyframes shine {
-    0% {
-        left: -50%;
-    }
-    100% {
-        left: 150%;
-    }
 }
 
 @keyframes ripple {
@@ -2976,6 +2969,15 @@ body { background: #000; overflow: hidden; position: relative; }
     }
 }
 
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#MeteorShowerNewBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
@@ -2985,5 +2987,20 @@ body { background: #000; overflow: hidden; position: relative; }
     }
     100% {
         box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
     }
 }
