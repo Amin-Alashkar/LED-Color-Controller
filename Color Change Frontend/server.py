@@ -680,6 +680,50 @@ async def custom_blink_loop(hex_color: str, on_duration: float = 0.5, off_durati
     neo.clear_strip()
     neo.update_strip()
 
+# ─── NEW: custom_breathing_loop ───
+async def custom_breathing_loop(hex_color: str, delay: float = 0.02, steps: int = 50):
+    """
+    Breathing effect with a custom color.
+    Fades in and out the given color across all LEDs.
+    """
+    global stop_requested
+    # Convert hex to RGB
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # Fade in
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = step / (steps - 1)   # from 0.0 → 1.0
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        if stop_requested:
+            break
+
+        # Fade out
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = 1 - (step / (steps - 1))  # from 1.0 → 0.0
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+    # When stop is requested, clear strip
+    neo.clear_strip()
+    neo.update_strip()
 
 # ────────────────────────────────────────────────────────────────────
 
@@ -742,6 +786,11 @@ async def animation_worker():
             elif req.animation_type == "custom_fade":
                 if req.hex_color:
                     await custom_fade_loop(req.hex_color)
+
+            # ─── NEW: Handle custom_breathing ───
+            elif req.animation_type == "custom_breathing":
+                if req.hex_color:
+                    await custom_breathing_loop(req.hex_color)
 
 
         await asyncio.sleep(0.1)
