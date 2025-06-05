@@ -31,6 +31,7 @@ const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn');
 const cardElement          = document.querySelector('.card');
 
 let isAnimationRunning = false;
+let currentAnim = null;
 
 // نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
@@ -66,12 +67,12 @@ async function fetchAndApplyState() {
         // ——— Fade Colors ———
         if (animation === "fade_colors") {
             isAnimationRunning = true;
+            currentAnim = "fade_colors";
             lightOneBtn.classList.add('active');
             lightOneBtn.textContent = 'Fade Colors (Running)';
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Fade Colors";
         } else {
-            isAnimationRunning = false;
             lightOneBtn.classList.remove('active');
             lightOneBtn.textContent = 'Fade Colors';
         }
@@ -79,6 +80,7 @@ async function fetchAndApplyState() {
         // ——— Pulse Sync ———
         if (animation === "pulse_sync") {
             isAnimationRunning = true;
+            currentAnim = "pulse_sync";
             pulseSyncBtn.classList.add('active');
             pulseSyncBtn.textContent = 'Pulse Sync (Running)';
             cardElement.style.background = "#000000";
@@ -91,6 +93,7 @@ async function fetchAndApplyState() {
         // ——— Wave Effect ———
         if (animation === "wave_effect") {
             isAnimationRunning = true;
+            currentAnim = "wave_effect";
             waveEffectBtn.classList.add('active');
             waveEffectBtn.textContent = 'Wave Effect (Running)';
             cardElement.style.background = "#000000";
@@ -103,6 +106,7 @@ async function fetchAndApplyState() {
         // ——— Rainbow Flow ———
         if (animation === "rainbow_flow") {
             isAnimationRunning = true;
+            currentAnim = "rainbow_flow";
             rainbowFlowBtn.classList.add('active');
             rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
             cardElement.style.background = "#000000";
@@ -115,6 +119,7 @@ async function fetchAndApplyState() {
         // ——— Blinking Pattern ———
         if (animation === "blinking_pattern") {
             isAnimationRunning = true;
+            currentAnim = "blinking_pattern";
             blinkingPatternBtn.classList.add('active');
             blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
             cardElement.style.background = "#000000";
@@ -127,6 +132,7 @@ async function fetchAndApplyState() {
         // ——— Running Lights ———
         if (animation === "running_lights") {
             isAnimationRunning = true;
+            currentAnim = "running_lights";
             runningLightsBtn.classList.add('active');
             runningLightsBtn.textContent = 'Running Lights (Running)';
             cardElement.style.background = "#000000";
@@ -139,6 +145,7 @@ async function fetchAndApplyState() {
         // ——— Breathing Effect ———
         if (animation === "breathing_effect") {
             isAnimationRunning = true;
+            currentAnim = "breathing_effect";
             breathingEffectBtn.classList.add('active');
             breathingEffectBtn.textContent = 'Breathing Effect (Running)';
             cardElement.style.background = "#000000";
@@ -151,6 +158,7 @@ async function fetchAndApplyState() {
         // ——— Snakes Chasing (كان Meteor Shower) ———
         if (animation === "meteor_shower") {
             isAnimationRunning = true;
+            currentAnim = "meteor_shower";
             snakesChasingBtn.classList.add('active');
             snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
             cardElement.style.background = "#000000";
@@ -163,6 +171,7 @@ async function fetchAndApplyState() {
         // ——— New Meteor Shower (الأفعى الوحيدة) ———
         if (animation === "single_snake") {
             isAnimationRunning = true;
+            currentAnim = "single_snake";
             meteorShowerNewBtn.classList.add('active');
             meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
             cardElement.style.background = "#000000";
@@ -175,6 +184,7 @@ async function fetchAndApplyState() {
         // ——— Fireworks Burst ———
         if (animation === "fireworks_burst") {
             isAnimationRunning = true;
+            currentAnim = "fireworks_burst";
             fireworksBurstBtn.classList.add('active');
             fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
             cardElement.style.background = "#000000";
@@ -188,6 +198,7 @@ async function fetchAndApplyState() {
         console.error("Error fetching state:", err);
         updateUI('#000000');
         isAnimationRunning = false;
+        currentAnim = null;
         // إزالة أي حالة نشطة على الأزرار
         lightOneBtn.classList.remove('active');
         lightOneBtn.textContent = 'Fade Colors';
@@ -226,7 +237,8 @@ async function changeColor(color) {
 // دالة إيقاف الأنيميشن (POST /stop)
 async function stopAnimation() {
     isAnimationRunning = false;
-    // نزيل الحالة النشطة من كل الزرور
+    currentAnim = null;
+    // نزيل الحالة النشطة من كل الأزرار
     lightOneBtn.classList.remove('active');
     lightOneBtn.textContent = 'Fade Colors';
     pulseSyncBtn.classList.remove('active');
@@ -256,11 +268,16 @@ async function stopAnimation() {
 
 // Fade Colors
 async function startFadeAnimation() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "fade_colors") {
+        await stopAnimation();
+    }
+    // إذا كانت نفس الانيميشن تعمل حاليًا، نوقفها
+    if (isAnimationRunning && currentAnim === "fade_colors") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "fade_colors";
     lightOneBtn.classList.add('active');
     lightOneBtn.textContent = 'Fade Colors (Running)';
     cardElement.style.background = "#000000";
@@ -270,11 +287,15 @@ async function startFadeAnimation() {
 
 // Pulse Sync
 async function startPulseSyncAnimation() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "pulse_sync") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "pulse_sync") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "pulse_sync";
     pulseSyncBtn.classList.add('active');
     pulseSyncBtn.textContent = 'Pulse Sync (Running)';
     cardElement.style.background = "#000000";
@@ -284,11 +305,15 @@ async function startPulseSyncAnimation() {
 
 // Wave Effect
 async function startWaveAnimation() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "wave_effect") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "wave_effect") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "wave_effect";
     waveEffectBtn.classList.add('active');
     waveEffectBtn.textContent = 'Wave Effect (Running)';
     cardElement.style.background = "#000000";
@@ -298,11 +323,15 @@ async function startWaveAnimation() {
 
 // Rainbow Flow
 async function startRainbowAnimation() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "rainbow_flow") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "rainbow_flow") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "rainbow_flow";
     rainbowFlowBtn.classList.add('active');
     rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
     cardElement.style.background = "#000000";
@@ -312,11 +341,15 @@ async function startRainbowAnimation() {
 
 // Blinking Pattern
 async function startBlinkingPattern() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "blinking_pattern") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "blinking_pattern") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "blinking_pattern";
     blinkingPatternBtn.classList.add('active');
     blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
     cardElement.style.background = "#000000";
@@ -326,11 +359,15 @@ async function startBlinkingPattern() {
 
 // Running Lights
 async function startRunningLights() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "running_lights") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "running_lights") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "running_lights";
     runningLightsBtn.classList.add('active');
     runningLightsBtn.textContent = 'Running Lights (Running)';
     cardElement.style.background = "#000000";
@@ -340,11 +377,15 @@ async function startRunningLights() {
 
 // Breathing Effect
 async function startBreathingAnimation() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "breathing_effect") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "breathing_effect") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "breathing_effect";
     breathingEffectBtn.classList.add('active');
     breathingEffectBtn.textContent = 'Breathing Effect (Running)';
     cardElement.style.background = "#000000";
@@ -354,11 +395,15 @@ async function startBreathingAnimation() {
 
 // Snakes Chasing (كان Meteor Shower)
 async function startSnakesChasing() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "meteor_shower") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "meteor_shower") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "meteor_shower";
     snakesChasingBtn.classList.add('active');
     snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
     cardElement.style.background = "#000000";
@@ -368,11 +413,15 @@ async function startSnakesChasing() {
 
 // ——— الانيميشن الجديد “Meteor Shower” (الأفعى الوحيدة) ———
 async function startSingleSnake() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "single_snake") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "single_snake") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "single_snake";
     meteorShowerNewBtn.classList.add('active');
     meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
     cardElement.style.background = "#000000";
@@ -382,11 +431,15 @@ async function startSingleSnake() {
 
 // Fireworks Burst
 async function startFireworksBurst() {
-    if (isAnimationRunning) {
+    if (isAnimationRunning && currentAnim !== "fireworks_burst") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "fireworks_burst") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
+    currentAnim = "fireworks_burst";
     fireworksBurstBtn.classList.add('active');
     fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
     cardElement.style.background = "#000000";
@@ -444,9 +497,11 @@ evtSource.onmessage = e => {
             cardElement.style.background = "";
         }
 
-        // … ثم نفس المنطق السابق في fetchAndApplyState()
+        // ——— نفس المنطق الموجود في fetchAndApplyState() ———
+
         if (animation === "fade_colors") {
             isAnimationRunning = true;
+            currentAnim = "fade_colors";
             lightOneBtn.classList.add('active');
             lightOneBtn.textContent = 'Fade Colors (Running)';
             cardElement.style.background = "#000000";
@@ -458,6 +513,7 @@ evtSource.onmessage = e => {
 
         if (animation === "pulse_sync") {
             isAnimationRunning = true;
+            currentAnim = "pulse_sync";
             pulseSyncBtn.classList.add('active');
             pulseSyncBtn.textContent = 'Pulse Sync (Running)';
             cardElement.style.background = "#000000";
@@ -469,6 +525,7 @@ evtSource.onmessage = e => {
 
         if (animation === "wave_effect") {
             isAnimationRunning = true;
+            currentAnim = "wave_effect";
             waveEffectBtn.classList.add('active');
             waveEffectBtn.textContent = 'Wave Effect (Running)';
             cardElement.style.background = "#000000";
@@ -480,6 +537,7 @@ evtSource.onmessage = e => {
 
         if (animation === "rainbow_flow") {
             isAnimationRunning = true;
+            currentAnim = "rainbow_flow";
             rainbowFlowBtn.classList.add('active');
             rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
             cardElement.style.background = "#000000";
@@ -491,6 +549,7 @@ evtSource.onmessage = e => {
 
         if (animation === "blinking_pattern") {
             isAnimationRunning = true;
+            currentAnim = "blinking_pattern";
             blinkingPatternBtn.classList.add('active');
             blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
             cardElement.style.background = "#000000";
@@ -502,6 +561,7 @@ evtSource.onmessage = e => {
 
         if (animation === "running_lights") {
             isAnimationRunning = true;
+            currentAnim = "running_lights";
             runningLightsBtn.classList.add('active');
             runningLightsBtn.textContent = 'Running Lights (Running)';
             cardElement.style.background = "#000000";
@@ -513,6 +573,7 @@ evtSource.onmessage = e => {
 
         if (animation === "breathing_effect") {
             isAnimationRunning = true;
+            currentAnim = "breathing_effect";
             breathingEffectBtn.classList.add('active');
             breathingEffectBtn.textContent = 'Breathing Effect (Running)';
             cardElement.style.background = "#000000";
@@ -524,6 +585,7 @@ evtSource.onmessage = e => {
 
         if (animation === "meteor_shower") {
             isAnimationRunning = true;
+            currentAnim = "meteor_shower";
             snakesChasingBtn.classList.add('active');
             snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
             cardElement.style.background = "#000000";
@@ -535,6 +597,7 @@ evtSource.onmessage = e => {
 
         if (animation === "single_snake") {
             isAnimationRunning = true;
+            currentAnim = "single_snake";
             meteorShowerNewBtn.classList.add('active');
             meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
             cardElement.style.background = "#000000";
@@ -546,6 +609,7 @@ evtSource.onmessage = e => {
 
         if (animation === "fireworks_burst") {
             isAnimationRunning = true;
+            currentAnim = "fireworks_burst";
             fireworksBurstBtn.classList.add('active');
             fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
             cardElement.style.background = "#000000";
