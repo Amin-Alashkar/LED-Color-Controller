@@ -648,6 +648,39 @@ async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 10)
     neo.clear_strip()
     neo.update_strip()
 
+
+# ─── NEW: custom_blink_loop ───
+async def custom_blink_loop(hex_color: str, on_duration: float = 0.5, off_duration: float = 0.5):
+    """
+    Blink a single hex_color on and off across all LEDs.
+    """
+    global stop_requested
+    # Convert hex to RGB
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+    
+    while not stop_requested:
+        # Turn on
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r_base, g_base, b_base)
+        neo.update_strip()
+        await asyncio.sleep(on_duration)
+        
+        if stop_requested:
+            break
+            
+        # Turn off
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+        await asyncio.sleep(off_duration)
+    
+    # When stop is requested, clear strip
+    neo.clear_strip()
+    neo.update_strip()
+
+
 # ────────────────────────────────────────────────────────────────────
 
 async def animation_worker():
@@ -700,6 +733,16 @@ async def animation_worker():
                     neo.update_strip()
                 stop_requested = True
             # └─ end of custom_fade branch
+
+            # ─── NEW: Handle custom_blink ───
+            if req.animation_type == "custom_blink":
+                if req.hex_color:
+                    await custom_blink_loop(req.hex_color)
+            # ─── NEW: Handle custom_fade ───
+            elif req.animation_type == "custom_fade":
+                if req.hex_color:
+                    await custom_fade_loop(req.hex_color)
+
 
         await asyncio.sleep(0.1)
 
