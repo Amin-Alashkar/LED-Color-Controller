@@ -391,21 +391,26 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
 
 async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 10):
     """
-    تأثير ألعاب نارية “صاروخ” واحد فقط:
-    - نختار لون الصاروخ عشوائياً من القائمة COLORS
-    - الصاروخ يسير من LED رقم 19 إلى منتصف الشريط (LED رقم 9)
-      ذيله مكوّن من 5 نقاط ضوء درجتها نصف سطوع الرأس.
-    - عندما يصل إلى المنتصف، يضيء رأس الصاروخ فجأة بنفس اللون وبساطوع كامل.
-    - ثم “ينفجر” الصاروخ في موجة ضوئية بلون الصاروخ وبساطوع أقصى، تنتشر للخارج.
-    - بعد الانفجار، تتلاشى الأضواء تدريجياً في عدد fade_steps من الخطوات.
-    - في نهاية الدالة، نضع stop_requested = True بحيث تتوقف الحلقة وتكون جاهزة لأي أنيميشن لاحق.
+    تأثير ألعاب نارية “صاروخ” واحد، مع سطوع مُقسَّم:
+    1. الصاروخ (رأس + ذيل) يسير من LED رقم 19 إلى منتصف الشريط (NUM_LEDS//2).
+       - رأس الصاروخ يكون بنصف السطوع طوال الرحلة.
+       - ذيل الصاروخ مكوَّن من 5 نقاط، كل نقطة أضعف تدريجياً (بنسبة نصف السطوع عند الرأس، ثم تقل).
+    2. عندما يصل الرأس إلى المنتصف:
+       - نضيء رأس الصاروخ فجأة بسطوع كامل (بنفس لون الصاروخ).
+       - نبقيه لوهلة قصيرة ثم يبدأ الانفجار.
+    3. الانفجار:
+       - ينتشر من منتصف الشريط إلى الطرفين في 5 طبقات (trail_length = 5) بلون الصاروخ وبأقصى سطوع.
+    4. التلاشي:
+       - بعد اكتمال الانفجار، تتلاشى الأضواء من أقصى سطوع إلى إطفاء خلال fade_steps خطوات.
+    5. عند الانتهاء، نُعيّن stop_requested = True حتى ينتهي العامل (animation_worker) ويصبح جاهزاً لطلب جديد.
     """
     global stop_requested
 
     total_leds = NUM_LEDS
-    mid = (total_leds - 1) // 2       # هنا mid = 9 (لأن العد من 0 إلى 19)
-    trail_length = 5                  # طول ذيل الصاروخ (خمسة نقاط خلف الرأس)
-    # ألوان محتملة للصاروخ/الانفجار
+    mid = total_leds // 2         # منتصف الشريط (مثلاً 20//2 = 10)
+    trail_length = 5              # طول ذيل الصاروخ (5 نقاط خلف الرأس)
+
+    # قائمة ألوان الصاروخ/الانفجار المحتملة
     COLORS = [
         (255,  50,  50),   # أحمر فاتح
         (255, 255,  50),   # أصفر
@@ -419,26 +424,29 @@ async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 1
     # نختار لون الصاروخ عشوائياً
     rocket_color = random.choice(COLORS)
 
-    # 1) مرحلة انطلاق الصاروخ من LED رقم 19 وحتى LED mid (9)
+    # ----------------------------------------
+    # 1) مرحلة انطلاق الصاروخ برأس بسطوع 50% (factor = 0.5)
+    # ----------------------------------------
     for pos in range(total_leds - 1, mid - 1, -1):
-        # إذا طُلب الإيقاف في أي لحظة، نخرج فوراً
         if stop_requested:
             return
 
         neo.clear_strip()
 
-        # نرسم ذيل الصاروخ: خمس نقاط خلف الرأس، سطوعها نصف سطوع الرأس تدريجياً
+        # نرسم ذيل الصاروخ: خمس نقاط، سطوعها يبدأ عند 50% ثم يقل تدريجياً حتى النقطة الخامسة
         for t in range(trail_length):
             trail_pos = pos + t
             if 0 <= trail_pos < total_leds:
-                # كل نقطة في الذيل نصف سطوع (factor = 0.5) ثم تناقص خفيف حتى الوصول إلى آخر نقطة
-                factor = 0.5 * (1 - (t / trail_length))  # بداية الذيل = 0.5، نهاية الذيل ~0.1
+                # الحساب: رأس الصاروخ سطوعه 0.5، والنقاط الخلفية:
+                # النقطة الأولى خلف الرأس: 0.5 * (1 - 1/5) = 0.4
+                # الثانية: 0.5 * (1 - 2/5) = 0.3، وهكذا.
+                factor = 0.5 * (1 - (t + 1) / (trail_length + 0))  # t+1 لان الذيل يبدأ خلف الرأس
                 r = int(rocket_color[0] * factor)
                 g = int(rocket_color[1] * factor)
                 b = int(rocket_color[2] * factor)
                 neo.set_led_color(trail_pos, r, g, b)
 
-        # نرسم رأس الصاروخ (pos) بسطوع نصف (factor = 0.5)
+        # نرسم رأس الصاروخ عند pos بسطوع 50%
         if 0 <= pos < total_leds:
             r_head = int(rocket_color[0] * 0.5)
             g_head = int(rocket_color[1] * 0.5)
@@ -448,18 +456,20 @@ async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 1
         neo.update_strip()
         await asyncio.sleep(delay_per_step)
 
-    # 2) عندما يصل الصاروخ للمنتصف: نطفئ ذيل الصاروخ ونضيء الرأس فجأة بسطوع كامل
+    # ----------------------------------------
+    # 2) عند الوصول إلى المنتصف: نضيء الرأس فجأة بسطوع 100%
+    # ----------------------------------------
     if not stop_requested:
         neo.clear_strip()
-        # الضوء المفاجئ في المنتصف بنفس لون الصاروخ وبساطوع كامل
+        # اضاءًة فورية بسطوع كامل
         neo.set_led_color(mid, *rocket_color)
         neo.update_strip()
-        await asyncio.sleep(delay_per_step * 2)  # نبقيه لحظة بسيطة قبل الانفجار
+        await asyncio.sleep(delay_per_step * 2)  # نبقيه للحظة قبل الانفجار
 
-    # 3) مرحلة الانفجار بلون الصاروخ وبساطوع أقصى
-    # هنا نبني مصفوفة انفجار تُعوَّض في التلاشي لاحقاً
+    # ----------------------------------------
+    # 3) مرحلة الانفجار (5 طبقات) بنفس لون الصاروخ وبسطوع كامل
+    # ----------------------------------------
     explosion_state = [(0, 0, 0)] * total_leds
-    # نوسّع الانفجار لخمسة مستويات (بما يساوي trail_length)
     for d in range(trail_length):
         if stop_requested:
             return
@@ -467,25 +477,25 @@ async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 1
         left_idx = mid - d
         right_idx = mid + d
 
-        # نضع لون الانفجار الكامل (no factor هنا) في المواقع
         if 0 <= left_idx < total_leds:
             explosion_state[left_idx] = rocket_color
         if 0 <= right_idx < total_leds:
             explosion_state[right_idx] = rocket_color
 
         neo.clear_strip()
-        # نرسم الحالة الحالية للانفجار
         for i, (r0, g0, b0) in enumerate(explosion_state):
             neo.set_led_color(i, r0, g0, b0)
         neo.update_strip()
         await asyncio.sleep(delay_per_step)
 
-    # 4) مرحلة تلاشي الانفجار تدريجياً في fade_steps خطوات
+    # ----------------------------------------
+    # 4) تلاشي الانفجار: من سطوع 100% إلى 0 خلال fade_steps خطوات
+    # ----------------------------------------
     for fs in range(fade_steps):
         if stop_requested:
             return
 
-        factor = 1.0 - (fs / (fade_steps - 1))  # من 1 => 0
+        factor = 1.0 - (fs / (fade_steps - 1))
         neo.clear_strip()
         for i, (r_base, g_base, b_base) in enumerate(explosion_state):
             r = int(r_base * factor)
@@ -495,7 +505,9 @@ async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 1
         neo.update_strip()
         await asyncio.sleep(delay_per_step / 2)
 
-    # 5) ننظف الشريط في النهاية ونطلب التوقف التام
+    # ----------------------------------------
+    # 5) بعد الانتهاء: نطفي الشريط ونوقّف الأنيميشن
+    # ----------------------------------------
     neo.clear_strip()
     neo.update_strip()
     stop_requested = True
