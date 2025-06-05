@@ -27,6 +27,7 @@ const meteorShowerNewBtn   = document.getElementById('MeteorShowerNewBtn');
 
 const pulseSyncBtn         = document.getElementById('PulseSyncBtn');
 const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn');
+const customBreathingBtn = document.getElementById('customBreathingBtn');
 
 const cardElement          = document.querySelector('.card');
 
@@ -228,6 +229,18 @@ async function fetchAndApplyState() {
             customBlinkBtn.classList.remove('active');
             customBlinkBtn.textContent = 'Blinking - Custom';
         }
+        if (animation === "custom_breathing") {
+            isAnimationRunning = true;
+            currentAnim = "custom_breathing";
+            customBreathingBtn.classList.add('active');
+            customBreathingBtn.textContent = 'Breathing Effect - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect - Custom";
+        } else {
+            customBreathingBtn.classList.remove('active');
+            customBreathingBtn.textContent = 'Breathing Effect - Custom';
+        }
+
 
 
     } catch (err) {
@@ -258,6 +271,8 @@ async function fetchAndApplyState() {
         fireworksBurstBtn.textContent = 'Fireworks Burst';
         customFadeBtn.classList.remove('active');
         customFadeBtn.textContent = 'Fade Colors - Custom';
+        customBreathingBtn.classList.remove('active');
+        customBreathingBtn.textContent = 'Breathing Effect - Custom';
         cardElement.style.background = "";
     }
 }
@@ -299,6 +314,8 @@ async function stopAnimation() {
     fireworksBurstBtn.textContent = 'Fireworks Burst';
     customFadeBtn.classList.remove('active');
     customFadeBtn.textContent = 'Fade Colors - Custom';
+    customBreathingBtn.classList.remove('active');
+    customBreathingBtn.textContent = 'Breathing Effect - Custom';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -574,6 +591,41 @@ async function startCustomBlinkAnimation() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
+// ─── NEW: دالة “Breathing Effect (Custom)” ───
+async function startCustomBreathingAnimation() {
+    if (isAnimationRunning && currentAnim === "custom_breathing") {
+        await stopAnimation();
+        return;
+    }
+
+    if (isAnimationRunning && currentAnim !== "custom_breathing") {
+        await stopAnimation();
+    }
+
+    customBreathingBtn.textContent = "Choose color…";
+    colorPicker.click();
+
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        
+        isAnimationRunning = true;
+        currentAnim = "custom_breathing";
+        customBreathingBtn.classList.add('active');
+        customBreathingBtn.textContent = 'Breathing Effect - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Breathing Effect - Custom";
+
+        await sendRequest("/animate", {
+            animation_type: "custom_breathing",
+            hex_color: chosenColor
+        });
+    };
+
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+
 // تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -603,6 +655,8 @@ off2Btn              .addEventListener("click", stopAnimation);
 customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
 
 customBlinkBtn.addEventListener("click", startCustomBlinkAnimation);
+
+customBreathingBtn.addEventListener("click", startCustomBreathingAnimation);
 
 // عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
@@ -763,6 +817,20 @@ evtSource.onmessage = e => {
             customFadeBtn.classList.remove('active');
             customFadeBtn.textContent = 'Fade Colors - Custom';
         }
+        // ──── NEW: حالة “custom_breathing” عبر SSE ────
+        if (animation === "custom_breathing") {
+            isAnimationRunning = true;
+            currentAnim = "custom_breathing";
+            customBreathingBtn.classList.add('active');
+            customBreathingBtn.textContent = 'Breathing Effect - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect - Custom";
+        } else {
+            customBreathingBtn.classList.remove('active');
+            customBreathingBtn.textContent = 'Breathing Effect - Custom';
+        }
+
+
 
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
