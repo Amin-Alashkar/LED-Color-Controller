@@ -1,110 +1,102 @@
-async def fireworks_burst_loop(delay: float = 0.05):
-    """
-    تأثير الألعاب النارية المعدل:
-    1. “الصاروخ” (ثلاثة أضواء) يبدأ من نهاية الشريط (أعلى مؤشر) ويتحرك سريعًا نحو منتصفه:
-       - الرأس بسطوع خافت جدًا (~20%)
-       - الضوء الثاني خلف الرأس بسطوع أخف (~10%)
-       - الضوء الثالث خلف الثاني بسطوع خافت للغاية (~5%)
-    2. عند وصول الرأس إلى منتصف عدد الـ LEDs، يحدث الانفجار بكامل السطوع (100%).
-    3. بعد الانفجار، نطبق تلاشي تدريجي (Fade-out) حتى تنطفئ الأضواء.
-    """
-    global stop_requested
-    COLORS = [
-        (255, 0, 0),    # أحمر
-        (0, 0, 255),    # أزرق
-        (0, 255, 0),    # أخضر
-        (255, 255, 0),  # أصفر
-        (255, 0, 255),  # أرجواني
-        (0, 255, 255),  # سماوي
-        (255, 165, 0),  # برتقالي
-    ]
-    
-    # إعدادات السطوع للأضواء الثلاثة (الصاروخ) بأقل مستويات ممكنة
-    ROCKET_BRIGHTNESSES = [
-        0.2,  # سطوع الرأس (~20%)
-        0.1,  # سطوع الضوء الثاني (~10%)
-        0.05  # سطوع الضوء الثالث (~5%)
-    ]
-    # سطوع الانفجار الكامل
-    EXPLOSION_BRIGHTNESS = 1.0  # 100%
-    # عدد خطوات التلاشي بعد الانفجار
-    FADE_STEPS = 20             
+/* ─────────────────────────────────────────────────── */
+/*  إضافة نمط مطابق لبقية الأزرار على الزر الجديد  */
+/* ─────────────────────────────────────────────────── */
 
-    # نحسب منتصف عدد الـ LEDs.
-    midpoint = NUM_LEDS // 2
+/* 1) الشكل الأساسي للزر (خلفية متدرجة + لون نص أبيض) */
+#MeteorShowerNewBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 25px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
 
-    while not stop_requested:
-        for color in COLORS:
-            if stop_requested:
-                break
+/* 2) تأثير الـ “shine” عند مرور الماوس */
+#MeteorShowerNewBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+    z-index: 1;
+}
 
-            # -------------------------
-            # 1. حركة “الصاروخ” من نهاية الشريط (أقصى فهرس) إلى منتصفه، بأسرع وقت ممكن
-            # -------------------------
-            for head_pos in range(NUM_LEDS - 1, -1, -1):
-                if stop_requested:
-                    break
+#MeteorShowerNewBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
 
-                # إذا وصل الرأس إلى منتصف الشريط، ننتقل فورًا لمرحلة الانفجار
-                if head_pos == midpoint:
-                    break
+/* 3) تغيير ظل الزر وحجمه الخفيف عند المرور */
+#MeteorShowerNewBtn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.2);
+}
 
-                neo.clear_strip()
-                # نرسم ثلاث نقاط: الرأس وتاليه وخلفه بسطوع خافت
-                for idx in range(3):
-                    led_pos = head_pos + idx  # لأننا نتحرك من الأعلى إلى الأسفل
-                    if 0 <= led_pos < NUM_LEDS:
-                        factor = ROCKET_BRIGHTNESSES[idx]
-                        r = int(color[0] * factor)
-                        g = int(color[1] * factor)
-                        b = int(color[2] * factor)
-                        neo.set_led_color(led_pos, r, g, b)
+/* 4) الحالة النشطة "active" للزر: توهج داخلي وPulse */
+#MeteorShowerNewBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none; /* نلغي أي shine خارجي عندما يكون نشطًا */
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+}
 
-                neo.update_strip()
-                # نجعل الصاروخ سريعًا: نستخدم delay * 0.5 أو حتى خفض delay عند الاحتياج
-                await asyncio.sleep(delay * 0.5)
+#MeteorShowerNewBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+    z-index: 2;
+}
 
-            if stop_requested:
-                break
+/* 5) keyframes مشتركة: Ripple و Shine و Pulse */
+/* (إذا كانت موجودة مسبقًا لا حاجة لإعادة تعريفها، لكن إن لم تكن فهذه نسخة مبسطة) */
 
-            # -------------------------
-            # 2. الانفجار عند منتصف الشريط (بأقصى سطوع)
-            # -------------------------
-            neo.clear_strip()
-            for i in range(NUM_LEDS):
-                r = int(color[0] * EXPLOSION_BRIGHTNESS)
-                g = int(color[1] * EXPLOSION_BRIGHTNESS)
-                b = int(color[2] * EXPLOSION_BRIGHTNESS)
-                neo.set_led_color(i, r, g, b)
-            neo.update_strip()
-            # نبقى بمشهد الانفجار الكامل لفترة قصيرة
-            await asyncio.sleep(0.2)
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
 
-            if stop_requested:
-                break
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
 
-            # -------------------------
-            # 3. التلاشي التدريجي (Fade-out) بعد الانفجار
-            # -------------------------
-            for fade_step in range(FADE_STEPS):
-                if stop_requested:
-                    break
-                factor = 1 - (fade_step / FADE_STEPS)  # من 1 (كامل) إلى 0 (إطفاء)
-                neo.clear_strip()
-                for i in range(NUM_LEDS):
-                    r = int(color[0] * factor)
-                    g = int(color[1] * factor)
-                    b = int(color[2] * factor)
-                    neo.set_led_color(i, r, g, b)
-                neo.update_strip()
-                await asyncio.sleep(delay)
-
-            # بعد انتهاء التلاشي، ننظف الشريط وننتظر قليلًا قبل اللون القادم
-            neo.clear_strip()
-            neo.update_strip()
-            await asyncio.sleep(0.2)
-
-        # نعيد الدورة مع الألوان الأخرى طالما لم يُطلَب الإيقاف
-    # إذا طُلب التوقف نهائيًّا، نتأكد من إطفاء كامل الشريط
-    neo.clear_strip()
-    neo.update_strip()
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
