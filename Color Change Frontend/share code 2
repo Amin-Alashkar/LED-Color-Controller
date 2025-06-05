@@ -1,102 +1,23 @@
-/* ─────────────────────────────────────────────────── */
-/*  إضافة نمط مطابق لبقية الأزرار على الزر الجديد  */
-/* ─────────────────────────────────────────────────── */
-
-/* 1) الشكل الأساسي للزر (خلفية متدرجة + لون نص أبيض) */
-#MeteorShowerNewBtn {
-    background: linear-gradient(135deg, #ff0000, #ff8c00);
-    color: white;
-    position: relative;
-    overflow: hidden;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 25px;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-}
-
-/* 2) تأثير الـ “shine” عند مرور الماوس */
-#MeteorShowerNewBtn::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: linear-gradient(
-        to bottom right,
-        rgba(255,255,255,0.3),
-        rgba(255,255,255,0)
-    );
-    transform: rotate(45deg);
-    transition: all 0.3s ease;
-    z-index: 1;
-}
-
-#MeteorShowerNewBtn:hover::before {
-    animation: shine 1.5s infinite;
-}
-
-/* 3) تغيير ظل الزر وحجمه الخفيف عند المرور */
-#MeteorShowerNewBtn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 14px rgba(0,0,0,0.2);
-}
-
-/* 4) الحالة النشطة "active" للزر: توهج داخلي وPulse */
-#MeteorShowerNewBtn.active {
-    background: linear-gradient(135deg, #ff0000, #ff2a00);
-    animation: none; /* نلغي أي shine خارجي عندما يكون نشطًا */
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
-}
-
-#MeteorShowerNewBtn.active::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    animation: ripple 1.5s infinite;
-    z-index: 2;
-}
-
-/* 5) keyframes مشتركة: Ripple و Shine و Pulse */
-/* (إذا كانت موجودة مسبقًا لا حاجة لإعادة تعريفها، لكن إن لم تكن فهذه نسخة مبسطة) */
-
-@keyframes shine {
-    0% {
-        left: -50%;
-    }
-    100% {
-        left: 150%;
-    }
-}
-
-@keyframes ripple {
-    0% {
-        transform: scale(1);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1.5);
-        opacity: 0;
-    }
-}
-
-@keyframes pulse {
-    0% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
-    }
-    70% {
-        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
-    }
-    100% {
-        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
-    }
-}
+<h2 class="button-title">Create Your Own</h2>
+<div class="button-container">
+    <button id="fadeColorsBtn">Fade Colors</button>
+    <button id="blinkingPatternBtn">Blinking Pattern</button>
+    <button id="breathingEffectBtn">Breathing Effect</button>
+    <button id="meteorShowerBtn">Meteor Shower</button>
+    <button id="pulseSyncBtn">Pulse Sync</button>
+    <button id="glitchFlashBtn">Glitch Flash</button>
+    <button id="heartBeatBtn">Heart Beat</button>
+    <button id="tunnelEffectBtn">Tunnel Effect</button>
+    <button id="laserShotBtn">Laser Shot</button>
+    <button id="sparklingStarsBtn">Sparkling Stars</button>
+    <button id="strobeFlashBtn">Strobe Flash</button>
+    <button id="knightRiderBtn">Knight Rider</button>
+    <button id="bounceBackBtn">Bounce Back</button>
+    <button id="rippleTouchBtn">Ripple Touch</button>
+    <button id="fireFlickerBtn">Fire Flicker</button>
+    <button id="colorWipeBtn">Color Wipe</button>
+    <button id="staticGlowBtn">Static Glow with Flicker</button>
+    <button id="colorEchoBtn">Color Echo</button>
+    <button id="timeWarpBtn">Time Warp</button>
+    <button id="quantumFlickerBtn">Quantum Flicker</button>
+</div>
