@@ -390,70 +390,114 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
 async def fireworks_burst_loop(delay: float = 0.05):
     """
     تأثير الألعاب النارية المعدل:
-    - يبدأ بضوء واحد يتحرك من نهاية الشريط (LED 19)
-    - يتحرك خطوة بخطوة نحو البداية (LED 0)
-    - بعد 10 خطوات (عند LED 9)، تضيء جميع المصابيح باللون الحالي
-    - ثم تتلاشى جميع المصابيح تدريجياً
-    - تكرر العملية مع اللون التالي في القائمة
+    1. “الصاروخ” (ثلاثة أضواء) يبدأ من نهاية الشريط (أعلى مؤشر) ويتحرك سريعًا نحو منتصفه:
+       - الرأس بسطوع خافت جدًا (~20%)
+       - الضوء الثاني خلف الرأس بسطوع أخف (~10%)
+       - الضوء الثالث خلف الثاني بسطوع خافت للغاية (~5%)
+    2. عند وصول الرأس إلى منتصف عدد الـ LEDs، يحدث الانفجار بكامل السطوع (100%).
+    3. بعد الانفجار، نطبق تلاشي تدريجي (Fade-out) حتى تنطفئ الأضواء.
     """
     global stop_requested
     COLORS = [
-        (255,   0,   0),  # أحمر
-        (  0,   0, 255),  # أزرق
-        (  0, 255,   0),  # أخضر
-        (255, 255,   0),  # أصفر
-        (255,   0, 255),  # أرجواني
-        (  0, 255, 255),  # سماوي
-        (255, 165,   0),  # برتقالي
-        (255, 192, 203),  # وردي
-        (138,  43, 226),  # أزرق بنفسجي
-        ( 50, 205,  50)   # أخضر ليموني
+        (255, 0, 0),    # أحمر
+        (0, 0, 255),    # أزرق
+        (0, 255, 0),    # أخضر
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
     ]
     
-    FADE_STEPS = 20  # خطوات التلاشي
-    
+    # إعدادات السطوع للأضواء الثلاثة (الصاروخ) بأقل مستويات ممكنة
+    ROCKET_BRIGHTNESSES = [
+        0.2,  # سطوع الرأس (~20%)
+        0.1,  # سطوع الضوء الثاني (~10%)
+        0.05  # سطوع الضوء الثالث (~5%)
+    ]
+    # سطوع الانفجار الكامل
+    EXPLOSION_BRIGHTNESS = 1.0  # 100%
+    # عدد خطوات التلاشي بعد الانفجار
+    FADE_STEPS = 20             
+
+    # نحسب منتصف عدد الـ LEDs.
+    midpoint = NUM_LEDS // 3
+
     while not stop_requested:
         for color in COLORS:
             if stop_requested:
                 break
-                
-            # المرحلة 1: تحريك الضوء الواحد من النهاية إلى البداية
-            for pos in range(NUM_LEDS-1, -1, -1):  # من 19 إلى 0
+
+            # -------------------------
+            # 1. حركة “الصاروخ” من نهاية الشريط (أقصى فهرس) إلى منتصفه، بأسرع وقت ممكن
+            # -------------------------
+            for head_pos in range(NUM_LEDS - 1, -1, -1):
                 if stop_requested:
                     break
-                    
+
+                # إذا وصل الرأس إلى منتصف الشريط، ننتقل فورًا لمرحلة الانفجار
+                if head_pos == midpoint:
+                    break
+
                 neo.clear_strip()
-                neo.set_led_color(pos, *color)  # إضاءة LED الحالي فقط
-                neo.update_strip()
-                await asyncio.sleep(3)
-                
-                # عندما يصل إلى LED 9 (بعد 10 خطوات من 19)
-                if pos == 9:
-                    # المرحلة 2: إضاءة جميع المصابيح باللون الحالي
-                    for i in range(NUM_LEDS):
-                        neo.set_led_color(i, *color)
-                    neo.update_strip()
-                    await asyncio.sleep(delay * 5)  # بقاء مضاءً قليلاً
-                    
-                    # المرحلة 3: التلاشي التدريجي
-                    for step in range(FADE_STEPS):
-                        if stop_requested:
-                            break
-                        factor = 1 - (step / (FADE_STEPS - 1))
+                # نرسم ثلاث نقاط: الرأس وتاليه وخلفه بسطوع خافت
+                for idx in range(3):
+                    led_pos = head_pos + idx  # لأننا نتحرك من الأعلى إلى الأسفل
+                    if 0 <= led_pos < NUM_LEDS:
+                        factor = ROCKET_BRIGHTNESSES[idx]
                         r = int(color[0] * factor)
                         g = int(color[1] * factor)
                         b = int(color[2] * factor)
-                        
-                        for i in range(NUM_LEDS):
-                            neo.set_led_color(i, r, g, b)
-                        neo.update_strip()
-                        await asyncio.sleep(delay / 2)
-                    
-                    break  # نهاية دورة هذا اللون
-    
-    # تنظيف الشريط عند التوقف
+                        neo.set_led_color(led_pos, r, g, b)
+
+                neo.update_strip()
+                # نجعل الصاروخ سريعًا: نستخدم delay * 0.5 أو حتى خفض delay عند الاحتياج
+                await asyncio.sleep(delay * 0.5)
+
+            if stop_requested:
+                break
+
+            # -------------------------
+            # 2. الانفجار عند منتصف الشريط (بأقصى سطوع)
+            # -------------------------
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                r = int(color[0] * EXPLOSION_BRIGHTNESS)
+                g = int(color[1] * EXPLOSION_BRIGHTNESS)
+                b = int(color[2] * EXPLOSION_BRIGHTNESS)
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            # نبقى بمشهد الانفجار الكامل لفترة قصيرة
+            await asyncio.sleep(0.2)
+
+            if stop_requested:
+                break
+
+            # -------------------------
+            # 3. التلاشي التدريجي (Fade-out) بعد الانفجار
+            # -------------------------
+            for fade_step in range(FADE_STEPS):
+                if stop_requested:
+                    break
+                factor = 1 - (fade_step / FADE_STEPS)  # من 1 (كامل) إلى 0 (إطفاء)
+                neo.clear_strip()
+                for i in range(NUM_LEDS):
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
+
+            # بعد انتهاء التلاشي، ننظف الشريط وننتظر قليلًا قبل اللون القادم
+            neo.clear_strip()
+            neo.update_strip()
+            await asyncio.sleep(0.2)
+
+        # نعيد الدورة مع الألوان الأخرى طالما لم يُطلَب الإيقاف
+    # إذا طُلب التوقف نهائيًّا، نتأكد من إطفاء كامل الشريط
     neo.clear_strip()
     neo.update_strip()
+
 
 
 async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
