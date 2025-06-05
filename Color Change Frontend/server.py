@@ -387,146 +387,75 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-
-
-async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 10):
+async def fireworks_burst_loop(delay: float = 0.05):
     """
-    تأثير ألعاب نارية “صاروخ” متكرر إلى ما لا نهاية:
-    1. الصاروخ (رأس + ذيل) يسير من LED رقم 19 إلى منتصف الشريط (NUM_LEDS//2).
-       - رأس الصاروخ يكون بنصف السطوع طوال الرحلة.
-       - ذيل الصاروخ مكوَّن من 5 نقاط، كل نقطة أضعف تدريجيًا (بنسبة نصف سطوع الرأس ثم تقل).
-    2. عندما يصل الرأس إلى منتصف الشريط:
-       - تضيء جميع المصابيح دفعة واحدة بنفس لون الصاروخ وبأقصى سطوع.
-       - نبقيها لوهلة قصيرة ثم يبدأ الانفجار.
-    3. الانفجار:
-       - ينتشر من منتصف الشريط إلى الأطراف في 5 طبقات (trail_length = 5) بنفس لون الصاروخ وبسطوع كامل.
-    4. التلاشي:
-       - بعد اكتمال الانفجار، تتلاشى الأضواء من أقصى سطوع إلى إطفاء خلال fade_steps خطوات.
-    5. يعود الصاروخ من جديد (loop) طالما لم يُطلَب الإيقاف (stop_requested == False).
+    تأثير الألعاب النارية المعدل:
+    - يبدأ بضوء واحد يتحرك من نهاية الشريط (LED 19)
+    - يتحرك خطوة بخطوة نحو البداية (LED 0)
+    - بعد 10 خطوات (عند LED 9)، تضيء جميع المصابيح باللون الحالي
+    - ثم تتلاشى جميع المصابيح تدريجياً
+    - تكرر العملية مع اللون التالي في القائمة
     """
     global stop_requested
-
-    total_leds = NUM_LEDS
-    mid = total_leds // 2         # منتصف الشريط (مثلاً 20//2 = 10)
-    trail_length = 5              # طول ذيل الصاروخ (5 نقاط خلف الرأس)
-
-    # قائمة ألوان الصاروخ/الانفجار المحتملة
     COLORS = [
-        (255,  50,  50),   # أحمر فاتح
-        (255, 255,  50),   # أصفر
-        ( 50, 255,  50),   # أخضر فاتح
-        ( 50, 255, 255),   # سماوي فاتح
-        ( 50,  50, 255),   # أزرق فاتح
-        (255,  50, 255),   # وردي
-        (255, 150,   0),   # برتقالي
+        (255,   0,   0),  # أحمر
+        (  0,   0, 255),  # أزرق
+        (  0, 255,   0),  # أخضر
+        (255, 255,   0),  # أصفر
+        (255,   0, 255),  # أرجواني
+        (  0, 255, 255),  # سماوي
+        (255, 165,   0),  # برتقالي
+        (255, 192, 203),  # وردي
+        (138,  43, 226),  # أزرق بنفسجي
+        ( 50, 205,  50)   # أخضر ليموني
     ]
-
+    
+    FADE_STEPS = 20  # خطوات التلاشي
+    
     while not stop_requested:
-        # نختار لون الصاروخ عشوائيًا في كل دورة
-        rocket_color = random.choice(COLORS)
-
-        # -------------------------------
-        # 1) مرحلة انطلاق الصاروخ (رأس بسطوع 50% + ذيل من 5 نقاط)
-        # -------------------------------
-        for pos in range(total_leds - 1, mid - 1, -1):
+        for color in COLORS:
             if stop_requested:
+                break
+                
+            # المرحلة 1: تحريك الضوء الواحد من النهاية إلى البداية
+            for pos in range(NUM_LEDS-1, -1, -1):  # من 19 إلى 0
+                if stop_requested:
+                    break
+                    
                 neo.clear_strip()
+                neo.set_led_color(pos, *color)  # إضاءة LED الحالي فقط
                 neo.update_strip()
-                return
-
-            neo.clear_strip()
-
-            # رسم ذيل الصاروخ: خمس نقاط خلف الرأس، سطوعها يبدأ عند 0.5 ثم يقل تدريجيًا
-            for t in range(trail_length):
-                trail_pos = pos + t
-                if 0 <= trail_pos < total_leds:
-                    # عامل الذيل: رأس الصاروخ يضيء بـ 0.5، والنقاط الخلفية:
-                    # النقطة الأولى خلف الرأس: 0.5 * (1 - 1/5) = 0.4
-                    # النقطة الثانية: 0.5 * (1 - 2/5) = 0.3، وهكذا.
-                    factor = 0.5 * (1 - (t + 1) / trail_length)
-                    r = int(rocket_color[0] * factor)
-                    g = int(rocket_color[1] * factor)
-                    b = int(rocket_color[2] * factor)
-                    neo.set_led_color(trail_pos, r, g, b)
-
-            # رسم رأس الصاروخ عند pos بسطوع 50%
-            if 0 <= pos < total_leds:
-                r_head = int(rocket_color[0] * 0.5)
-                g_head = int(rocket_color[1] * 0.5)
-                b_head = int(rocket_color[2] * 0.5)
-                neo.set_led_color(pos, r_head, g_head, b_head)
-
-            neo.update_strip()
-            await asyncio.sleep(delay_per_step)
-
-        # -------------------------------
-        # 2) عند وصول الرأس إلى منتصف الشريط: نضيء جميع المصابيح دفعة واحدة بسطوع 100%
-        # -------------------------------
-        if stop_requested:
-            neo.clear_strip()
-            neo.update_strip()
-            return
-
-        neo.clear_strip()
-        # أضاءة كاملة (100%) لجميع LEDs بنفس لون الصاروخ
-        for i in range(total_leds):
-            neo.set_led_color(i, *rocket_color)
-        neo.update_strip()
-        await asyncio.sleep(delay_per_step * 2)  # نبقيها للحظة قبل الانفجار
-
-        # -------------------------------
-        # 3) مرحلة الانفجار (5 طبقات) بنفس لون الصاروخ وبسطوع 100%
-        # -------------------------------
-        explosion_state = [(0, 0, 0)] * total_leds
-        for d in range(trail_length):
-            if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
-
-            left_idx = mid - d
-            right_idx = mid + d
-
-            if 0 <= left_idx < total_leds:
-                explosion_state[left_idx] = rocket_color
-            if 0 <= right_idx < total_leds:
-                explosion_state[right_idx] = rocket_color
-
-            neo.clear_strip()
-            for i, (r0, g0, b0) in enumerate(explosion_state):
-                neo.set_led_color(i, r0, g0, b0)
-            neo.update_strip()
-            await asyncio.sleep(delay_per_step)
-
-        # -------------------------------
-        # 4) مرحلة التلاشي: من سطوع 100% إلى 0 خلال fade_steps خطوات
-        # -------------------------------
-        for fs in range(fade_steps):
-            if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
-
-            factor = 1.0 - (fs / (fade_steps - 1))  # من 1.0 إلى 0.0
-            neo.clear_strip()
-            for i, (r_base, g_base, b_base) in enumerate(explosion_state):
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(i, r, g, b)
-            neo.update_strip()
-            await asyncio.sleep(delay_per_step / 2)
-
-        # -------------------------------
-        # 5) استراحة قصيرة قبل الدورة التالية
-        # -------------------------------
-        neo.clear_strip()
-        neo.update_strip()
-        await asyncio.sleep(delay_per_step * 3)
-
-    # عند طلب الإيقاف (stop_requested==True) نطفي الشريط نهائيًا
+                await asyncio.sleep(3)
+                
+                # عندما يصل إلى LED 9 (بعد 10 خطوات من 19)
+                if pos == 9:
+                    # المرحلة 2: إضاءة جميع المصابيح باللون الحالي
+                    for i in range(NUM_LEDS):
+                        neo.set_led_color(i, *color)
+                    neo.update_strip()
+                    await asyncio.sleep(delay * 5)  # بقاء مضاءً قليلاً
+                    
+                    # المرحلة 3: التلاشي التدريجي
+                    for step in range(FADE_STEPS):
+                        if stop_requested:
+                            break
+                        factor = 1 - (step / (FADE_STEPS - 1))
+                        r = int(color[0] * factor)
+                        g = int(color[1] * factor)
+                        b = int(color[2] * factor)
+                        
+                        for i in range(NUM_LEDS):
+                            neo.set_led_color(i, r, g, b)
+                        neo.update_strip()
+                        await asyncio.sleep(delay / 2)
+                    
+                    break  # نهاية دورة هذا اللون
+    
+    # تنظيف الشريط عند التوقف
     neo.clear_strip()
     neo.update_strip()
+
+
 async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
     """
     تأثير الشهاب المعدل - أسرع وأطول مع ذيل متوهج
