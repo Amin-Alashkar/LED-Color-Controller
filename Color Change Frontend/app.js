@@ -1,9 +1,16 @@
 // app.js
 
-// في المدرسة كان:
-const API_BASE_URL = "http://10.220.1.123:8000";
-// في البيت:
-// const API_BASE_URL = "http://192.168.1.247:8000";
+
+let host = window.location.hostname;
+let API_BASE_URL;
+
+if (host.includes("10.220")) {
+    API_BASE_URL = "http://10.220.1.123:8000";
+} else if (host.includes("192.168")) {
+    API_BASE_URL = "http://192.168.1.247:8000";
+} else {
+    API_BASE_URL = "http://localhost:8000"; // احتياط
+}
 
 // DOM Elements
 const colorDisplay         = document.getElementById('colorDisplay');
