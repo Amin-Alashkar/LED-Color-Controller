@@ -34,11 +34,10 @@ current_anim: str | None = None
 class AnimationRequest(BaseModel):
     animation_type: str
     color_index: int = 0
-    hex_color: str | None = None
+    hex_color: str | None = None   # <-- we already need this
 
 class ColorRequest(BaseModel):
     hex_color: str
-
 async def light_up_one_by_one(color_index: int, delay: float = 0.011):
     global stop_requested
     colors = [
@@ -601,6 +600,54 @@ async def single_snake_loop(delay_per_step: float = 0.0001):
     neo.clear_strip()
     neo.update_strip()
 
+
+# ── NEW: custom_fade_loop ──
+async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 10):
+    """
+    Fade a single hex_color in and out across all LEDs.
+    We convert hex_color to (r_base, g_base, b_base), then
+    loop brightness from 0→1 and 1→0 until stop_requested is True.
+    """
+    global stop_requested
+    # Convert hex to RGB
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # Fade in
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = step / (steps - 1)   # from 0.0 → 1.0
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        if stop_requested:
+            break
+
+        # Fade out
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = 1 - (step / (steps - 1))  # from 1.0 → 0.0
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        # Loop again if not stopped
+
+    # When stop is requested, clear strip
+    neo.clear_strip()
+    neo.update_strip()
+
 # ────────────────────────────────────────────────────────────────────
 
 async def animation_worker():
@@ -612,7 +659,13 @@ async def animation_worker():
             stop_requested = False
             current_anim = req.animation_type
 
-            if req.animation_type == "light_one_by_one":
+            # ── NEW: Handle custom_fade ──
+            if req.animation_type == "custom_fade":
+                # req.hex_color is guaranteed not None if coming from the frontend
+                if req.hex_color:
+                    await custom_fade_loop(req.hex_color)
+                # once that loop ends, continue to next queue
+            elif req.animation_type == "light_one_by_one":
                 while not stop_requested:
                     await light_up_one_by_one(req.color_index)
             elif req.animation_type == "fade_colors":
@@ -635,11 +688,8 @@ async def animation_worker():
                 await fireworks_burst_loop()
             elif req.animation_type == "meteor_shower_modified":
                 await meteor_shower_modified_loop()
-
-            # ——— الفرع الجديد لـ “single_snake” ———
             elif req.animation_type == "single_snake":
                 await single_snake_loop()
-
             elif req.animation_type == "solid_color":
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
@@ -649,6 +699,7 @@ async def animation_worker():
                         neo.set_led_color(i, r, g, b)
                     neo.update_strip()
                 stop_requested = True
+            # └─ end of custom_fade branch
 
         await asyncio.sleep(0.1)
 
@@ -665,6 +716,7 @@ async def start_animation(req: AnimationRequest):
     global current_hex, current_anim
     with animation_lock:
         animation_queue.clear()
+        stop_requested = False
         animation_queue.append(req)
     current_hex = None
     current_anim = req.animation_type
