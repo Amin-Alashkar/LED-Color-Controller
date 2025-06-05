@@ -1,36 +1,36 @@
-// App.js
-
 // في المدرسة كان:
-const API_BASE_URL = "http://10.220.1.123:8000";
+// const API_BASE_URL = "http://10.220.1.123:8000";
 // في البيت:
-// const API_BASE_URL = "http://192.168.1.247:8000";
+const API_BASE_URL = "http://192.168.1.247:8000";
 
 // DOM Elements
-const colorDisplay       = document.getElementById('colorDisplay');
-const lightOneBtn        = document.getElementById('lightOneBtn');
-const offBtn             = document.getElementById('offBtn');
-const off2Btn            = document.getElementById('off2Btn');
-const colorPicker        = document.getElementById('colorPicker');
+const colorDisplay         = document.getElementById('colorDisplay');
+const lightOneBtn          = document.getElementById('lightOneBtn');
+const offBtn               = document.getElementById('offBtn');
+const off2Btn              = document.getElementById('off2Btn');
+const colorPicker          = document.getElementById('colorPicker');
 
-// أزرار الأنيميشن
+// أزرار الانيميشن القديمة
 const waveEffectBtn        = document.getElementById('WaveEffectBtn');
 const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
 const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
-const meteorShowerBtn      = document.getElementById('MeteorShowerBtn');
 const runningLightsBtn     = document.getElementById('RunningLightsBtn');
 const breathingEffectBtn   = document.getElementById('BreathingEffectBtn');
-const pulseSyncBtn         = document.getElementById('PulseSyncBtn');
-const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn'); // الزر الجديد
 
-// العنصر الخاص بالبطاقة
-const cardElement     = document.querySelector('.card');
+// هنا: الزرّ المسمّى "Snakes Chasing" (كان اسمه سابقاً MeteorShowerBtn)
+const snakesChasingBtn     = document.getElementById('MeteorShowerBtn');
+
+// زرّ الانيميشن الجديد "Meteor Shower"
+const meteorShowerNewBtn   = document.getElementById('MeteorShowerNewBtn');
+
+const pulseSyncBtn         = document.getElementById('PulseSyncBtn');
+const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn');
+
+const cardElement          = document.querySelector('.card');
 
 let isAnimationRunning = false;
 
-// أعلام لتحديد حالة اختيار اللون للأنيميشنات الخاصة
-let isPickingMeteorColor = false;
-let isPickingRunningLightsColor = false;
-
+// نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
     try {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
@@ -45,12 +45,14 @@ async function sendRequest(endpoint, data) {
     }
 }
 
+// جلب الحالة الحالية من /state وتحديث الواجهة
 async function fetchAndApplyState() {
     try {
         const res = await fetch(`${API_BASE_URL}/state`);
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const { animation, color } = await res.json();
 
+        // إذا كان هناك لون ثابت، نظّمه في الواجهة
         if (color) {
             updateUI(color);
             cardElement.style.background = "";
@@ -59,140 +61,152 @@ async function fetchAndApplyState() {
             cardElement.style.background = "";
         }
 
-        // Fade Colors
+        // ——— Fade Colors ———
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
-            lightOneBtn.textContent = 'Fade Colors (Running)';
+            lightOneBtn.textContent = 'Fade Colors (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Fade Colors";
+            colorDisplay.textContent = "Fade Colors";
         } else {
             isAnimationRunning = false;
             lightOneBtn.classList.remove('active');
-            lightOneBtn.textContent = 'Fade Colors';
+            lightOneBtn.textContent = 'Fade Colors';
         }
 
-        // Pulse Sync
+        // ——— Pulse Sync ———
         if (animation === "pulse_sync") {
             isAnimationRunning = true;
             pulseSyncBtn.classList.add('active');
-            pulseSyncBtn.textContent = 'Pulse Sync (Running)';
+            pulseSyncBtn.textContent = 'Pulse Sync (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Pulse Sync";
+            colorDisplay.textContent = "Pulse Sync";
         } else {
             pulseSyncBtn.classList.remove('active');
-            pulseSyncBtn.textContent = 'Pulse Sync';
+            pulseSyncBtn.textContent = 'Pulse Sync';
         }
 
-        // Wave Effect
+        // ——— Wave Effect ———
         if (animation === "wave_effect") {
             isAnimationRunning = true;
             waveEffectBtn.classList.add('active');
-            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Wave Effect";
+            colorDisplay.textContent = "Wave Effect";
         } else {
             waveEffectBtn.classList.remove('active');
-            waveEffectBtn.textContent = 'Wave Effect';
+            waveEffectBtn.textContent = 'Wave Effect';
         }
 
-        // Rainbow Flow
+        // ——— Rainbow Flow ———
         if (animation === "rainbow_flow") {
             isAnimationRunning = true;
             rainbowFlowBtn.classList.add('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Rainbow Flow";
+            colorDisplay.textContent = "Rainbow Flow";
         } else {
             rainbowFlowBtn.classList.remove('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow';
+            rainbowFlowBtn.textContent = 'Rainbow Flow';
         }
 
-        // Blinking Pattern
+        // ——— Blinking Pattern ———
         if (animation === "blinking_pattern") {
             isAnimationRunning = true;
             blinkingPatternBtn.classList.add('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Blinking Pattern";
+            colorDisplay.textContent = "Blinking Pattern";
         } else {
             blinkingPatternBtn.classList.remove('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern';
-        }
-        
-        // Meteor Shower
-        if (animation === "meteor_shower") {
-            isAnimationRunning = true;
-            meteorShowerBtn.classList.add('active');
-            meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Meteor Shower";
-        } else {
-            meteorShowerBtn.classList.remove('active');
-            meteorShowerBtn.textContent = 'Meteor Shower';
+            blinkingPatternBtn.textContent = 'Blinking Pattern';
         }
 
-        // Running Lights
+        // ——— Running Lights ———
         if (animation === "running_lights") {
             isAnimationRunning = true;
             runningLightsBtn.classList.add('active');
-            runningLightsBtn.textContent = 'Running Lights (Running)';
+            runningLightsBtn.textContent = 'Running Lights (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Running Lights";
+            colorDisplay.textContent = "Running Lights";
         } else {
             runningLightsBtn.classList.remove('active');
-            runningLightsBtn.textContent = 'Running Lights';
+            runningLightsBtn.textContent = 'Running Lights';
         }
 
-        // Breathing Effect
+        // ——— Breathing Effect ———
         if (animation === "breathing_effect") {
             isAnimationRunning = true;
             breathingEffectBtn.classList.add('active');
-            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Breathing Effect";
+            colorDisplay.textContent = "Breathing Effect";
         } else {
             breathingEffectBtn.classList.remove('active');
-            breathingEffectBtn.textContent = 'Breathing Effect';
+            breathingEffectBtn.textContent = 'Breathing Effect';
         }
 
-        // Fireworks Burst
+        // ——— Snakes Chasing (كان Meteor Shower) ———
+        if (animation === "meteor_shower") {
+            isAnimationRunning = true;
+            snakesChasingBtn.classList.add('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Snakes Chasing";
+        } else {
+            snakesChasingBtn.classList.remove('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing';
+        }
+
+        // ——— New Meteor Shower (الأفعى الوحيدة) ———
+        if (animation === "single_snake") {
+            isAnimationRunning = true;
+            meteorShowerNewBtn.classList.add('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower";
+        } else {
+            meteorShowerNewBtn.classList.remove('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower';
+        }
+
+        // ——— Fireworks Burst ———
         if (animation === "fireworks_burst") {
             isAnimationRunning = true;
             fireworksBurstBtn.classList.add('active');
-            fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
+            fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Fireworks Burst";
+            colorDisplay.textContent = "Fireworks Burst";
         } else {
             fireworksBurstBtn.classList.remove('active');
-            fireworksBurstBtn.textContent = 'Fireworks Burst';
+            fireworksBurstBtn.textContent = 'Fireworks Burst';
         }
 
     } catch (err) {
         console.error("Error fetching state:", err);
         updateUI('#000000');
         isAnimationRunning = false;
-
         // إزالة أي حالة نشطة على الأزرار
         lightOneBtn.classList.remove('active');
-        lightOneBtn.textContent = 'Fade Colors';
+        lightOneBtn.textContent = 'Fade Colors';
         pulseSyncBtn.classList.remove('active');
-        pulseSyncBtn.textContent = 'Pulse Sync';
+        pulseSyncBtn.textContent = 'Pulse Sync';
         waveEffectBtn.classList.remove('active');
-        waveEffectBtn.textContent = 'Wave Effect';
+        waveEffectBtn.textContent = 'Wave Effect';
         rainbowFlowBtn.classList.remove('active');
-        rainbowFlowBtn.textContent = 'Rainbow Flow';
+        rainbowFlowBtn.textContent = 'Rainbow Flow';
         blinkingPatternBtn.classList.remove('active');
-        blinkingPatternBtn.textContent = 'Blinking Pattern';
-        meteorShowerBtn.classList.remove('active');
-        meteorShowerBtn.textContent = 'Meteor Shower';
+        blinkingPatternBtn.textContent = 'Blinking Pattern';
         runningLightsBtn.classList.remove('active');
-        runningLightsBtn.textContent = 'Running Lights';
+        runningLightsBtn.textContent = 'Running Lights';
         breathingEffectBtn.classList.remove('active');
-        breathingEffectBtn.textContent = 'Breathing Effect';
+        breathingEffectBtn.textContent = 'Breathing Effect';
+        snakesChasingBtn.classList.remove('active');
+        snakesChasingBtn.textContent = 'Snakes Chasing';
+        meteorShowerNewBtn.classList.remove('active');
+        meteorShowerNewBtn.textContent = 'Meteor Shower';
         fireworksBurstBtn.classList.remove('active');
-        fireworksBurstBtn.textContent = 'Fireworks Burst';
-
+        fireworksBurstBtn.textContent = 'Fireworks Burst';
         cardElement.style.background = "";
     }
 }
@@ -210,30 +224,35 @@ async function changeColor(color) {
 // دالة إيقاف الأنيميشن (POST /stop)
 async function stopAnimation() {
     isAnimationRunning = false;
+    // نزيل الحالة النشطة من كل الزرور
     lightOneBtn.classList.remove('active');
-    lightOneBtn.textContent = 'Fade Colors';
+    lightOneBtn.textContent = 'Fade Colors';
     pulseSyncBtn.classList.remove('active');
-    pulseSyncBtn.textContent = 'Pulse Sync';
+    pulseSyncBtn.textContent = 'Pulse Sync';
     waveEffectBtn.classList.remove('active');
-    waveEffectBtn.textContent = 'Wave Effect';
+    waveEffectBtn.textContent = 'Wave Effect';
     rainbowFlowBtn.classList.remove('active');
-    rainbowFlowBtn.textContent = 'Rainbow Flow';
+    rainbowFlowBtn.textContent = 'Rainbow Flow';
     blinkingPatternBtn.classList.remove('active');
-    blinkingPatternBtn.textContent = 'Blinking Pattern';
-    meteorShowerBtn.classList.remove('active');
-    meteorShowerBtn.textContent = 'Meteor Shower';
+    blinkingPatternBtn.textContent = 'Blinking Pattern';
     runningLightsBtn.classList.remove('active');
-    runningLightsBtn.textContent = 'Running Lights';
+    runningLightsBtn.textContent = 'Running Lights';
     breathingEffectBtn.classList.remove('active');
-    breathingEffectBtn.textContent = 'Breathing Effect';
+    breathingEffectBtn.textContent = 'Breathing Effect';
+    snakesChasingBtn.classList.remove('active');
+    snakesChasingBtn.textContent = 'Snakes Chasing';
+    meteorShowerNewBtn.classList.remove('active');
+    meteorShowerNewBtn.textContent = 'Meteor Shower';
     fireworksBurstBtn.classList.remove('active');
-    fireworksBurstBtn.textContent = 'Fireworks Burst';
+    fireworksBurstBtn.textContent = 'Fireworks Burst';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
 }
 
-// عند الضغط على زر Fade Colors
+// ——— الدوال التي تشغل الانيميشنات ———
+
+// Fade Colors
 async function startFadeAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -241,13 +260,13 @@ async function startFadeAnimation() {
     }
     isAnimationRunning = true;
     lightOneBtn.classList.add('active');
-    lightOneBtn.textContent = 'Fade Colors (Running)';
+    lightOneBtn.textContent = 'Fade Colors (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Fade Colors";
+    colorDisplay.textContent = "Fade Colors";
     await sendRequest("/animate", { animation_type: "fade_colors" });
 }
 
-// عند الضغط على زر Pulse Sync
+// Pulse Sync
 async function startPulseSyncAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -255,13 +274,13 @@ async function startPulseSyncAnimation() {
     }
     isAnimationRunning = true;
     pulseSyncBtn.classList.add('active');
-    pulseSyncBtn.textContent = 'Pulse Sync (Running)';
+    pulseSyncBtn.textContent = 'Pulse Sync (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Pulse Sync";
+    colorDisplay.textContent = "Pulse Sync";
     await sendRequest("/animate", { animation_type: "pulse_sync" });
 }
 
-// عند الضغط على زر Wave Effect
+// Wave Effect
 async function startWaveAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -269,13 +288,13 @@ async function startWaveAnimation() {
     }
     isAnimationRunning = true;
     waveEffectBtn.classList.add('active');
-    waveEffectBtn.textContent = 'Wave Effect (Running)';
+    waveEffectBtn.textContent = 'Wave Effect (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Wave Effect";
+    colorDisplay.textContent = "Wave Effect";
     await sendRequest("/animate", { animation_type: "wave_effect" });
 }
 
-// عند الضغط على زر Rainbow Flow
+// Rainbow Flow
 async function startRainbowAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -283,13 +302,13 @@ async function startRainbowAnimation() {
     }
     isAnimationRunning = true;
     rainbowFlowBtn.classList.add('active');
-    rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+    rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Rainbow Flow";
+    colorDisplay.textContent = "Rainbow Flow";
     await sendRequest("/animate", { animation_type: "rainbow_flow" });
 }
 
-// عند الضغط على زر Blinking Pattern
+// Blinking Pattern
 async function startBlinkingPattern() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -297,27 +316,13 @@ async function startBlinkingPattern() {
     }
     isAnimationRunning = true;
     blinkingPatternBtn.classList.add('active');
-    blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+    blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Blinking Pattern";
+    colorDisplay.textContent = "Blinking Pattern";
     await sendRequest("/animate", { animation_type: "blinking_pattern" });
 }
 
-// حدث الضغط على زر Meteor Shower
-async function startMeteorShower() {
-    if (isAnimationRunning) {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    meteorShowerBtn.classList.add('active');
-    meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Meteor Shower";
-    await sendRequest("/animate", { animation_type: "meteor_shower" });
-}
-
-// دالة لتشغيل Running Lights
+// Running Lights
 async function startRunningLights() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -325,13 +330,13 @@ async function startRunningLights() {
     }
     isAnimationRunning = true;
     runningLightsBtn.classList.add('active');
-    runningLightsBtn.textContent = 'Running Lights (Running)';
+    runningLightsBtn.textContent = 'Running Lights (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Running Lights";
+    colorDisplay.textContent = "Running Lights";
     await sendRequest("/animate", { animation_type: "running_lights" });
 }
 
-// ─── تعديل دالة تأثير التنفس لتعمل تلقائيًا دون اختيار لون ───
+// Breathing Effect
 async function startBreathingAnimation() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -339,15 +344,41 @@ async function startBreathingAnimation() {
     }
     isAnimationRunning = true;
     breathingEffectBtn.classList.add('active');
-    breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+    breathingEffectBtn.textContent = 'Breathing Effect (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Breathing Effect";
-    await sendRequest("/animate", { 
-        animation_type: "breathing_effect"
-    });
+    colorDisplay.textContent = "Breathing Effect";
+    await sendRequest("/animate", { animation_type: "breathing_effect" });
 }
 
-// دالة لتشغيل Fireworks Burst
+// Snakes Chasing (كان Meteor Shower)
+async function startSnakesChasing() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    snakesChasingBtn.classList.add('active');
+    snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Snakes Chasing";
+    await sendRequest("/animate", { animation_type: "meteor_shower" });
+}
+
+// ——— الانيميشن الجديد “Meteor Shower” (الأفعى الوحيدة) ———
+async function startSingleSnake() {
+    if (isAnimationRunning) {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    meteorShowerNewBtn.classList.add('active');
+    meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Meteor Shower";
+    await sendRequest("/animate", { animation_type: "single_snake" });
+}
+
+// Fireworks Burst
 async function startFireworksBurst() {
     if (isAnimationRunning) {
         await stopAnimation();
@@ -355,13 +386,13 @@ async function startFireworksBurst() {
     }
     isAnimationRunning = true;
     fireworksBurstBtn.classList.add('active');
-    fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
+    fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Fireworks Burst";
+    colorDisplay.textContent = "Fireworks Burst";
     await sendRequest("/animate", { animation_type: "fireworks_burst" });
 }
 
-// دالة لتحديث واجهة المستخدم إلى اللون المعطى
+// تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
     document.body.style.boxShadow      = `0 0 80px ${color}80 inset`;
@@ -371,50 +402,33 @@ function updateUI(color) {
 }
 
 // ربط الأحداث
-lightOneBtn        .addEventListener("click", startFadeAnimation);
-pulseSyncBtn       .addEventListener("click", startPulseSyncAnimation);
-waveEffectBtn      .addEventListener("click", startWaveAnimation);
-rainbowFlowBtn     .addEventListener("click", startRainbowAnimation);
-blinkingPatternBtn .addEventListener("click", startBlinkingPattern);
-meteorShowerBtn    .addEventListener("click", startMeteorShower);
-runningLightsBtn   .addEventListener("click", startRunningLights);
-breathingEffectBtn .addEventListener("click", startBreathingAnimation);
-fireworksBurstBtn  .addEventListener("click", startFireworksBurst); // تم التعديل
-offBtn             .addEventListener("click", stopAnimation);
-off2Btn            .addEventListener("click", stopAnimation);
+lightOneBtn          .addEventListener("click", startFadeAnimation);
+pulseSyncBtn         .addEventListener("click", startPulseSyncAnimation);
+waveEffectBtn        .addEventListener("click", startWaveAnimation);
+rainbowFlowBtn       .addEventListener("click", startRainbowAnimation);
+blinkingPatternBtn   .addEventListener("click", startBlinkingPattern);
+runningLightsBtn     .addEventListener("click", startRunningLights);
+breathingEffectBtn   .addEventListener("click", startBreathingAnimation);
+// الزر القديم أصبح بإسم startSnakesChasing
+snakesChasingBtn     .addEventListener("click", startSnakesChasing);
+// الزر الجديد “Meteor Shower”
+meteorShowerNewBtn   .addEventListener("click", startSingleSnake);
+fireworksBurstBtn    .addEventListener("click", startFireworksBurst);
+offBtn               .addEventListener("click", stopAnimation);
+off2Btn              .addEventListener("click", stopAnimation);
 
-// تعديل مستمع colorPicker العادي
+// عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
-    if (!isPickingMeteorColor && !isPickingRunningLightsColor) {
-        changeColor(e.target.value);
-    }
+    changeColor(e.target.value);
 });
 
-// عند تحميل الصفحة لأول مرة:
+// عند تحميل الصفحة أول مرة
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchAndApplyState();
     setInterval(fetchAndApplyState, 2000);
 });
 
-// تكويد النجوم المتوهجة
-document.addEventListener("DOMContentLoaded", function () {
-    const starsContainer = document.querySelector(".stars-container");
-    for (let i = 0; i < 20; i++) {
-        let star = document.createElement("div");
-        star.classList.add("star");
-        star.innerHTML = "⋆";
-        star.style.left = Math.random() * window.innerWidth + "px";
-        star.style.top = Math.random() * window.innerHeight + "px";
-        star.style.animationDelay = Math.random() * 3 + "s";
-        star.addEventListener("animationiteration", () => {
-            star.style.left = Math.random() * window.innerWidth + "px";
-            star.style.top = Math.random() * window.innerHeight + "px";
-        });
-        starsContainer.appendChild(star);
-    }
-});
-
-/* SSE لدفع الحالة تلقائيًا */
+// SSE لدفع الحالة تلقائيًا
 const evtSource = new EventSource(`${API_BASE_URL}/stream`);
 evtSource.onmessage = e => {
     try {
@@ -428,112 +442,115 @@ evtSource.onmessage = e => {
             cardElement.style.background = "";
         }
 
-        // fade_colors
+        // … ثم نفس المنطق السابق في fetchAndApplyState()
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             lightOneBtn.classList.add('active');
-            lightOneBtn.textContent = 'Fade Colors (Running)';
+            lightOneBtn.textContent = 'Fade Colors (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Fade Colors";
+            colorDisplay.textContent = "Fade Colors";
         } else {
             lightOneBtn.classList.remove('active');
-            lightOneBtn.textContent = 'Fade Colors';
+            lightOneBtn.textContent = 'Fade Colors';
         }
 
-        // pulse_sync
         if (animation === "pulse_sync") {
             isAnimationRunning = true;
             pulseSyncBtn.classList.add('active');
-            pulseSyncBtn.textContent = 'Pulse Sync (Running)';
+            pulseSyncBtn.textContent = 'Pulse Sync (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Pulse Sync";
+            colorDisplay.textContent = "Pulse Sync";
         } else {
             pulseSyncBtn.classList.remove('active');
-            pulseSyncBtn.textContent = 'Pulse Sync';
+            pulseSyncBtn.textContent = 'Pulse Sync';
         }
 
-        // wave_effect
         if (animation === "wave_effect") {
             isAnimationRunning = true;
             waveEffectBtn.classList.add('active');
-            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Wave Effect";
+            colorDisplay.textContent = "Wave Effect";
         } else {
             waveEffectBtn.classList.remove('active');
-            waveEffectBtn.textContent = 'Wave Effect';
+            waveEffectBtn.textContent = 'Wave Effect';
         }
 
-        // rainbow_flow
         if (animation === "rainbow_flow") {
             isAnimationRunning = true;
             rainbowFlowBtn.classList.add('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Rainbow Flow";
+            colorDisplay.textContent = "Rainbow Flow";
         } else {
             rainbowFlowBtn.classList.remove('active');
-            rainbowFlowBtn.textContent = 'Rainbow Flow';
+            rainbowFlowBtn.textContent = 'Rainbow Flow';
         }
 
-        // blinking_pattern
         if (animation === "blinking_pattern") {
             isAnimationRunning = true;
             blinkingPatternBtn.classList.add('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Blinking Pattern";
+            colorDisplay.textContent = "Blinking Pattern";
         } else {
             blinkingPatternBtn.classList.remove('active');
-            blinkingPatternBtn.textContent = 'Blinking Pattern';
+            blinkingPatternBtn.textContent = 'Blinking Pattern';
         }
 
-        // meteor_shower
-        if (animation === "meteor_shower") {
-            isAnimationRunning = true;
-            meteorShowerBtn.classList.add('active');
-            meteorShowerBtn.textContent = 'Meteor Shower (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Meteor Shower";
-        } else {
-            meteorShowerBtn.classList.remove('active');
-            meteorShowerBtn.textContent = 'Meteor Shower';
-        }
-
-        // running_lights
         if (animation === "running_lights") {
             isAnimationRunning = true;
             runningLightsBtn.classList.add('active');
-            runningLightsBtn.textContent = 'Running Lights (Running)';
+            runningLightsBtn.textContent = 'Running Lights (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Running Lights";
+            colorDisplay.textContent = "Running Lights";
         } else {
             runningLightsBtn.classList.remove('active');
-            runningLightsBtn.textContent = 'Running Lights';
+            runningLightsBtn.textContent = 'Running Lights';
         }
 
-        // breathing_effect
         if (animation === "breathing_effect") {
             isAnimationRunning = true;
             breathingEffectBtn.classList.add('active');
-            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Breathing Effect";
+            colorDisplay.textContent = "Breathing Effect";
         } else {
             breathingEffectBtn.classList.remove('active');
-            breathingEffectBtn.textContent = 'Breathing Effect';
+            breathingEffectBtn.textContent = 'Breathing Effect';
         }
 
-        // fireworks_burst
+        if (animation === "meteor_shower") {
+            isAnimationRunning = true;
+            snakesChasingBtn.classList.add('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Snakes Chasing";
+        } else {
+            snakesChasingBtn.classList.remove('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing';
+        }
+
+        if (animation === "single_snake") {
+            isAnimationRunning = true;
+            meteorShowerNewBtn.classList.add('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower";
+        } else {
+            meteorShowerNewBtn.classList.remove('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower';
+        }
+
         if (animation === "fireworks_burst") {
             isAnimationRunning = true;
             fireworksBurstBtn.classList.add('active');
-            fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
+            fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
             cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Fireworks Burst";
+            colorDisplay.textContent = "Fireworks Burst";
         } else {
             fireworksBurstBtn.classList.remove('active');
-            fireworksBurstBtn.textContent = 'Fireworks Burst';
+            fireworksBurstBtn.textContent = 'Fireworks Burst';
         }
 
     } catch (err) {
