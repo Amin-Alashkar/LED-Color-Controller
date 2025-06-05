@@ -390,9 +390,9 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
 async def fireworks_burst_loop(delay: float = 0.05):
     """
     تأثير الألعاب النارية المعدل:
-    - يبدأ اللون من نهاية الشريط (LED 19) ويتحرك للخلف
-    - عندما يقطع مسافة 10 LEDs، يضيء الشريط كاملاً بنفس اللون لكن بشدة أقل
-    - يتبع اللون الرئيسي ضوءان متدرجا الشدة يطاردانه
+    - النقاط الثلاث الأولى قبل الانفجار تكون بدرجة إضاءة أقل (مثلاً 50% سطوع)
+    - الانفجار نفسه يكون بأقصى سطوع ممكن
+    - بعد الانفجار نضيف تأثير تلاشي تدريجي (Fade-out) لألوان الانفجار
     """
     global stop_requested
     COLORS = [
@@ -406,10 +406,10 @@ async def fireworks_burst_loop(delay: float = 0.05):
     ]
     
     # إعدادات التأثير
-    TRAIL_LENGTH = 10  # المسافة قبل إضاءة الشريط كاملاً
-    CHASERS = 2        # عدد الأضواء المطاردة
-    BASE_BRIGHTNESS = 0.7  # سطوع الضوء الرئيسي
-    CHASER_FACTOR = 0.5    # عامل تخفيف المطاردين
+    PRELAUNCH_POINTS = 3      # عدد النقاط التي تظهر قبل الانفجار
+    PRELAUNCH_BRIGHTNESS = 0.5  # نسبة السطوع للنقاط الأولى (50%)
+    EXPLOSION_BRIGHTNESS = 1.0  # سطوع الانفجار الكامل (100%)
+    FADE_STEPS = 20            # عدد خطوات التلاشي بعد الانفجار
     
     while not stop_requested:
         for color in COLORS:
@@ -421,49 +421,64 @@ async def fireworks_burst_loop(delay: float = 0.05):
             neo.update_strip()
             await asyncio.sleep(0.5)
             
-            # تحريك الضوء من النهاية إلى البداية
-            for pos in range(NUM_LEDS-1, -TRAIL_LENGTH-1, -1):
+            # 1. عرض النقاط الثلاث الأولى بسطوع أقل قبل الانفجار
+            for step_point in range(PRELAUNCH_POINTS):
                 if stop_requested:
                     break
-                    
+                
+                # نحسب موضع النقطة؛ تبدأ من النهاية وتتجه باتجاه البداية
+                pos = NUM_LEDS - 1 - step_point * (NUM_LEDS // PRELAUNCH_POINTS)
+                
                 neo.clear_strip()
-                
-                # 1. رسم الضوء الرئيسي (إذا كان ضمن النطاق)
+                # نرسم النقطة بسطوع PRELAUNCH_BRIGHTNESS
+                r_base = int(color[0] * PRELAUNCH_BRIGHTNESS)
+                g_base = int(color[1] * PRELAUNCH_BRIGHTNESS)
+                b_base = int(color[2] * PRELAUNCH_BRIGHTNESS)
                 if 0 <= pos < NUM_LEDS:
-                    r = int(color[0] * BASE_BRIGHTNESS)
-                    g = int(color[1] * BASE_BRIGHTNESS)
-                    b = int(color[2] * BASE_BRIGHTNESS)
-                    neo.set_led_color(pos, r, g, b)
-                
-                # 2. رسم المطاردين (ضوءان خلف الرئيسي)
-                for c in range(1, CHASERS+1):
-                    chaser_pos = pos + c
-                    if 0 <= chaser_pos < NUM_LEDS:
-                        factor = BASE_BRIGHTNESS * (CHASER_FACTOR ** c)
-                        r = int(color[0] * factor)
-                        g = int(color[1] * factor)
-                        b = int(color[2] * factor)
-                        neo.set_led_color(chaser_pos, r, g, b)
-                
-                # 3. إذا قطع المسافة المطلوبة، نضيء الشريط كاملاً بشدة أقل
-                if pos <= NUM_LEDS - TRAIL_LENGTH:
-                    for i in range(NUM_LEDS):
-                        factor = 0.3  # شدة أقل للشريط كامل
-                        r = int(color[0] * factor)
-                        g = int(color[1] * factor)
-                        b = int(color[2] * factor)
-                        neo.set_led_color(i, r, g, b)
-                
+                    neo.set_led_color(pos, r_base, g_base, b_base)
+                neo.update_strip()
+                await asyncio.sleep(delay * 2)  # نجعلها أبطأ قليلًا لتبقى مرئية
+            
+            if stop_requested:
+                break
+            
+            # 2. الانفجار: نضيء كامل الشريط بأقصى سطوع
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                r = int(color[0] * EXPLOSION_BRIGHTNESS)
+                g = int(color[1] * EXPLOSION_BRIGHTNESS)
+                b = int(color[2] * EXPLOSION_BRIGHTNESS)
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            
+            # نبقى قليلًا على الانفجار الكامل لدرجة السطوع القصوى
+            await asyncio.sleep(0.2)
+            
+            if stop_requested:
+                break
+            
+            # 3. تأثير التلاشي (Fade-out) بعد الانفجار
+            for fade_step in range(FADE_STEPS):
+                if stop_requested:
+                    break
+                factor = 1 - (fade_step / FADE_STEPS)  # يبدأ من 1 (كامل) وحتى 0 (إطفاء)
+                neo.clear_strip()
+                for i in range(NUM_LEDS):
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(i, r, g, b)
                 neo.update_strip()
                 await asyncio.sleep(delay)
             
-            # تأخير قبل الانتقال للون التالي
-            await asyncio.sleep(1)
+            # بعد انتهاء التلاشي، ننظف الشريط قليلًا قبل الانتقال للون التالي
+            neo.clear_strip()
+            neo.update_strip()
+            await asyncio.sleep(0.2)
     
-    # تنظيف الشريط عند التوقف
+    # عندما يُطلَب التوقف تمامًا، نتأكد من إطفاء الأضواء
     neo.clear_strip()
     neo.update_strip()
-
 
 
 
