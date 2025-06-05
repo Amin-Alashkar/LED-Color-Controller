@@ -1,5 +1,3 @@
-# Server.py
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
@@ -144,6 +142,7 @@ async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
             color_index += 1
     neo.clear_strip()
     neo.update_strip()
+
 # ────────────────────────────────────────────────────────────────────
 
 async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
@@ -306,7 +305,7 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
             if snake_index >= total_snakes and not active_snakes:
                 break
 
-        # بعد إنهاء عشر أفاعي، نعيد الدورة تلقائيًّا
+        # بعد إنتهاء عشر أفاعي، نعيد الدورة تلقائيًّا
     neo.clear_strip()
     neo.update_strip()
 
@@ -498,8 +497,6 @@ async def fireworks_burst_loop(delay: float = 0.05):
     neo.clear_strip()
     neo.update_strip()
 
-
-
 async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
     """
     تأثير الشهاب المعدل - أسرع وأطول مع ذيل متوهج
@@ -552,9 +549,55 @@ async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
     neo.clear_strip()
     neo.update_strip()
 
+# ────────────────────────────────────────────────────────────────────
 
+# ——— إضافة دالة الانيميشن الجديد “single_snake_loop” ———
+async def single_snake_loop(delay_per_step: float = 0.0001):
+    """
+    انيميشن الأفعى الوحيدة (Snake One):
+    - تنتظر وقتاً عشوائياً بين 0 و 45 ثانية قبل الانطلاق
+    - تتحرك الأفعى من الـ LED رقم 19 إلى LED رقم -trail_length
+    - سرعتها مضاعفة (لذلك استخدمنا delay_per_step = 0.025 بدلاً من 0.05)
+    - بعد الانتهاء تنتظر مجدداً وقتاً عشوائياً جديداً في الدورة التالية
+    """
+    global stop_requested
+    trail_length = 12  # طول الأفعى (عدد الـ LEDs التي تشكل ذيل الأفعى)
+    while not stop_requested:
+        # ننتظر وقتاً عشوائياً حتى 45 ثانية قبل ظهور الأفعى
+        wait_time = random.uniform(0, 30)
+        await asyncio.sleep(wait_time)
+        
+        # نختار لونًا عشوائياً للأفعى (اختياري، أو يمكنك جعل اللون ثابت)
+        color = (
+            random.randint(100, 255),  # R
+            random.randint(100, 255),  # G
+            random.randint(100, 255)   # B
+        )
+        
+        # نمرر الأفعى عرض الشريط مرة واحدة:
+        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
+            if stop_requested:
+                break
+            
+            neo.clear_strip()
+            # رسم الأفعى ذي الطول trail_length
+            for t in range(trail_length):
+                led_pos = head_pos + t
+                if 0 <= led_pos < NUM_LEDS:
+                    # نحسب عامل التلاشي في الذيل
+                    factor = (trail_length - t) / trail_length
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(led_pos, r, g, b)
+            
+            neo.update_strip()
+            # بما أن سرعة ×2 من النسخة العادية، قمنا بتقليل الوقت إلى delay_per_step
+            await asyncio.sleep(delay_per_step)
 
-
+    # عند طلب التوقف، نتأكد من إطفاء الشريط نهائياً
+    neo.clear_strip()
+    neo.update_strip()
 
 # ────────────────────────────────────────────────────────────────────
 
@@ -566,6 +609,7 @@ async def animation_worker():
                 req = animation_queue.popleft()
             stop_requested = False
             current_anim = req.animation_type
+
             if req.animation_type == "light_one_by_one":
                 while not stop_requested:
                     await light_up_one_by_one(req.color_index)
@@ -589,6 +633,11 @@ async def animation_worker():
                 await fireworks_burst_loop()
             elif req.animation_type == "meteor_shower_modified":
                 await meteor_shower_modified_loop()
+
+            # ——— الفرع الجديد لـ “single_snake” ———
+            elif req.animation_type == "single_snake":
+                await single_snake_loop()
+
             elif req.animation_type == "solid_color":
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
@@ -598,7 +647,7 @@ async def animation_worker():
                         neo.set_led_color(i, r, g, b)
                     neo.update_strip()
                 stop_requested = True
-                
+
         await asyncio.sleep(0.1)
 
 @app.on_event("startup")
