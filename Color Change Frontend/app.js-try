@@ -33,6 +33,15 @@ const cardElement          = document.querySelector('.card');
 let isAnimationRunning = false;
 let currentAnim = null;
 
+// ── NEW: “Fade Colors (Custom)” button under Create Your Own ──
+const customFadeBtn       = document.getElementById('customFadeBtn');
+
+// (You already have other “Create Your Own” buttons—no need to change them unless you want to wire them up.)
+// const fadeColorsBtn           = document.getElementById('fadeColorsBtn');
+// const blinkingPatternBtnCO    = document.getElementById('blinkingPatternBtn');
+// … etc.
+
+// ───────────────────────────────────────────────────────
 // نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
     try {
@@ -64,7 +73,7 @@ async function fetchAndApplyState() {
             cardElement.style.background = "";
         }
 
-        // ——— Fade Colors ———
+        // ——— Fade Colors (built‑in) ———
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             currentAnim = "fade_colors";
@@ -155,7 +164,7 @@ async function fetchAndApplyState() {
             breathingEffectBtn.textContent = 'Breathing Effect';
         }
 
-        // ——— Snakes Chasing (كان Meteor Shower) ———
+        // ——— Snakes Chasing (Meteor Shower built‑in) ———
         if (animation === "meteor_shower") {
             isAnimationRunning = true;
             currentAnim = "meteor_shower";
@@ -168,7 +177,7 @@ async function fetchAndApplyState() {
             snakesChasingBtn.textContent = 'Snakes Chasing';
         }
 
-        // ——— New Meteor Shower (الأفعى الوحيدة) ———
+        // ——— New Meteor Shower (single_snake built‑in) ———
         if (animation === "single_snake") {
             isAnimationRunning = true;
             currentAnim = "single_snake";
@@ -192,6 +201,22 @@ async function fetchAndApplyState() {
         } else {
             fireworksBurstBtn.classList.remove('active');
             fireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+        // ── NEW: Custom Fade Colors from “Create Your Own” ──
+        if (animation === "custom_fade") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fade";
+            customFadeBtn.classList.add('active');
+            customFadeBtn.textContent = 'Fade Colors (Custom) (Running)';
+            cardElement.style.background = "#000000";
+
+            // show the literal text “Fade Colors (Custom)” in the colorDisplay
+            colorDisplay.textContent = "Fade Colors (Custom)";
+            // We do NOT override the color ring here because the loop itself is handling the fade.
+        } else {
+            customFadeBtn.classList.remove('active');
+            customFadeBtn.textContent = 'Fade Colors (Custom)';
         }
 
     } catch (err) {
@@ -220,6 +245,8 @@ async function fetchAndApplyState() {
         meteorShowerNewBtn.textContent = 'Meteor Shower';
         fireworksBurstBtn.classList.remove('active');
         fireworksBurstBtn.textContent = 'Fireworks Burst';
+        customFadeBtn.classList.remove('active');
+        customFadeBtn.textContent = 'Fade Colors (Custom)';
         cardElement.style.background = "";
     }
 }
@@ -259,6 +286,10 @@ async function stopAnimation() {
     meteorShowerNewBtn.textContent = 'Meteor Shower';
     fireworksBurstBtn.classList.remove('active');
     fireworksBurstBtn.textContent = 'Fireworks Burst';
+    // ── NEW: clear customFadeBtn too
+    customFadeBtn.classList.remove('active');
+    customFadeBtn.textContent = 'Fade Colors (Custom)';
+
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -266,12 +297,11 @@ async function stopAnimation() {
 
 // ——— الدوال التي تشغل الانيميشنات ———
 
-// Fade Colors
+// Fade Colors (built‑in)
 async function startFadeAnimation() {
     if (isAnimationRunning && currentAnim !== "fade_colors") {
         await stopAnimation();
     }
-    // إذا كانت نفس الانيميشن تعمل حاليًا، نوقفها
     if (isAnimationRunning && currentAnim === "fade_colors") {
         await stopAnimation();
         return;
@@ -393,7 +423,7 @@ async function startBreathingAnimation() {
     await sendRequest("/animate", { animation_type: "breathing_effect" });
 }
 
-// Snakes Chasing (كان Meteor Shower)
+// Snakes Chasing (Meteor Shower built‑in)
 async function startSnakesChasing() {
     if (isAnimationRunning && currentAnim !== "meteor_shower") {
         await stopAnimation();
@@ -447,6 +477,31 @@ async function startFireworksBurst() {
     await sendRequest("/animate", { animation_type: "fireworks_burst" });
 }
 
+// ── NEW: startCustomFadeAnimation() ──
+// This reads the current colorPicker value and sends it to the backend 
+// under animation_type = "custom_fade". We label the UI as “Fade Colors (Custom)”.
+async function startCustomFadeAnimation() {
+    const chosenColor = colorPicker.value;
+    // If some other animation is running and it's NOT custom_fade, stop it first.
+    if (isAnimationRunning && currentAnim !== "custom_fade") {
+        await stopAnimation();
+    }
+    // If already in custom_fade, a second click should stop it.
+    if (isAnimationRunning && currentAnim === "custom_fade") {
+        await stopAnimation();
+        return;
+    }
+    // Start custom fade
+    isAnimationRunning = true;
+    currentAnim = "custom_fade";
+    customFadeBtn.classList.add('active');
+    customFadeBtn.textContent = 'Fade Colors (Custom) (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Fade Colors (Custom)";
+    // Send the chosen hex color to the backend:
+    await sendRequest("/animate", { animation_type: "custom_fade", hex_color: chosenColor });
+}
+
 // تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -471,6 +526,9 @@ meteorShowerNewBtn   .addEventListener("click", startSingleSnake);
 fireworksBurstBtn    .addEventListener("click", startFireworksBurst);
 offBtn               .addEventListener("click", stopAnimation);
 off2Btn              .addEventListener("click", stopAnimation);
+
+// ── NEW: bind customFadeBtn ──
+customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
 
 // عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
@@ -497,7 +555,7 @@ evtSource.onmessage = e => {
             cardElement.style.background = "";
         }
 
-        // ——— نفس المنطق الموجود في fetchAndApplyState() ———
+        // ——— replicate the same logic as fetchAndApplyState() ———
 
         if (animation === "fade_colors") {
             isAnimationRunning = true;
@@ -617,6 +675,19 @@ evtSource.onmessage = e => {
         } else {
             fireworksBurstBtn.classList.remove('active');
             fireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+        // ── NEW: handle “custom_fade” via SSE ──
+        if (animation === "custom_fade") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fade";
+            customFadeBtn.classList.add('active');
+            customFadeBtn.textContent = 'Fade Colors (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors (Custom)";
+        } else {
+            customFadeBtn.classList.remove('active');
+            customFadeBtn.textContent = 'Fade Colors (Custom)';
         }
 
     } catch (err) {
