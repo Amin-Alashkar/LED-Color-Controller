@@ -1,13 +1,8 @@
-  INFO   192.168.1.204:55850 - "POST /animate HTTP/1.1" 200
-      INFO   192.168.1.204:55850 - "GET /state HTTP/1.1" 200
-      INFO   192.168.1.204:55850 - "GET /state HTTP/1.1" 200
-Task exception was never retrieved
-future: <Task finished name='Task-3' coro=<animation_worker() done, defined at /home/student/pixel_project/server.py:555> exception=AttributeError("'Pi5Neo' object has no attribute 'strip'")>
-Traceback (most recent call last):
-  File "/home/student/pixel_project/server.py", line 583, in animation_worker
-    await fireworks_burst_loop()
-  File "/home/student/pixel_project/server.py", line 470, in fireworks_burst_loop
-    r, g, b = neo.strip[i]  # بافتراض أنّ Pi5Neo يتيح الوصول للمصفوفة حالياً
-              ^^^^^^^^^
-AttributeError: 'Pi5Neo' object has no attribute 'strip'
-      INFO   192.168.1.204:55850 - "GET /state HTTP/1.1" 200
+بدي كل مايخلص انفجار يجي يلي بعده ويلي بعده الى ما لانهايه
+الانميشن انا قلت لك لازم تكون لما يوصل الصاروخ الى المنتصف كل الضواء تصير بي نفس لون الصاروخ مره فجاه مثال:
+◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎
+◉◉◉◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎◎
+↑↑↑ ⇢⇢⇢⇢⇢
+لما الصاروخ يوصل المنتصف:
+◎◎◎◎◎◎◎◎◉◉◉◎◎◎◎◎◎◎◎◎
+◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉◉
