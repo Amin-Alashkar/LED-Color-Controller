@@ -391,18 +391,18 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
 
 async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 10):
     """
-    تأثير ألعاب نارية “صاروخ” واحد، مع سطوع مُقسَّم:
+    تأثير ألعاب نارية “صاروخ” متكرر إلى ما لا نهاية:
     1. الصاروخ (رأس + ذيل) يسير من LED رقم 19 إلى منتصف الشريط (NUM_LEDS//2).
        - رأس الصاروخ يكون بنصف السطوع طوال الرحلة.
-       - ذيل الصاروخ مكوَّن من 5 نقاط، كل نقطة أضعف تدريجياً (بنسبة نصف السطوع عند الرأس، ثم تقل).
-    2. عندما يصل الرأس إلى المنتصف:
-       - نضيء رأس الصاروخ فجأة بسطوع كامل (بنفس لون الصاروخ).
-       - نبقيه لوهلة قصيرة ثم يبدأ الانفجار.
+       - ذيل الصاروخ مكوَّن من 5 نقاط، كل نقطة أضعف تدريجيًا (بنسبة نصف سطوع الرأس ثم تقل).
+    2. عندما يصل الرأس إلى منتصف الشريط:
+       - تضيء جميع المصابيح دفعة واحدة بنفس لون الصاروخ وبأقصى سطوع.
+       - نبقيها لوهلة قصيرة ثم يبدأ الانفجار.
     3. الانفجار:
-       - ينتشر من منتصف الشريط إلى الطرفين في 5 طبقات (trail_length = 5) بلون الصاروخ وبأقصى سطوع.
+       - ينتشر من منتصف الشريط إلى الأطراف في 5 طبقات (trail_length = 5) بنفس لون الصاروخ وبسطوع كامل.
     4. التلاشي:
        - بعد اكتمال الانفجار، تتلاشى الأضواء من أقصى سطوع إلى إطفاء خلال fade_steps خطوات.
-    5. عند الانتهاء، نُعيّن stop_requested = True حتى ينتهي العامل (animation_worker) ويصبح جاهزاً لطلب جديد.
+    5. يعود الصاروخ من جديد (loop) طالما لم يُطلَب الإيقاف (stop_requested == False).
     """
     global stop_requested
 
@@ -421,97 +421,112 @@ async def fireworks_burst_loop(delay_per_step: float = 0.02, fade_steps: int = 1
         (255, 150,   0),   # برتقالي
     ]
 
-    # نختار لون الصاروخ عشوائياً
-    rocket_color = random.choice(COLORS)
+    while not stop_requested:
+        # نختار لون الصاروخ عشوائيًا في كل دورة
+        rocket_color = random.choice(COLORS)
 
-    # ----------------------------------------
-    # 1) مرحلة انطلاق الصاروخ برأس بسطوع 50% (factor = 0.5)
-    # ----------------------------------------
-    for pos in range(total_leds - 1, mid - 1, -1):
+        # -------------------------------
+        # 1) مرحلة انطلاق الصاروخ (رأس بسطوع 50% + ذيل من 5 نقاط)
+        # -------------------------------
+        for pos in range(total_leds - 1, mid - 1, -1):
+            if stop_requested:
+                neo.clear_strip()
+                neo.update_strip()
+                return
+
+            neo.clear_strip()
+
+            # رسم ذيل الصاروخ: خمس نقاط خلف الرأس، سطوعها يبدأ عند 0.5 ثم يقل تدريجيًا
+            for t in range(trail_length):
+                trail_pos = pos + t
+                if 0 <= trail_pos < total_leds:
+                    # عامل الذيل: رأس الصاروخ يضيء بـ 0.5، والنقاط الخلفية:
+                    # النقطة الأولى خلف الرأس: 0.5 * (1 - 1/5) = 0.4
+                    # النقطة الثانية: 0.5 * (1 - 2/5) = 0.3، وهكذا.
+                    factor = 0.5 * (1 - (t + 1) / trail_length)
+                    r = int(rocket_color[0] * factor)
+                    g = int(rocket_color[1] * factor)
+                    b = int(rocket_color[2] * factor)
+                    neo.set_led_color(trail_pos, r, g, b)
+
+            # رسم رأس الصاروخ عند pos بسطوع 50%
+            if 0 <= pos < total_leds:
+                r_head = int(rocket_color[0] * 0.5)
+                g_head = int(rocket_color[1] * 0.5)
+                b_head = int(rocket_color[2] * 0.5)
+                neo.set_led_color(pos, r_head, g_head, b_head)
+
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+        # -------------------------------
+        # 2) عند وصول الرأس إلى منتصف الشريط: نضيء جميع المصابيح دفعة واحدة بسطوع 100%
+        # -------------------------------
         if stop_requested:
+            neo.clear_strip()
+            neo.update_strip()
             return
 
         neo.clear_strip()
-
-        # نرسم ذيل الصاروخ: خمس نقاط، سطوعها يبدأ عند 50% ثم يقل تدريجياً حتى النقطة الخامسة
-        for t in range(trail_length):
-            trail_pos = pos + t
-            if 0 <= trail_pos < total_leds:
-                # الحساب: رأس الصاروخ سطوعه 0.5، والنقاط الخلفية:
-                # النقطة الأولى خلف الرأس: 0.5 * (1 - 1/5) = 0.4
-                # الثانية: 0.5 * (1 - 2/5) = 0.3، وهكذا.
-                factor = 0.5 * (1 - (t + 1) / (trail_length + 0))  # t+1 لان الذيل يبدأ خلف الرأس
-                r = int(rocket_color[0] * factor)
-                g = int(rocket_color[1] * factor)
-                b = int(rocket_color[2] * factor)
-                neo.set_led_color(trail_pos, r, g, b)
-
-        # نرسم رأس الصاروخ عند pos بسطوع 50%
-        if 0 <= pos < total_leds:
-            r_head = int(rocket_color[0] * 0.5)
-            g_head = int(rocket_color[1] * 0.5)
-            b_head = int(rocket_color[2] * 0.5)
-            neo.set_led_color(pos, r_head, g_head, b_head)
-
+        # أضاءة كاملة (100%) لجميع LEDs بنفس لون الصاروخ
+        for i in range(total_leds):
+            neo.set_led_color(i, *rocket_color)
         neo.update_strip()
-        await asyncio.sleep(delay_per_step)
+        await asyncio.sleep(delay_per_step * 2)  # نبقيها للحظة قبل الانفجار
 
-    # ----------------------------------------
-    # 2) عند الوصول إلى المنتصف: نضيء الرأس فجأة بسطوع 100%
-    # ----------------------------------------
-    if not stop_requested:
+        # -------------------------------
+        # 3) مرحلة الانفجار (5 طبقات) بنفس لون الصاروخ وبسطوع 100%
+        # -------------------------------
+        explosion_state = [(0, 0, 0)] * total_leds
+        for d in range(trail_length):
+            if stop_requested:
+                neo.clear_strip()
+                neo.update_strip()
+                return
+
+            left_idx = mid - d
+            right_idx = mid + d
+
+            if 0 <= left_idx < total_leds:
+                explosion_state[left_idx] = rocket_color
+            if 0 <= right_idx < total_leds:
+                explosion_state[right_idx] = rocket_color
+
+            neo.clear_strip()
+            for i, (r0, g0, b0) in enumerate(explosion_state):
+                neo.set_led_color(i, r0, g0, b0)
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+        # -------------------------------
+        # 4) مرحلة التلاشي: من سطوع 100% إلى 0 خلال fade_steps خطوات
+        # -------------------------------
+        for fs in range(fade_steps):
+            if stop_requested:
+                neo.clear_strip()
+                neo.update_strip()
+                return
+
+            factor = 1.0 - (fs / (fade_steps - 1))  # من 1.0 إلى 0.0
+            neo.clear_strip()
+            for i, (r_base, g_base, b_base) in enumerate(explosion_state):
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step / 2)
+
+        # -------------------------------
+        # 5) استراحة قصيرة قبل الدورة التالية
+        # -------------------------------
         neo.clear_strip()
-        # اضاءًة فورية بسطوع كامل
-        neo.set_led_color(mid, *rocket_color)
         neo.update_strip()
-        await asyncio.sleep(delay_per_step * 2)  # نبقيه للحظة قبل الانفجار
+        await asyncio.sleep(delay_per_step * 3)
 
-    # ----------------------------------------
-    # 3) مرحلة الانفجار (5 طبقات) بنفس لون الصاروخ وبسطوع كامل
-    # ----------------------------------------
-    explosion_state = [(0, 0, 0)] * total_leds
-    for d in range(trail_length):
-        if stop_requested:
-            return
-
-        left_idx = mid - d
-        right_idx = mid + d
-
-        if 0 <= left_idx < total_leds:
-            explosion_state[left_idx] = rocket_color
-        if 0 <= right_idx < total_leds:
-            explosion_state[right_idx] = rocket_color
-
-        neo.clear_strip()
-        for i, (r0, g0, b0) in enumerate(explosion_state):
-            neo.set_led_color(i, r0, g0, b0)
-        neo.update_strip()
-        await asyncio.sleep(delay_per_step)
-
-    # ----------------------------------------
-    # 4) تلاشي الانفجار: من سطوع 100% إلى 0 خلال fade_steps خطوات
-    # ----------------------------------------
-    for fs in range(fade_steps):
-        if stop_requested:
-            return
-
-        factor = 1.0 - (fs / (fade_steps - 1))
-        neo.clear_strip()
-        for i, (r_base, g_base, b_base) in enumerate(explosion_state):
-            r = int(r_base * factor)
-            g = int(g_base * factor)
-            b = int(b_base * factor)
-            neo.set_led_color(i, r, g, b)
-        neo.update_strip()
-        await asyncio.sleep(delay_per_step / 2)
-
-    # ----------------------------------------
-    # 5) بعد الانتهاء: نطفي الشريط ونوقّف الأنيميشن
-    # ----------------------------------------
+    # عند طلب الإيقاف (stop_requested==True) نطفي الشريط نهائيًا
     neo.clear_strip()
     neo.update_strip()
-    stop_requested = True
-
 async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
     """
     تأثير الشهاب المعدل - أسرع وأطول مع ذيل متوهج
