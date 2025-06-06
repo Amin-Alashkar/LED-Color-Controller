@@ -1,32 +1,32 @@
-# ─── START AUTOMATIC SERVERS AT BOOT ───
-
-# بس نضمن إنه لما الجهاز يقلع ويتصل بالشاشة (tty1)، ما يشغّل ولا أمر أكثر من مرة:
 if [ "$(tty)" = "/dev/tty1" ]; then
 
-  # 1. تشفير UTF-8 لبايثون (إذا تحتاجه)
+
   export PYTHONIOENCODING=utf-8
 
-  # 2. نروح لمجلّد المشروع
-  cd /home/pi/pixel_project/
 
-  # 3. نفعّل الـvirtual environment لو موجود
-  #    (غيّر .venv لمجلّد الـvenv حقّك إذا اسمه مختلف)
+  cd /home/student/pixel_project/LED-Color-Controller
   source .venv/bin/activate
 
-  # 4. نشغّل FastAPI مع uvicorn في الخلفية
-  #    (server:app لازم يتطابق مع اسم ملفك والمتغيّر في server.py)
+
+
   uvicorn server:app --host 0.0.0.0 --port 8000 &
 
-  # 5. ننتظر ثواني بسيطة عشان يتأكد الـbackend اشتغل (اختياري)
+
   sleep 2
 
-  # 6. ننتقل لمجلّد الفرونت‑إند
-  cd /home/pi/pixel_project/frontend/
 
-  # 7. نشغّل http‑server على البورت 5500 (متشابه مع Live Server)
-  http-server -c-1 -p 5500 &
+  cd Color Change Frontend
 
-  # -c-1 يعني بدون “cache” حتى تضمن أنك تشوف آخر تحديث للصفحات بدون تحتاج تعيد التحميل بالقوة.
+  http-server -c-1 -p 5501 &
+
+  
 fi
 
-# ───── END AUTOMATIC SERVERS ─────
+
+and it says"bash: .venv/bin/activate: No such file or directory
+bash: uvicorn: command not found
+bash: cd: too many arguments
+bash: http-server: command not found
+[1]+  Exit 127                http-server -c-1 -p 5501
+student@raspberrypi:~/pixel_project/LED-Color-Controller $ 
+"
