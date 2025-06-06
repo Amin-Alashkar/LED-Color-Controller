@@ -1,10 +1,1 @@
-(.venv) student@raspberrypi:~/pixel_project $ crontab -e
-no crontab for student - using an empty one
-
-Select an editor.  To change later, run 'select-editor'.
-  1. /bin/nano        <---- easiest
-  2. /usr/bin/vim.tiny
-  3. /usr/bin/code
-  4. /bin/ed
-
-Choose 1-4 [1]: 
+40 13 * * * /usr/bin/python3 /home/student/pixel_project/turn_off_lights.py >> /home/student/pixel_project/cron_log.txt 2>&1
