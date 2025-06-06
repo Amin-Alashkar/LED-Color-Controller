@@ -1,18 +1,12 @@
-if [ "$(tty)" = "/dev/tty1" ]; then
-  export PYTHONIOENCODING=utf-8
+#!/usr/bin/env python3
+import requests
 
-  # تفعيل البيئة الافتراضية
-  cd /home/student/pixel_project
-  source .venv/bin/activate
+# إذا السيرفر يعمل على الـPi نفسه، نستخدم localhost
+url = "http://localhost:8000/color"
+data = {"hex_color": "#000000"}
 
-  # تشغيل السيرفر من مكان وجود server.py
-  uvicorn server:app --host 0.0.0.0 --port 8000 &
-
-  sleep 2
-
-  # تشغيل الواجهة الأمامية
-  cd "LED-Color-Controller/Color Change Frontend"
-
-  # تأكد أنك مثبت http-server عبر npm
-  http-server -c-1 -p 5501 &
-fi
+try:
+    res = requests.post(url, json=data, timeout=5)
+    print(f"Request sent at 12:33, status: {res.status_code}, response: {res.text}")
+except Exception as e:
+    print(f"Error sending request: {e}")
