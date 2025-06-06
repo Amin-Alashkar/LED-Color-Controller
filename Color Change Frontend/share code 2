@@ -30,3 +30,6 @@ bash: http-server: command not found
 [1]+  Exit 127                http-server -c-1 -p 5501
 student@raspberrypi:~/pixel_project/LED-Color-Controller $ 
 "
+
+
+source .venv/bin/activate
