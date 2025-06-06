@@ -24,7 +24,7 @@ const meteorShowerNewBtn   = document.getElementById('MeteorShowerNewBtn');
 
 const pulseSyncBtn         = document.getElementById('PulseSyncBtn');
 const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn');
-const customBreathingBtn = document.getElementById('customBreathingBtn');
+const customBreathingBtn   = document.getElementById('customBreathingBtn');
 
 const cardElement          = document.querySelector('.card');
 
@@ -32,13 +32,31 @@ let isAnimationRunning = false;
 let currentAnim = null;
 
 // ─── NEW: زرّ “Fade Colors (Custom)” ───
-const customFadeBtn       = document.getElementById('customFadeBtn');
-
-
+const customFadeBtn             = document.getElementById('customFadeBtn');
 // ─── NEW: زرّ “Blinking Pattern (Custom)” ───
-const customBlinkBtn = document.getElementById('customBlinkBtn');
+const customBlinkBtn            = document.getElementById('customBlinkBtn');
+// ─── NEW: زرّ “Breathing Effect (Custom)” ───
+const customBreathingBtn2       = document.getElementById('customBreathingBtn');
 
-
+// ─── NEW: باقي أزرار Create Your Own ───
+const customMeteorShowerBtn     = document.getElementById('customMeteorShowerBtn');
+const customPulseSyncBtn        = document.getElementById('customPulseSyncBtn');
+const customGlitchFlashBtn      = document.getElementById('customGlitchFlashBtn');
+const customHeartBeatBtn        = document.getElementById('customHeartBeatBtn');
+const customTunnelEffectBtn     = document.getElementById('customTunnelEffectBtn');
+const customLaserShotBtn        = document.getElementById('customLaserShotBtn');
+const customSparklingStarsBtn   = document.getElementById('customSparklingStarsBtn');
+const customStrobeFlashBtn      = document.getElementById('customStrobeFlashBtn');
+const customKnightRiderBtn      = document.getElementById('customKnightRiderBtn');
+const customBounceBackBtn       = document.getElementById('customBounceBackBtn');
+const customRippleTouchBtn      = document.getElementById('customRippleTouchBtn');
+const customFireFlickerBtn      = document.getElementById('customFireFlickerBtn');
+const customColorWipeBtn        = document.getElementById('customColorWipeBtn');
+const customStaticGlowBtn       = document.getElementById('customStaticGlowBtn');
+const customColorEchoBtn        = document.getElementById('customColorEchoBtn');
+const customTimeWarpBtn         = document.getElementById('customTimeWarpBtn');
+const customQuantumFlickerBtn   = document.getElementById('customQuantumFlickerBtn');
+const customRunningLightsBtn2   = document.getElementById('customRunningLightsBtn');
 
 // نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
@@ -62,7 +80,6 @@ async function fetchAndApplyState() {
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const { animation, color } = await res.json();
 
-        // إذا كان هناك لون ثابت، نظّمه في الواجهة
         if (color) {
             updateUI(color);
             cardElement.style.background = "";
@@ -214,7 +231,7 @@ async function fetchAndApplyState() {
             customFadeBtn.textContent = 'Fade Colors - Custom';
         }
 
-        // ──── NEW: حالة “custom_blink” ────
+        // ──── NEW: Custom Blinking ────
         if (animation === "custom_blink") {
             isAnimationRunning = true;
             currentAnim = "custom_blink";
@@ -226,19 +243,253 @@ async function fetchAndApplyState() {
             customBlinkBtn.classList.remove('active');
             customBlinkBtn.textContent = 'Blinking - Custom';
         }
+
+        // ──── NEW: Custom Breathing ────
         if (animation === "custom_breathing") {
             isAnimationRunning = true;
             currentAnim = "custom_breathing";
-            customBreathingBtn.classList.add('active');
-            customBreathingBtn.textContent = 'Breathing Effect - Custom (Running)';
+            customBreathingBtn2.classList.add('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom (Running)';
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Breathing Effect - Custom";
         } else {
-            customBreathingBtn.classList.remove('active');
-            customBreathingBtn.textContent = 'Breathing Effect - Custom';
+            customBreathingBtn2.classList.remove('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom';
         }
 
+        // ──── NEW: Custom Meteor Shower ────
+        if (animation === "custom_meteor_shower") {
+            isAnimationRunning = true;
+            currentAnim = "custom_meteor_shower";
+            customMeteorShowerBtn.classList.add('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower - Custom";
+        } else {
+            customMeteorShowerBtn.classList.remove('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower';
+        }
 
+        // ──── NEW: Custom Pulse Sync ────
+        if (animation === "custom_pulse_sync") {
+            isAnimationRunning = true;
+            currentAnim = "custom_pulse_sync";
+            customPulseSyncBtn.classList.add('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Pulse Sync - Custom";
+        } else {
+            customPulseSyncBtn.classList.remove('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync';
+        }
+
+        // ──── NEW: Custom Glitch Flash ────
+        if (animation === "custom_glitch_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_glitch_flash";
+            customGlitchFlashBtn.classList.add('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Glitch Flash - Custom";
+        } else {
+            customGlitchFlashBtn.classList.remove('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash';
+        }
+
+        // ──── NEW: Custom Heart Beat ────
+        if (animation === "custom_heart_beat") {
+            isAnimationRunning = true;
+            currentAnim = "custom_heart_beat";
+            customHeartBeatBtn.classList.add('active');
+            customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Heart Beat - Custom";
+        } else {
+            customHeartBeatBtn.classList.remove('active');
+            customHeartBeatBtn.textContent = 'Heart Beat';
+        }
+
+        // ──── NEW: Custom Tunnel Effect ────
+        if (animation === "custom_tunnel_effect") {
+            isAnimationRunning = true;
+            currentAnim = "custom_tunnel_effect";
+            customTunnelEffectBtn.classList.add('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Tunnel Effect - Custom";
+        } else {
+            customTunnelEffectBtn.classList.remove('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect';
+        }
+
+        // ──── NEW: Custom Laser Shot ────
+        if (animation === "custom_laser_shot") {
+            isAnimationRunning = true;
+            currentAnim = "custom_laser_shot";
+            customLaserShotBtn.classList.add('active');
+            customLaserShotBtn.textContent = 'Laser Shot (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Laser Shot - Custom";
+        } else {
+            customLaserShotBtn.classList.remove('active');
+            customLaserShotBtn.textContent = 'Laser Shot';
+        }
+
+        // ──── NEW: Custom Sparkling Stars ────
+        if (animation === "custom_sparkling_stars") {
+            isAnimationRunning = true;
+            currentAnim = "custom_sparkling_stars";
+            customSparklingStarsBtn.classList.add('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Sparkling Stars - Custom";
+        } else {
+            customSparklingStarsBtn.classList.remove('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars';
+        }
+
+        // ──── NEW: Custom Strobe Flash ────
+        if (animation === "custom_strobe_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_strobe_flash";
+            customStrobeFlashBtn.classList.add('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Strobe Flash - Custom";
+        } else {
+            customStrobeFlashBtn.classList.remove('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash';
+        }
+
+        // ──── NEW: Custom Knight Rider ────
+        if (animation === "custom_knight_rider") {
+            isAnimationRunning = true;
+            currentAnim = "custom_knight_rider";
+            customKnightRiderBtn.classList.add('active');
+            customKnightRiderBtn.textContent = 'Knight Rider (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Knight Rider - Custom";
+        } else {
+            customKnightRiderBtn.classList.remove('active');
+            customKnightRiderBtn.textContent = 'Knight Rider';
+        }
+
+        // ──── NEW: Custom Bounce Back ────
+        if (animation === "custom_bounce_back") {
+            isAnimationRunning = true;
+            currentAnim = "custom_bounce_back";
+            customBounceBackBtn.classList.add('active');
+            customBounceBackBtn.textContent = 'Bounce Back (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Bounce Back - Custom";
+        } else {
+            customBounceBackBtn.classList.remove('active');
+            customBounceBackBtn.textContent = 'Bounce Back';
+        }
+
+        // ──── NEW: Custom Ripple Touch ────
+        if (animation === "custom_ripple_touch") {
+            isAnimationRunning = true;
+            currentAnim = "custom_ripple_touch";
+            customRippleTouchBtn.classList.add('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Ripple Touch - Custom";
+        } else {
+            customRippleTouchBtn.classList.remove('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch';
+        }
+
+        // ──── NEW: Custom Fire Flicker ────
+        if (animation === "custom_fire_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fire_flicker";
+            customFireFlickerBtn.classList.add('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fire Flicker - Custom";
+        } else {
+            customFireFlickerBtn.classList.remove('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker';
+        }
+
+        // ──── NEW: Custom Color Wipe ────
+        if (animation === "custom_color_wipe") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_wipe";
+            customColorWipeBtn.classList.add('active');
+            customColorWipeBtn.textContent = 'Color Wipe (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Wipe - Custom";
+        } else {
+            customColorWipeBtn.classList.remove('active');
+            customColorWipeBtn.textContent = 'Color Wipe';
+        }
+
+        // ──── NEW: Custom Static Glow with Flicker ────
+        if (animation === "custom_static_glow") {
+            isAnimationRunning = true;
+            currentAnim = "custom_static_glow";
+            customStaticGlowBtn.classList.add('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Static Glow with Flicker - Custom";
+        } else {
+            customStaticGlowBtn.classList.remove('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+        }
+
+        // ──── NEW: Custom Color Echo ────
+        if (animation === "custom_color_echo") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_echo";
+            customColorEchoBtn.classList.add('active');
+            customColorEchoBtn.textContent = 'Color Echo (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Echo - Custom";
+        } else {
+            customColorEchoBtn.classList.remove('active');
+            customColorEchoBtn.textContent = 'Color Echo';
+        }
+
+        // ──── NEW: Custom Time Warp ────
+        if (animation === "custom_time_warp") {
+            isAnimationRunning = true;
+            currentAnim = "custom_time_warp";
+            customTimeWarpBtn.classList.add('active');
+            customTimeWarpBtn.textContent = 'Time Warp (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Time Warp - Custom";
+        } else {
+            customTimeWarpBtn.classList.remove('active');
+            customTimeWarpBtn.textContent = 'Time Warp';
+        }
+
+        // ──── NEW: Custom Quantum Flicker ────
+        if (animation === "custom_quantum_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_quantum_flicker";
+            customQuantumFlickerBtn.classList.add('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Quantum Flicker - Custom";
+        } else {
+            customQuantumFlickerBtn.classList.remove('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+        }
+
+        // ──── NEW: Custom Running Lights ────
+        if (animation === "custom_running_lights") {
+            isAnimationRunning = true;
+            currentAnim = "custom_running_lights";
+            customRunningLightsBtn2.classList.add('active');
+            customRunningLightsBtn2.textContent = 'Running Lights (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights - Custom";
+        } else {
+            customRunningLightsBtn2.classList.remove('active');
+            customRunningLightsBtn2.textContent = 'Running Lights';
+        }
 
     } catch (err) {
         console.error("Error fetching state:", err);
@@ -268,8 +519,46 @@ async function fetchAndApplyState() {
         fireworksBurstBtn.textContent = 'Fireworks Burst';
         customFadeBtn.classList.remove('active');
         customFadeBtn.textContent = 'Fade Colors - Custom';
-        customBreathingBtn.classList.remove('active');
-        customBreathingBtn.textContent = 'Breathing Effect - Custom';
+        customBlinkBtn.classList.remove('active');
+        customBlinkBtn.textContent = 'Blinking - Custom';
+        customBreathingBtn2.classList.remove('active');
+        customBreathingBtn2.textContent = 'Breathing Effect - Custom';
+        customMeteorShowerBtn.classList.remove('active');
+        customMeteorShowerBtn.textContent = 'Meteor Shower';
+        customPulseSyncBtn.classList.remove('active');
+        customPulseSyncBtn.textContent = 'Pulse Sync';
+        customGlitchFlashBtn.classList.remove('active');
+        customGlitchFlashBtn.textContent = 'Glitch Flash';
+        customHeartBeatBtn.classList.remove('active');
+        customHeartBeatBtn.textContent = 'Heart Beat';
+        customTunnelEffectBtn.classList.remove('active');
+        customTunnelEffectBtn.textContent = 'Tunnel Effect';
+        customLaserShotBtn.classList.remove('active');
+        customLaserShotBtn.textContent = 'Laser Shot';
+        customSparklingStarsBtn.classList.remove('active');
+        customSparklingStarsBtn.textContent = 'Sparkling Stars';
+        customStrobeFlashBtn.classList.remove('active');
+        customStrobeFlashBtn.textContent = 'Strobe Flash';
+        customKnightRiderBtn.classList.remove('active');
+        customKnightRiderBtn.textContent = 'Knight Rider';
+        customBounceBackBtn.classList.remove('active');
+        customBounceBackBtn.textContent = 'Bounce Back';
+        customRippleTouchBtn.classList.remove('active');
+        customRippleTouchBtn.textContent = 'Ripple Touch';
+        customFireFlickerBtn.classList.remove('active');
+        customFireFlickerBtn.textContent = 'Fire Flicker';
+        customColorWipeBtn.classList.remove('active');
+        customColorWipeBtn.textContent = 'Color Wipe';
+        customStaticGlowBtn.classList.remove('active');
+        customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+        customColorEchoBtn.classList.remove('active');
+        customColorEchoBtn.textContent = 'Color Echo';
+        customTimeWarpBtn.classList.remove('active');
+        customTimeWarpBtn.textContent = 'Time Warp';
+        customQuantumFlickerBtn.classList.remove('active');
+        customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+        customRunningLightsBtn2.classList.remove('active');
+        customRunningLightsBtn2.textContent = 'Running Lights';
         cardElement.style.background = "";
     }
 }
@@ -311,8 +600,46 @@ async function stopAnimation() {
     fireworksBurstBtn.textContent = 'Fireworks Burst';
     customFadeBtn.classList.remove('active');
     customFadeBtn.textContent = 'Fade Colors - Custom';
-    customBreathingBtn.classList.remove('active');
-    customBreathingBtn.textContent = 'Breathing Effect - Custom';
+    customBlinkBtn.classList.remove('active');
+    customBlinkBtn.textContent = 'Blinking - Custom';
+    customBreathingBtn2.classList.remove('active');
+    customBreathingBtn2.textContent = 'Breathing Effect - Custom';
+    customMeteorShowerBtn.classList.remove('active');
+    customMeteorShowerBtn.textContent = 'Meteor Shower';
+    customPulseSyncBtn.classList.remove('active');
+    customPulseSyncBtn.textContent = 'Pulse Sync';
+    customGlitchFlashBtn.classList.remove('active');
+    customGlitchFlashBtn.textContent = 'Glitch Flash';
+    customHeartBeatBtn.classList.remove('active');
+    customHeartBeatBtn.textContent = 'Heart Beat';
+    customTunnelEffectBtn.classList.remove('active');
+    customTunnelEffectBtn.textContent = 'Tunnel Effect';
+    customLaserShotBtn.classList.remove('active');
+    customLaserShotBtn.textContent = 'Laser Shot';
+    customSparklingStarsBtn.classList.remove('active');
+    customSparklingStarsBtn.textContent = 'Sparkling Stars';
+    customStrobeFlashBtn.classList.remove('active');
+    customStrobeFlashBtn.textContent = 'Strobe Flash';
+    customKnightRiderBtn.classList.remove('active');
+    customKnightRiderBtn.textContent = 'Knight Rider';
+    customBounceBackBtn.classList.remove('active');
+    customBounceBackBtn.textContent = 'Bounce Back';
+    customRippleTouchBtn.classList.remove('active');
+    customRippleTouchBtn.textContent = 'Ripple Touch';
+    customFireFlickerBtn.classList.remove('active');
+    customFireFlickerBtn.textContent = 'Fire Flicker';
+    customColorWipeBtn.classList.remove('active');
+    customColorWipeBtn.textContent = 'Color Wipe';
+    customStaticGlowBtn.classList.remove('active');
+    customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+    customColorEchoBtn.classList.remove('active');
+    customColorEchoBtn.textContent = 'Color Echo';
+    customTimeWarpBtn.classList.remove('active');
+    customTimeWarpBtn.textContent = 'Time Warp';
+    customQuantumFlickerBtn.classList.remove('active');
+    customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+    customRunningLightsBtn2.classList.remove('active');
+    customRunningLightsBtn2.textContent = 'Running Lights';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -502,39 +829,24 @@ async function startFireworksBurst() {
 }
 
 // ──── NEW: دالة “Fade Colors (Custom)” ────
-// عند الضغط على الزرّ customFadeBtn، نفتح colorPicker أولاً.
-// عند اختيار اللون (حدث input)، نبعت الطلب باللون المختار.
-// إذا ضغطت ثانيةً أثناء custom_fade، نوقف الأنيميشن.
-//
-// مثلاً: 
-// - الضغط الأوّل “Choose color…”, يفتح نافذة اختيار اللون.
-// - عندما تختار لوناً (input event)، يبدأ الأنيميشن على الفور.
-// - الضغط على الزرّة أثناء تشغيل custom_fade يوقفه.
-//
-// لاحظ أنّنا نعتمد على حدث "input" حتى يظهر اللون فوراً عند كل تغيير في colorPicker.
-//
 async function startCustomFadeAnimation() {
     // إذا كان custom_fade يعمل الآن، نوقفه
     if (isAnimationRunning && currentAnim === "custom_fade") {
         await stopAnimation();
         return;
     }
-
     // إذا كان أي أنيميشن آخر قيد التشغيل، نوقفه أولاً
     if (isAnimationRunning && currentAnim !== "custom_fade") {
         await stopAnimation();
     }
-
     // الآن نطلب من المستخدم اختيار اللون:
     customFadeBtn.textContent = "Choose color…";
     // نفتح نافذة color picker برمجياً:
-    colorPicker.click();  
-
+    colorPicker.click();
     // نُعدّ مستمعاً وحيداً لحدث "input" على colorPicker
     const onColorChosen = async (e) => {
         // أولاً ننظف (نزيل) هذا المستمع
         colorPicker.removeEventListener("input", onColorChosen);
-
         const chosenColor = e.target.value; // اللون الذي اخترته
         // نضع UI على وضع التشغيل
         isAnimationRunning = true;
@@ -543,48 +855,41 @@ async function startCustomFadeAnimation() {
         customFadeBtn.textContent = 'Fade Colors - Custom (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Fade Colors - Custom";
-
         // نرسل طلب بدء أنيميشن custom_fade مع الـ hex_color الذي اخترته
         await sendRequest("/animate", {
             animation_type: "custom_fade",
             hex_color: chosenColor
         });
     };
-
     // نضيف مستمع input على colorPicker
     colorPicker.addEventListener("input", onColorChosen);
 }
 
+// ──── NEW: دالة “Blinking Pattern (Custom)” ────
 async function startCustomBlinkAnimation() {
     if (isAnimationRunning && currentAnim === "custom_blink") {
         await stopAnimation();
         return;
     }
-
     if (isAnimationRunning && currentAnim !== "custom_blink") {
         await stopAnimation();
     }
-
     customBlinkBtn.textContent = "Choose color…";
-    colorPicker.click();  
-
+    colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
-        
         isAnimationRunning = true;
         currentAnim = "custom_blink";
         customBlinkBtn.classList.add('active');
         customBlinkBtn.textContent = 'Blinking - Custom (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Blinking - Custom";
-
         await sendRequest("/animate", {
             animation_type: "custom_blink",
             hex_color: chosenColor
         });
     };
-
     colorPicker.addEventListener("input", onColorChosen);
 }
 
@@ -594,34 +899,531 @@ async function startCustomBreathingAnimation() {
         await stopAnimation();
         return;
     }
-
     if (isAnimationRunning && currentAnim !== "custom_breathing") {
         await stopAnimation();
     }
-
-    customBreathingBtn.textContent = "Choose color…";
+    customBreathingBtn2.textContent = "Choose color…";
     colorPicker.click();
-
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
-        
         isAnimationRunning = true;
         currentAnim = "custom_breathing";
-        customBreathingBtn.classList.add('active');
-        customBreathingBtn.textContent = 'Breathing Effect - Custom (Running)';
+        customBreathingBtn2.classList.add('active');
+        customBreathingBtn2.textContent = 'Breathing Effect - Custom (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Breathing Effect - Custom";
-
         await sendRequest("/animate", {
             animation_type: "custom_breathing",
             hex_color: chosenColor
         });
     };
-
     colorPicker.addEventListener("input", onColorChosen);
 }
 
+// ──── NEW: دالة “Meteor Shower (Custom)” ───
+async function startCustomMeteorShower() {
+    if (isAnimationRunning && currentAnim === "custom_meteor_shower") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_meteor_shower") {
+        await stopAnimation();
+    }
+    customMeteorShowerBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_meteor_shower";
+        customMeteorShowerBtn.classList.add('active');
+        customMeteorShowerBtn.textContent = 'Meteor Shower (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Meteor Shower - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_meteor_shower",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Pulse Sync (Custom)” ───
+async function startCustomPulseSync() {
+    if (isAnimationRunning && currentAnim === "custom_pulse_sync") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_pulse_sync") {
+        await stopAnimation();
+    }
+    customPulseSyncBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_pulse_sync";
+        customPulseSyncBtn.classList.add('active');
+        customPulseSyncBtn.textContent = 'Pulse Sync (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Pulse Sync - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_pulse_sync",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Glitch Flash (Custom)” ───
+async function startCustomGlitchFlash() {
+    if (isAnimationRunning && currentAnim === "custom_glitch_flash") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_glitch_flash") {
+        await stopAnimation();
+    }
+    customGlitchFlashBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_glitch_flash";
+        customGlitchFlashBtn.classList.add('active');
+        customGlitchFlashBtn.textContent = 'Glitch Flash (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Glitch Flash - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_glitch_flash",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Heart Beat (Custom)” ───
+async function startCustomHeartBeat() {
+    if (isAnimationRunning && currentAnim === "custom_heart_beat") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_heart_beat") {
+        await stopAnimation();
+    }
+    customHeartBeatBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_heart_beat";
+        customHeartBeatBtn.classList.add('active');
+        customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Heart Beat - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_heart_beat",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Tunnel Effect (Custom)” ───
+async function startCustomTunnelEffect() {
+    if (isAnimationRunning && currentAnim === "custom_tunnel_effect") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_tunnel_effect") {
+        await stopAnimation();
+    }
+    customTunnelEffectBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_tunnel_effect";
+        customTunnelEffectBtn.classList.add('active');
+        customTunnelEffectBtn.textContent = 'Tunnel Effect (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Tunnel Effect - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_tunnel_effect",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Laser Shot (Custom)” ───
+async function startCustomLaserShot() {
+    if (isAnimationRunning && currentAnim === "custom_laser_shot") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_laser_shot") {
+        await stopAnimation();
+    }
+    customLaserShotBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_laser_shot";
+        customLaserShotBtn.classList.add('active');
+        customLaserShotBtn.textContent = 'Laser Shot (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Laser Shot - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_laser_shot",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Sparkling Stars (Custom)” ───
+async function startCustomSparklingStars() {
+    if (isAnimationRunning && currentAnim === "custom_sparkling_stars") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_sparkling_stars") {
+        await stopAnimation();
+    }
+    customSparklingStarsBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_sparkling_stars";
+        customSparklingStarsBtn.classList.add('active');
+        customSparklingStarsBtn.textContent = 'Sparkling Stars (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Sparkling Stars - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_sparkling_stars",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Strobe Flash (Custom)” ───
+async function startCustomStrobeFlash() {
+    if (isAnimationRunning && currentAnim === "custom_strobe_flash") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_strobe_flash") {
+        await stopAnimation();
+    }
+    customStrobeFlashBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_strobe_flash";
+        customStrobeFlashBtn.classList.add('active');
+        customStrobeFlashBtn.textContent = 'Strobe Flash (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Strobe Flash - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_strobe_flash",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Knight Rider (Custom)” ───
+async function startCustomKnightRider() {
+    if (isAnimationRunning && currentAnim === "custom_knight_rider") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_knight_rider") {
+        await stopAnimation();
+    }
+    customKnightRiderBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_knight_rider";
+        customKnightRiderBtn.classList.add('active');
+        customKnightRiderBtn.textContent = 'Knight Rider (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Knight Rider - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_knight_rider",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Bounce Back (Custom)” ───
+async function startCustomBounceBack() {
+    if (isAnimationRunning && currentAnim === "custom_bounce_back") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_bounce_back") {
+        await stopAnimation();
+    }
+    customBounceBackBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_bounce_back";
+        customBounceBackBtn.classList.add('active');
+        customBounceBackBtn.textContent = 'Bounce Back (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Bounce Back - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_bounce_back",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Ripple Touch (Custom)” ───
+async function startCustomRippleTouch() {
+    if (isAnimationRunning && currentAnim === "custom_ripple_touch") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_ripple_touch") {
+        await stopAnimation();
+    }
+    customRippleTouchBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_ripple_touch";
+        customRippleTouchBtn.classList.add('active');
+        customRippleTouchBtn.textContent = 'Ripple Touch (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Ripple Touch - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_ripple_touch",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Fire Flicker (Custom)” ───
+async function startCustomFireFlicker() {
+    if (isAnimationRunning && currentAnim === "custom_fire_flicker") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_fire_flicker") {
+        await stopAnimation();
+    }
+    customFireFlickerBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_fire_flicker";
+        customFireFlickerBtn.classList.add('active');
+        customFireFlickerBtn.textContent = 'Fire Flicker (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Fire Flicker - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_fire_flicker",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Color Wipe (Custom)” ───
+async function startCustomColorWipe() {
+    if (isAnimationRunning && currentAnim === "custom_color_wipe") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_color_wipe") {
+        await stopAnimation();
+    }
+    customColorWipeBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_color_wipe";
+        customColorWipeBtn.classList.add('active');
+        customColorWipeBtn.textContent = 'Color Wipe (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Color Wipe - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_color_wipe",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Static Glow with Flicker (Custom)” ───
+async function startCustomStaticGlow() {
+    if (isAnimationRunning && currentAnim === "custom_static_glow") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_static_glow") {
+        await stopAnimation();
+    }
+    customStaticGlowBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_static_glow";
+        customStaticGlowBtn.classList.add('active');
+        customStaticGlowBtn.textContent = 'Static Glow with Flicker (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Static Glow with Flicker - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_static_glow",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Color Echo (Custom)” ───
+async function startCustomColorEcho() {
+    if (isAnimationRunning && currentAnim === "custom_color_echo") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_color_echo") {
+        await stopAnimation();
+    }
+    customColorEchoBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_color_echo";
+        customColorEchoBtn.classList.add('active');
+        customColorEchoBtn.textContent = 'Color Echo (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Color Echo - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_color_echo",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Time Warp (Custom)” ───
+async function startCustomTimeWarp() {
+    if (isAnimationRunning && currentAnim === "custom_time_warp") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_time_warp") {
+        await stopAnimation();
+    }
+    customTimeWarpBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_time_warp";
+        customTimeWarpBtn.classList.add('active');
+        customTimeWarpBtn.textContent = 'Time Warp (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Time Warp - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_time_warp",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Quantum Flicker (Custom)” ───
+async function startCustomQuantumFlicker() {
+    if (isAnimationRunning && currentAnim === "custom_quantum_flicker") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_quantum_flicker") {
+        await stopAnimation();
+    }
+    customQuantumFlickerBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_quantum_flicker";
+        customQuantumFlickerBtn.classList.add('active');
+        customQuantumFlickerBtn.textContent = 'Quantum Flicker (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Quantum Flicker - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_quantum_flicker",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Running Lights (Custom)” ───
+async function startCustomRunningLights() {
+    if (isAnimationRunning && currentAnim === "custom_running_lights") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_running_lights") {
+        await stopAnimation();
+    }
+    customRunningLightsBtn2.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_running_lights";
+        customRunningLightsBtn2.classList.add('active');
+        customRunningLightsBtn2.textContent = 'Running Lights (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Running Lights - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_running_lights",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
 
 // تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
@@ -651,9 +1453,65 @@ off2Btn              .addEventListener("click", stopAnimation);
 // ──── NEW: ربط زرّ “Fade Colors (Custom)” ────
 customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
 
-customBlinkBtn.addEventListener("click", startCustomBlinkAnimation);
+// ──── NEW: ربط زرّ “Blinking Pattern (Custom)” ────
+customBlinkBtn       .addEventListener("click", startCustomBlinkAnimation);
 
-customBreathingBtn.addEventListener("click", startCustomBreathingAnimation);
+// ──── NEW: ربط زرّ “Breathing Effect (Custom)” ────
+customBreathingBtn2  .addEventListener("click", startCustomBreathingAnimation);
+
+// ──── NEW: ربط زرّ “Meteor Shower (Custom)” ────
+customMeteorShowerBtn.addEventListener("click", startCustomMeteorShower);
+
+// ──── NEW: ربط زرّ “Pulse Sync (Custom)” ────
+customPulseSyncBtn   .addEventListener("click", startCustomPulseSync);
+
+// ──── NEW: ربط زرّ “Glitch Flash (Custom)” ────
+customGlitchFlashBtn .addEventListener("click", startCustomGlitchFlash);
+
+// ──── NEW: ربط زرّ “Heart Beat (Custom)” ────
+customHeartBeatBtn   .addEventListener("click", startCustomHeartBeat);
+
+// ──── NEW: ربط زرّ “Tunnel Effect (Custom)” ────
+customTunnelEffectBtn.addEventListener("click", startCustomTunnelEffect);
+
+// ──── NEW: ربط زرّ “Laser Shot (Custom)” ────
+customLaserShotBtn   .addEventListener("click", startCustomLaserShot);
+
+// ──── NEW: ربط زرّ “Sparkling Stars (Custom)” ────
+customSparklingStarsBtn.addEventListener("click", startCustomSparklingStars);
+
+// ──── NEW: ربط زرّ “Strobe Flash (Custom)” ────
+customStrobeFlashBtn .addEventListener("click", startCustomStrobeFlash);
+
+// ──── NEW: ربط زرّ “Knight Rider (Custom)” ────
+customKnightRiderBtn .addEventListener("click", startCustomKnightRider);
+
+// ──── NEW: ربط زرّ “Bounce Back (Custom)” ────
+customBounceBackBtn  .addEventListener("click", startCustomBounceBack);
+
+// ──── NEW: ربط زرّ “Ripple Touch (Custom)” ────
+customRippleTouchBtn .addEventListener("click", startCustomRippleTouch);
+
+// ──── NEW: ربط زرّ “Fire Flicker (Custom)” ────
+customFireFlickerBtn .addEventListener("click", startCustomFireFlicker);
+
+// ──── NEW: ربط زرّ “Color Wipe (Custom)” ────
+customColorWipeBtn   .addEventListener("click", startCustomColorWipe);
+
+// ──── NEW: ربط زرّ “Static Glow with Flicker (Custom)” ────
+customStaticGlowBtn  .addEventListener("click", startCustomStaticGlow);
+
+// ──── NEW: ربط زرّ “Color Echo (Custom)” ────
+customColorEchoBtn   .addEventListener("click", startCustomColorEcho);
+
+// ──── NEW: ربط زرّ “Time Warp (Custom)” ────
+customTimeWarpBtn    .addEventListener("click", startCustomTimeWarp);
+
+// ──── NEW: ربط زرّ “Quantum Flicker (Custom)” ────
+customQuantumFlickerBtn.addEventListener("click", startCustomQuantumFlicker);
+
+// ──── NEW: ربط زرّ “Running Lights (Custom)” ────
+customRunningLightsBtn2.addEventListener("click", startCustomRunningLights);
 
 // عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
@@ -680,8 +1538,7 @@ evtSource.onmessage = e => {
             cardElement.style.background = "";
         }
 
-        // … ثم نفس المنطق السابق في fetchAndApplyState()
-
+        // ثم نفس المنطق السابق في fetchAndApplyState()
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             currentAnim = "fade_colors";
@@ -802,7 +1659,8 @@ evtSource.onmessage = e => {
             fireworksBurstBtn.textContent = 'Fireworks Burst';
         }
 
-        // ──── NEW: حالة “custom_fade” عبر SSE ────
+        // ──── NEW: حالات Create Your Own عبر SSE ────
+
         if (animation === "custom_fade") {
             isAnimationRunning = true;
             currentAnim = "custom_fade";
@@ -812,24 +1670,275 @@ evtSource.onmessage = e => {
             colorDisplay.textContent = "Fade Colors - Custom";
         } else {
             customFadeBtn.classList.remove('active');
-            customFadeBtn.textContent = 'Fade Colors - Custom';
+            customFadeBtn.textContent = 'Fade Colors - Custom';
         }
-        // ──── NEW: حالة “custom_breathing” عبر SSE ────
+
+        if (animation === "custom_blink") {
+            isAnimationRunning = true;
+            currentAnim = "custom_blink";
+            customBlinkBtn.classList.add('active');
+            customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking - Custom";
+        } else {
+            customBlinkBtn.classList.remove('active');
+            customBlinkBtn.textContent = 'Blinking - Custom';
+        }
+
         if (animation === "custom_breathing") {
             isAnimationRunning = true;
             currentAnim = "custom_breathing";
-            customBreathingBtn.classList.add('active');
-            customBreathingBtn.textContent = 'Breathing Effect - Custom (Running)';
+            customBreathingBtn2.classList.add('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom (Running)';
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Breathing Effect - Custom";
         } else {
-            customBreathingBtn.classList.remove('active');
-            customBreathingBtn.textContent = 'Breathing Effect - Custom';
+            customBreathingBtn2.classList.remove('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom';
         }
 
+        if (animation === "custom_meteor_shower") {
+            isAnimationRunning = true;
+            currentAnim = "custom_meteor_shower";
+            customMeteorShowerBtn.classList.add('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower - Custom";
+        } else {
+            customMeteorShowerBtn.classList.remove('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower';
+        }
 
+        if (animation === "custom_pulse_sync") {
+            isAnimationRunning = true;
+            currentAnim = "custom_pulse_sync";
+            customPulseSyncBtn.classList.add('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Pulse Sync - Custom";
+        } else {
+            customPulseSyncBtn.classList.remove('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync';
+        }
+
+        if (animation === "custom_glitch_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_glitch_flash";
+            customGlitchFlashBtn.classList.add('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Glitch Flash - Custom";
+        } else {
+            customGlitchFlashBtn.classList.remove('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash';
+        }
+
+        if (animation === "custom_heart_beat") {
+            isAnimationRunning = true;
+            currentAnim = "custom_heart_beat";
+            customHeartBeatBtn.classList.add('active');
+            customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Heart Beat - Custom";
+        } else {
+            customHeartBeatBtn.classList.remove('active');
+            customHeartBeatBtn.textContent = 'Heart Beat';
+        }
+
+        if (animation === "custom_tunnel_effect") {
+            isAnimationRunning = true;
+            currentAnim = "custom_tunnel_effect";
+            customTunnelEffectBtn.classList.add('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Tunnel Effect - Custom";
+        } else {
+            customTunnelEffectBtn.classList.remove('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect';
+        }
+
+        if (animation === "custom_laser_shot") {
+            isAnimationRunning = true;
+            currentAnim = "custom_laser_shot";
+            customLaserShotBtn.classList.add('active');
+            customLaserShotBtn.textContent = 'Laser Shot (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Laser Shot - Custom";
+        } else {
+            customLaserShotBtn.classList.remove('active');
+            customLaserShotBtn.textContent = 'Laser Shot';
+        }
+
+        if (animation === "custom_sparkling_stars") {
+            isAnimationRunning = true;
+            currentAnim = "custom_sparkling_stars";
+            customSparklingStarsBtn.classList.add('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Sparkling Stars - Custom";
+        } else {
+            customSparklingStarsBtn.classList.remove('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars';
+        }
+
+        if (animation === "custom_strobe_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_strobe_flash";
+            customStrobeFlashBtn.classList.add('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Strobe Flash - Custom";
+        } else {
+            customStrobeFlashBtn.classList.remove('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash';
+        }
+
+        if (animation === "custom_knight_rider") {
+            isAnimationRunning = true;
+            currentAnim = "custom_knight_rider";
+            customKnightRiderBtn.classList.add('active');
+            customKnightRiderBtn.textContent = 'Knight Rider (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Knight Rider - Custom";
+        } else {
+            customKnightRiderBtn.classList.remove('active');
+            customKnightRiderBtn.textContent = 'Knight Rider';
+        }
+
+        if (animation === "custom_bounce_back") {
+            isAnimationRunning = true;
+            currentAnim = "custom_bounce_back";
+            customBounceBackBtn.classList.add('active');
+            customBounceBackBtn.textContent = 'Bounce Back (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Bounce Back - Custom";
+        } else {
+            customBounceBackBtn.classList.remove('active');
+            customBounceBackBtn.textContent = 'Bounce Back';
+        }
+
+        if (animation === "custom_ripple_touch") {
+            isAnimationRunning = true;
+            currentAnim = "custom_ripple_touch";
+            customRippleTouchBtn.classList.add('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Ripple Touch - Custom";
+        } else {
+            customRippleTouchBtn.classList.remove('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch';
+        }
+
+        if (animation === "custom_fire_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fire_flicker";
+            customFireFlickerBtn.classList.add('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fire Flicker - Custom";
+        } else {
+            customFireFlickerBtn.classList.remove('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker';
+        }
+
+        if (animation === "custom_color_wipe") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_wipe";
+            customColorWipeBtn.classList.add('active');
+            customColorWipeBtn.textContent = 'Color Wipe (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Wipe - Custom";
+        } else {
+            customColorWipeBtn.classList.remove('active');
+            customColorWipeBtn.textContent = 'Color Wipe';
+        }
+
+        if (animation === "custom_static_glow") {
+            isAnimationRunning = true;
+            currentAnim = "custom_static_glow";
+            customStaticGlowBtn.classList.add('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Static Glow with Flicker - Custom";
+        } else {
+            customStaticGlowBtn.classList.remove('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+        }
+
+        if (animation === "custom_color_echo") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_echo";
+            customColorEchoBtn.classList.add('active');
+            customColorEchoBtn.textContent = 'Color Echo (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Echo - Custom";
+        } else {
+            customColorEchoBtn.classList.remove('active');
+            customColorEchoBtn.textContent = 'Color Echo';
+        }
+
+        if (animation === "custom_time_warp") {
+            isAnimationRunning = true;
+            currentAnim = "custom_time_warp";
+            customTimeWarpBtn.classList.add('active');
+            customTimeWarpBtn.textContent = 'Time Warp (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Time Warp - Custom";
+        } else {
+            customTimeWarpBtn.classList.remove('active');
+            customTimeWarpBtn.textContent = 'Time Warp';
+        }
+
+        if (animation === "custom_quantum_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_quantum_flicker";
+            customQuantumFlickerBtn.classList.add('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Quantum Flicker - Custom";
+        } else {
+            customQuantumFlickerBtn.classList.remove('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+        }
+
+        if (animation === "custom_running_lights") {
+            isAnimationRunning = true;
+            currentAnim = "custom_running_lights";
+            customRunningLightsBtn2.classList.add('active');
+            customRunningLightsBtn2.textContent = 'Running Lights (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights - Custom";
+        } else {
+            customRunningLightsBtn2.classList.remove('active');
+            customRunningLightsBtn2.textContent = 'Running Lights';
+        }
 
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
     }
 };
+
+
+
+
+
+
+
+
+// تكويد النجوم المتوهجة
+document.addEventListener("DOMContentLoaded", function () {
+    const starsContainer = document.querySelector(".stars-container");
+    for (let i = 0; i < 20; i++) {
+        let star = document.createElement("div");
+        star.classList.add("star");
+        star.innerHTML = "⋆";
+        star.style.left = Math.random() * window.innerWidth + "px";
+        star.style.top = Math.random() * window.innerHeight + "px";
+        star.style.animationDelay = Math.random() * 3 + "s";
+        star.addEventListener("animationiteration", () => {
+            star.style.left = Math.random() * window.innerWidth + "px";
+            star.style.top = Math.random() * window.innerHeight + "px";
+        });
+        starsContainer.appendChild(star);
+    }
+});
