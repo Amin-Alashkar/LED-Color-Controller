@@ -1,35 +1,14 @@
 if [ "$(tty)" = "/dev/tty1" ]; then
-
-
   export PYTHONIOENCODING=utf-8
 
-
-  cd /home/student/pixel_project/LED-Color-Controller
+  cd /home/student/pixel_project
   source .venv/bin/activate
 
-
-
+  cd LED-Color-Controller
   uvicorn server:app --host 0.0.0.0 --port 8000 &
-
 
   sleep 2
 
-
-  cd Color Change Frontend
-
+  cd "Color Change Frontend"
   http-server -c-1 -p 5501 &
-
-  
 fi
-
-
-and it says"bash: .venv/bin/activate: No such file or directory
-bash: uvicorn: command not found
-bash: cd: too many arguments
-bash: http-server: command not found
-[1]+  Exit 127                http-server -c-1 -p 5501
-student@raspberrypi:~/pixel_project/LED-Color-Controller $ 
-"
-
-
-source .venv/bin/activate
