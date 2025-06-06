@@ -37,9 +37,8 @@ const customFadeBtn       = document.getElementById('customFadeBtn');
 // ─── NEW: زرّ “Blinking Pattern (Custom)” ───
 const customBlinkBtn      = document.getElementById('customBlinkBtn');
 
-// ─── NEW: زرّ “Custom Meteor Shower” ───
-const customMeteorBtn     = meteorShowerNewBtn; 
-// (باختصار، نستخدم نفس الزرّ “Meteor Shower”، لكن عندما يضغط المستخدم، يختار لوناً أولاً)
+// ─── NEW: زرّ “Custom Meteor Shower” تحت Create Your Own ───
+const customMeteorBtn     = document.getElementById('customMeteorBtn');
 
 // نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
@@ -246,14 +245,12 @@ async function fetchAndApplyState() {
             isAnimationRunning = true;
             currentAnim = "custom_meteor_shower";
             customMeteorBtn.classList.add('active');
-            customMeteorBtn.textContent = 'Meteor Shower (Running)';
+            customMeteorBtn.textContent = 'Custom Meteor Shower (Running)';
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Meteor Shower";
         } else {
-            // عندما لا تكون custom_meteor_shower قيد التشغيل، نجعل الزرّ عادي
-            // لاحظ أننا نستعيد النص الأصلي “Meteor Shower” للزر
             customMeteorBtn.classList.remove('active');
-            customMeteorBtn.textContent = 'Meteor Shower';
+            customMeteorBtn.textContent = 'Custom Meteor Shower';
         }
 
     } catch (err) {
@@ -288,6 +285,8 @@ async function fetchAndApplyState() {
         customBlinkBtn.textContent = 'Blinking - Custom';
         customBreathingBtn.classList.remove('active');
         customBreathingBtn.textContent = 'Breathing Effect - Custom';
+        customMeteorBtn.classList.remove('active');
+        customMeteorBtn.textContent = 'Custom Meteor Shower';
         cardElement.style.background = "";
     }
 }
@@ -333,6 +332,8 @@ async function stopAnimation() {
     customBlinkBtn.textContent = 'Blinking - Custom';
     customBreathingBtn.classList.remove('active');
     customBreathingBtn.textContent = 'Breathing Effect - Custom';
+    customMeteorBtn.classList.remove('active');
+    customMeteorBtn.textContent = 'Custom Meteor Shower';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -660,7 +661,7 @@ async function startCustomMeteorShower() {
         isAnimationRunning = true;
         currentAnim = "custom_meteor_shower";
         customMeteorBtn.classList.add('active');
-        customMeteorBtn.textContent = 'Meteor Shower (Running)';
+        customMeteorBtn.textContent = 'Custom Meteor Shower (Running)';
         cardElement.style.background = "#000000";
         colorDisplay.textContent = "Meteor Shower";
 
@@ -693,8 +694,8 @@ runningLightsBtn     .addEventListener("click", startRunningLights);
 breathingEffectBtn   .addEventListener("click", startBreathingAnimation);
 // الزر القديم أصبح بإسم startSnakesChasing
 snakesChasingBtn     .addEventListener("click", startSnakesChasing);
-// الآن زرّ Meteor Shower يستدعي color-picker ثم يُشغّل custom meteor shower
-meteorShowerNewBtn   .addEventListener("click", startCustomMeteorShower);
+// الزر الجديد “Meteor Shower” الافتراضي
+meteorShowerNewBtn   .addEventListener("click", startSingleSnake);
 fireworksBurstBtn    .addEventListener("click", startFireworksBurst);
 offBtn               .addEventListener("click", stopAnimation);
 off2Btn              .addEventListener("click", stopAnimation);
@@ -703,6 +704,9 @@ off2Btn              .addEventListener("click", stopAnimation);
 customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
 customBlinkBtn       .addEventListener("click", startCustomBlinkAnimation);
 customBreathingBtn   .addEventListener("click", startCustomBreathingAnimation);
+
+// ──── NEW: ربط زرّ “Custom Meteor Shower” تحت Create Your Own ────
+customMeteorBtn      .addEventListener("click", startCustomMeteorShower);
 
 // عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
@@ -882,12 +886,12 @@ evtSource.onmessage = e => {
             isAnimationRunning = true;
             currentAnim = "custom_meteor_shower";
             customMeteorBtn.classList.add('active');
-            customMeteorBtn.textContent = 'Meteor Shower (Running)';
+            customMeteorBtn.textContent = 'Custom Meteor Shower (Running)';
             cardElement.style.background = "#000000";
             colorDisplay.textContent = "Meteor Shower";
         } else {
             customMeteorBtn.classList.remove('active');
-            customMeteorBtn.textContent = 'Meteor Shower';
+            customMeteorBtn.textContent = 'Custom Meteor Shower';
         }
 
     } catch (err) {
