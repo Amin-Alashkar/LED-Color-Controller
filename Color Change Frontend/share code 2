@@ -1,2 +1,10 @@
-sudo apt update
-sudo apt install python3-requests
+(.venv) student@raspberrypi:~/pixel_project $ crontab -e
+no crontab for student - using an empty one
+
+Select an editor.  To change later, run 'select-editor'.
+  1. /bin/nano        <---- easiest
+  2. /usr/bin/vim.tiny
+  3. /usr/bin/code
+  4. /bin/ed
+
+Choose 1-4 [1]: 
