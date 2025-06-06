@@ -1,3 +1,14 @@
+Opened SPI device: /dev/spidev0.0
+INFO:     Started server process [1494]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+ERROR:    [Errno 98] error while attempting to bind on address ('0.0.0.0', 8000): address already in use
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+bash: http-server: command not found
+[1]+  Exit 127                http-server -c-1 -p 5501
+(.venv) student@raspberrypi:~/pixel_project/LED-Color-Controller/Color Change Fr
+ontend $ 
 if [ "$(tty)" = "/dev/tty1" ]; then
   export PYTHONIOENCODING=utf-8
 
