@@ -1,5 +1,3 @@
-<!-- index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,11 +27,6 @@
             <button id="offBtn" onclick="changeColor('#000000')">Off</button>
         </div>
 
-        <div class="color-picker-wrapper">
-            <div class="color-ring"></div>
-            <input type="color" id="colorPicker" value="#000000">
-        </div>
-
         <h2 class="button-title">Animation</h2>
         <div class="button-container">
             <button id="lightOneBtn">Fade Colors</button>
@@ -44,11 +37,47 @@
             <button id="BreathingEffectBtn">Breathing Effect</button>
             <button id="MeteorShowerBtn">Meteor Shower</button>
             <button id="PulseSyncBtn">Pulse Sync</button>
-            <button id="FireworksBurstBtn">Fireworks Burst</button> <!-- تم تعديل هذا السطر -->
-            <br>
+            <button id="FireworksBurstBtn">Fireworks Burst</button>
+            <button id="MeteorShowerNewBtn">Meteor Shower</button>
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
         </div>
+
+        <h2 class="button-title">Color Picker</h2>
+        <div class="color-picker-wrapper">
+            <div class="color-ring"></div>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
+
         <h2 class="button-title">Create Your Own</h2>
+        <div class="button-container">
+            <button id="customFadeBtn">Fade Colors - Custom</button>
+            <button id="customBlinkBtn">Blinking Pattern</button>
+            <button id="customBreathingBtn">Breathing Effect</button>
+            <!-- هنا نضيف زرّ Custom Meteor Shower -->
+            <button id="customMeteorBtn">Custom Meteor Shower</button>
+            <button id="">Meteor Shower</button>
+            <button id="">Pulse Sync</button>
+            <button id="">Glitch Flash</button>
+            <button id="">Heart Beat</button>
+            <button id="">Tunnel Effect</button>
+            <button id="">Laser Shot</button>
+            <button id="">Sparkling Stars</button>
+            <button id="">Strobe Flash</button>
+            <button id="">Knight Rider</button>
+            <button id="">Bounce Back</button>
+            <button id="">Ripple Touch</button>
+            <button id="">Fire Flicker</button>
+            <button id="">Color Wipe</button>
+            <button id="">Static Glow with Flicker</button>
+            <button id="">Color Echo</button>
+            <button id="">Time Warp</button>
+            <button id="">Quantum Flicker</button>
+            <button id="">Running Lights</button>
+        </div>
+        <div class="color-picker-wrapper">
+            <div class="color-ring"></div>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
     </div>
 
     <div id="aura-shapes">
