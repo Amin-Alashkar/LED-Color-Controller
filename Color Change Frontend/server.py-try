@@ -1,5 +1,3 @@
-# server.py
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
@@ -34,10 +32,11 @@ current_anim: str | None = None
 class AnimationRequest(BaseModel):
     animation_type: str
     color_index: int = 0
-    hex_color: str | None = None   # <-- we already need this
+    hex_color: str | None = None   # <-- نستخدمه للـ custom_ animations
 
 class ColorRequest(BaseModel):
     hex_color: str
+
 async def light_up_one_by_one(color_index: int, delay: float = 0.011):
     global stop_requested
     colors = [
@@ -223,8 +222,8 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
     - كل أفعى طولها 12 LED بتدريج من الفاتح إلى الداكن
     - تتحرك كل أفعى من LED رقم 19 إلى LED رقم 0
     - بين كل أفعى وأفعى مسافة 5 أضواء سوداء
-    - في كل دورة نحافظ على تشغيل ثلاث أفاعي في آنٍ واحد حتى ننتهي من إطلاق العشر أفاعي
-    - بعد انتهاء العشر أفاعي، نعيد الدورة من جديد طالما لم يُطلَب الإيقاف
+    - في كل دورة نحافظ على تشغيل ثلاث أفعي في آنٍ واحد حتى ننتهي من إطلاق العشر أفعي
+    - بعد انتهاء العشر أفعي، نعيد الدورة من جديد طالما لم يُطلَب الإيقاف
     """
     global stop_requested
 
@@ -307,6 +306,234 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
                 break
 
         # بعد إنتهاء عشر أفاعي، نعيد الدورة تلقائيًّا
+    neo.clear_strip()
+    neo.update_strip()
+
+async def running_lights_loop(delay: float = 0.05):
+    """
+    تأثير أضواء متحركة بألوان عشوائية:
+    - لدينا سبع نقاط انطلاق: 19,16,13,10,7,4,1
+    - لكل نقطة، نختار لونًا عشوائيًا ثم نحركه إلى الأسفل حتى الصفر
+    - عندما يصل إلى ما دون 0، نعيد تهيئته بلون جديد عند موقع الانطلاق الأصلي
+    - يستمر هذا التكرار باستمرار طالما لم يُطلَب الإيقاف
+    """
+    global stop_requested
+    spawn_positions = list(range(19, -1, -3))  # [19,16,13,10,7,4,1]
+    # نهيئ الشرارات الثلاث في المواقع الأصلية
+    sparks = []
+    for p in spawn_positions:
+        color = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+        sparks.append({'start': p, 'pos': p, 'color': color})
+
+    while not stop_requested:
+        neo.clear_strip()
+        # رسم كل شرارة في موقعها الحالي
+        for s in sparks:
+            if 0 <= s['pos'] < NUM_LEDS:
+                neo.set_led_color(s['pos'], *s['color'])
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        # تحديث كل شرارة: نقلها خطوة لأسفل أو إعادة تهيئتها
+        for s in sparks:
+            s['pos'] -= 1
+            if s['pos'] < 0:
+                s['pos'] = s['start']
+                s['color'] = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+    neo.clear_strip()
+    neo.update_strip()
+
+async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
+    """
+    تأثير تنفسي ناعم ينتقل بين ألوان مختلفة تلقائيًا:
+    - ينتقل بين مجموعة من الألوان الأساسية
+    - كل لون يمر بدورة تنفس كاملة (زيادة ثم نقصان الشدة)
+    - يعطي إحساساً بالتنفس مع تغير الألوان
+    """
+    global stop_requested
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (128, 0, 128),  # بنفسجي
+        (255, 192, 203) # وردي
+    ]
+    while not stop_requested:
+        for (r_base, g_base, b_base) in COLORS:
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
+
+async def fireworks_burst_loop(delay: float = 0.05):
+    """
+    تأثير الألعاب النارية المعدل:
+    1. “الصاروخ” (ثلاثة أضواء) يبدأ من نهاية الشريط (أعلى مؤشر) ويتحرك سريعًا نحو منتصفه:
+       - الرأس بسطوع خافت جدًا (~20%)
+       - الضوء الثاني خلف الرأس بسطوع أخف (~10%)
+       - الضوء الثالث خلف الثاني بسطوع خافت للغاية (~5%)
+    2. عند وصول الرأس إلى منتصف عدد الـ LEDs، يحدث الانفجار بكامل السطوع (100%).
+    3. بعد الانفجار، نطبق تلاشي تدريجي (Fade-out) حتى تنطفئ الأضواء.
+    """
+    global stop_requested
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 0, 255),    # أزرق
+        (0, 255, 0),    # أخضر
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+    ]
+    
+    # إعدادات السطوع للأضواء الثلاثة (الصاروخ) بأقل مستويات ممكنة
+    ROCKET_BRIGHTNESSES = [
+        0.2,  # سطوع الرأس (~20%)
+        0.1,  # سطوع الضوء الثاني (~10%)
+        0.05  # سطوع الضوء الثالث (~5%)
+    ]
+    # سطوع الانفجار الكامل
+    EXPLOSION_BRIGHTNESS = 1.0  # 100%
+    # عدد خطوات التلاشي بعد الانفجار
+    FADE_STEPS = 20             
+
+    # نحسب منتصف عدد الـ LEDs.
+    midpoint = NUM_LEDS // 3
+
+    while not stop_requested:
+        for color in COLORS:
+            if stop_requested:
+                break
+
+            # -------------------------
+            # 1. حركة “الصاروخ” من نهاية الشريط (أقصى فهرس) إلى منتصفه، بأسرع وقت ممكن
+            # -------------------------
+            for head_pos in range(NUM_LEDS - 1, -1, -1):
+                if stop_requested:
+                    break
+
+                # إذا وصل الرأس إلى منتصف الشريط، ننتقل فورًا لمرحلة الانفجار
+                if head_pos == midpoint:
+                    break
+
+                neo.clear_strip()
+                # نرسم ثلاث نقاط: الرأس وتاليه وخلفه بسطوع خافت
+                for idx in range(3):
+                    led_pos = head_pos + idx  # لأننا نتحرك من الأعلى إلى الأسفل
+                    if 0 <= led_pos < NUM_LEDS:
+                        factor = ROCKET_BRIGHTNESSES[idx]
+                        r = int(color[0] * factor)
+                        g = int(color[1] * factor)
+                        b = int(color[2] * factor)
+                        neo.set_led_color(led_pos, r, g, b)
+
+                neo.update_strip()
+                # نجعل الصاروخ سريعًا: نستخدم delay * 0.5 أو حتى خفض delay عند الاحتياج
+                await asyncio.sleep(delay * 0.5)
+
+            if stop_requested:
+                break
+
+            # -------------------------
+            # 2. الانفجار عند منتصف الشريط (بأقصى سطوع)
+            # -------------------------
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                r = int(color[0] * EXPLOSION_BRIGHTNESS)
+                g = int(color[1] * EXPLOSION_BRIGHTNESS)
+                b = int(color[2] * EXPLOSION_BRIGHTNESS)
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            # نبقى بمشهد الانفجار الكامل لفترة قصيرة
+            await asyncio.sleep(0.2)
+
+            if stop_requested:
+                break
+
+            # -------------------------
+            # 3. التلاشي التدريجي (Fade-out) بعد الانفجار
+            # -------------------------
+            for fade_step in range(FADE_STEPS):
+                if stop_requested:
+                    break
+                factor = 1 - (fade_step / FADE_STEPS)  # من 1 (كامل) إلى 0 (إطفاء)
+                neo.clear_strip()
+                for i in range(NUM_LEDS):
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(i, r, g, b)
+                neo.update_strip()
+                await asyncio.sleep(delay)
+
+            # بعد انتهاء التلاشي، ننظف الشريط وننتظر قليلًا قبل اللون القادم
+            neo.clear_strip()
+            neo.update_strip()
+            await asyncio.sleep(0.2)
+
+        # نعيد الدورة مع الألوان الأخرى طالما لم يُطلَب الإيقاف
+    # إذا طُلب التوقف نهائيًّا، نتأكد من إطفاء كامل الشريط
+    neo.clear_strip()
+    neo.update_strip()
+
+# ─── NEW: دالة “custom_meteor_shower_loop” ───
+async def custom_meteor_shower_loop(hex_color: str, delay_per_step: float = 0.05, trail_length: int = 12):
+    """
+    انميشن شهاب مخصّص باللون الذي يختاره المستخدم:
+    - شهاب واحد يتحرك من نهاية الشريط إلى بدايته
+    - ذيل متدرج لوني يعتمد على hex_color
+    - يعيد نفسه دائماً حتى يطلب الإيقاف
+    """
+    global stop_requested
+
+    # تحويل hex_color إلى (r_base, g_base, b_base)
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # نمرّر الشهاب من LED رقم 19 إلى LED رقم -trail_length
+        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
+            if stop_requested:
+                break
+
+            neo.clear_strip()
+            # رسم الشهاب مع ذيل طوله trail_length
+            for t in range(trail_length):
+                led_pos = head_pos + t
+                if 0 <= led_pos < NUM_LEDS:
+                    # عامل التلاشي في الذيل (من 1.0 عند الرأس إلى 0.0 عند نهاية الذيل)
+                    factor = (trail_length - t) / trail_length
+                    r = int(r_base * factor)
+                    g = int(g_base * factor)
+                    b = int(b_base * factor)
+                    neo.set_led_color(led_pos, r, g, b)
+
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+    # عندما يُطلَب التوقف، نتأكد من إطفاء كامل الشريط
     neo.clear_strip()
     neo.update_strip()
 
@@ -596,13 +823,12 @@ async def single_snake_loop(delay_per_step: float = 0.0001):
             # بما أن سرعة ×2 من النسخة العادية، قمنا بتقليل الوقت إلى delay_per_step
             await asyncio.sleep(delay_per_step)
 
-    # عند طلب التوقف، نتأكد من إطفاء الشريط نهائياً
+    # عند طلب التوقف، نتأكد من إطفاء الشريط نهائيًا
     neo.clear_strip()
     neo.update_strip()
 
-
 # ── NEW: custom_fade_loop ──
-async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 50):
+async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 10):
     """
     Fade a single hex_color in and out across all LEDs.
     We convert hex_color to (r_base, g_base, b_base), then
@@ -648,6 +874,82 @@ async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 50)
     neo.clear_strip()
     neo.update_strip()
 
+# ─── NEW: custom_blink_loop ───
+async def custom_blink_loop(hex_color: str, on_duration: float = 0.5, off_duration: float = 0.5):
+    """
+    Blink a single hex_color on and off across all LEDs.
+    """
+    global stop_requested
+    # Convert hex to RGB
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+    
+    while not stop_requested:
+        # Turn on
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r_base, g_base, b_base)
+        neo.update_strip()
+        await asyncio.sleep(on_duration)
+        
+        if stop_requested:
+            break
+            
+        # Turn off
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+        await asyncio.sleep(off_duration)
+    
+    # When stop is requested, clear strip
+    neo.clear_strip()
+    neo.update_strip()
+
+# ─── NEW: custom_breathing_loop ───
+async def custom_breathing_loop(hex_color: str, delay: float = 0.02, steps: int = 50):
+    """
+    Breathing effect with a custom color.
+    Fades in and out the given color across all LEDs.
+    """
+    global stop_requested
+    # Convert hex to RGB
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # Fade in
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = step / (steps - 1)   # from 0.0 → 1.0
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        if stop_requested:
+            break
+
+        # Fade out
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = 1 - (step / (steps - 1))  # from 1.0 → 0.0
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+    # When stop is requested, clear strip
+    neo.clear_strip()
+    neo.update_strip()
+
 # ────────────────────────────────────────────────────────────────────
 
 async def animation_worker():
@@ -659,37 +961,54 @@ async def animation_worker():
             stop_requested = False
             current_anim = req.animation_type
 
-            # ── NEW: Handle custom_fade ──
-            if req.animation_type == "custom_fade":
-                # req.hex_color is guaranteed not None if coming from the frontend
+            # ── Handle custom_meteor_shower ──
+            if req.animation_type == "custom_meteor_shower":
+                if req.hex_color:
+                    await custom_meteor_shower_loop(req.hex_color)
+            
+            # ── Handle custom_fade ──
+            elif req.animation_type == "custom_fade":
                 if req.hex_color:
                     await custom_fade_loop(req.hex_color)
-                # once that loop ends, continue to next queue
+
+            # Light one by one
             elif req.animation_type == "light_one_by_one":
                 while not stop_requested:
                     await light_up_one_by_one(req.color_index)
+
             elif req.animation_type == "fade_colors":
                 await fade_colors_loop()
+
             elif req.animation_type == "pulse_sync":
                 await pulse_sync_loop()
+
             elif req.animation_type == "wave_effect":
                 await wave_effect_loop()
+
             elif req.animation_type == "rainbow_flow":
                 await rainbow_flow_loop()
+
             elif req.animation_type == "blinking_pattern":
                 await blinking_pattern_loop()
+
             elif req.animation_type == "meteor_shower":
                 await meteor_shower_loop()
+
             elif req.animation_type == "running_lights":
                 await running_lights_loop()
+
             elif req.animation_type == "breathing_effect":
                 await breathing_effect_loop()
+
             elif req.animation_type == "fireworks_burst":
                 await fireworks_burst_loop()
+
             elif req.animation_type == "meteor_shower_modified":
                 await meteor_shower_modified_loop()
+
             elif req.animation_type == "single_snake":
                 await single_snake_loop()
+
             elif req.animation_type == "solid_color":
                 if req.hex_color:
                     r = int(req.hex_color[1:3], 16)
@@ -699,7 +1018,16 @@ async def animation_worker():
                         neo.set_led_color(i, r, g, b)
                     neo.update_strip()
                 stop_requested = True
-            # └─ end of custom_fade branch
+            
+            # ── Handle custom_blink ──
+            elif req.animation_type == "custom_blink":
+                if req.hex_color:
+                    await custom_blink_loop(req.hex_color)
+
+            # ── Handle custom_breathing ──
+            elif req.animation_type == "custom_breathing":
+                if req.hex_color:
+                    await custom_breathing_loop(req.hex_color)
 
         await asyncio.sleep(0.1)
 
