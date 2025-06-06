@@ -3004,3 +3004,3009 @@ body { background: #000; overflow: hidden; position: relative; }
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
     }
 }
+/* s.css */
+
+@keyframes ledGlow {
+    0% { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+    50% { text-shadow: 0 0 15px currentColor, 0 0 30px currentColor; }
+    100% { text-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+}
+
+@keyframes colorChange {
+    0% { color: #ff0000; }
+    25% { color: #ffff00; }
+    50% { color: #00ff00; }
+    75% { color: #00ffff; }
+    100% { color: #ff0000; }
+}
+
+@keyframes rotateHue {
+    0% { border-color: #ff0000; }
+    25% { border-color: #ffff00; }
+    50% { border-color: #00ff00; }
+    75% { border-color: #00ffff; }
+    100% { border-color: #ff0000; }
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.5s ease;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+    min-height: 100vh;
+    box-shadow: 0 0 30px rgba(0,0,0,0.1) inset;
+}
+
+.led-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    animation: ledGlow 2s infinite, colorChange 8s infinite;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    position: relative;
+    display: inline-block;
+}
+
+.led-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    animation: ledGlow 2s infinite;
+}
+
+.button-title{
+    /* font-size: 2.5rem; */
+    font-weight: bold;
+    margin-bottom: 30px;
+    animation: ledGlow 2s infinite, colorChange 8s infinite;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    position: relative;
+    display: inline-block;
+}
+
+.button-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, currentColor, transparent);
+    animation: ledGlow 2s infinite;
+}
+
+.button-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-weight: bold;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.2);
+}
+
+
+#redBtn {
+    background-color: #ff0000;
+    color: #ff0000;
+}
+
+#greenBtn {
+    background-color: #00ff00;
+    color: #00ff00;
+}
+
+#blueBtn {
+    background-color: #0000ff;
+    color: #0000ff;
+}
+
+#orangeBtn {
+    background-color: #FFA500;
+    color: #FFA500;
+}
+
+
+#yellowBtn {
+    color: #FFFF00;
+    background-color: #FFFF00;
+}
+#purpleBtn {
+    background-color: #A020F0;
+    color: #A020F0;
+}
+
+#pinkBtn {
+    background-color: #FFC0CB;
+    color: #FFC0CB;
+}
+
+
+#whiteBtn {
+    background-color: #FFFFFF;
+    color: #FFFFFF;
+}
+
+
+#grayBtn {
+    background-color: #808080;
+    color: #808080;
+}
+
+
+#brownBtn {
+    background-color: #964B00;
+    color: #964B00;
+}
+
+
+#offBtn {
+    background-color: #000000;
+    color: white;
+}
+
+#off2Btn {
+    background-color: #000000;
+    color: white;
+}
+
+
+@keyframes rotateColors {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.color-picker-wrapper {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 20px auto;
+}
+
+#colorPicker {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    cursor: pointer;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
+#colorPicker:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.color-ring {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: conic-gradient(
+        #ff0000, 
+        #ff8000, 
+        #ffff00, 
+        #80ff00, 
+        #00ff00, 
+        #00ff80, 
+        #00ffff, 
+        #0080ff, 
+        #0000ff, 
+        #8000ff, 
+        #ff00ff, 
+        #ff0080,
+        #ff0000
+    );
+    animation: rotateColors 5s linear infinite;
+    box-sizing: border-box;
+    z-index: 1;
+    filter: blur(5px);
+    opacity: 0.8;
+}
+
+.color-ring-inner {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    background: white;
+    border-radius: 50%;
+    top: 5px;
+    left: 5px;
+    z-index: 1;
+}
+.color-picker-wrapper {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 20px auto;
+}
+
+#colorPicker {
+    width: 100px;
+    height: 100px;
+    position: absolute; 
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    border: 3px solid #fff;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 2;
+}
+
+#colorPicker:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+.color-ring {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    border: 5px solid;
+    border-color: #ff0000;
+    animation: rotateHue 8s linear infinite;
+    box-sizing: border-box;
+    z-index: 1;
+}
+
+/* تصميم البطاقة والمظهر العام */
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    margin-top: 20px;
+    transition: all 0.3s ease;
+    max-height: 100vh;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+.card::-webkit-scrollbar{
+  width: 8px;
+
+}
+
+.card::-webkit-scrollbar-track{
+  background: rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+.card::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,0.3);
+  border-radius: 4px;
+
+}
+.color-display {
+    width: 150px;
+    height: 150px;
+    margin: 20px auto;
+    border-radius: 50%;
+    background: #ff0000;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+    transition: all 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+}
+
+@keyframes lightOneByOne {
+    0% {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+    }
+    25% {
+        box-shadow: 0 0 10px rgba(255, 255, 0, 0.8);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.8);
+    }
+    75% {
+        box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
+    }
+}
+
+
+.button-container button.active {
+    animation: pulse 1.5s infinite;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#lightOneBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#lightOneBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#lightOneBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#lightOneBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#lightOneBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#lightOneBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+.button-container button.active {
+    animation: pulse 1.5s infinite;
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#WaveEffectBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#WaveEffectBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#WaveEffectBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#WaveEffectBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#WaveEffectBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#WaveEffectBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#FadeInandOutBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#FadeInandOutBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#FadeInandOutBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#FadeInandOutBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#FadeInandOutBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#FadeInandOutBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#RainbowFlowBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#RainbowFlowBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#RainbowFlowBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#RainbowFlowBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#RainbowFlowBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#RainbowFlowBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#BlinkingPatternBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#BlinkingPatternBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#BlinkingPatternBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#BlinkingPatternBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#BlinkingPatternBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#BlinkingPatternBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#RunningLightsBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#RunningLightsBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#RunningLightsBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#RunningLightsBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#RunningLightsBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#RunningLightsBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#BreathingEffectBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#BreathingEffectBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#BreathingEffectBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#BreathingEffectBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#BreathingEffectBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#BreathingEffectBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+
+#MeteorShowerBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#MeteorShowerBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#MeteorShowerBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#MeteorShowerBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#MeteorShowerBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#MeteorShowerBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#PulseSyncBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#PulseSyncBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#PulseSyncBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#PulseSyncBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#PulseSyncBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#PulseSyncBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+/* تأثير خاص لزر Light One by One */
+#FireworksBurstBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#FireworksBurstBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#FireworksBurstBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#FireworksBurstBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#FireworksBurstBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#FireworksBurstBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+/*==================================================================
+  1. متغيرات عامة (CSS Variables) للـ Aura
+==================================================================*/
+:root {
+  /* تدرّجات الألوان الأساسية للوهج */
+  --aura-color-1: rgba(255, 50, 150, 0.80);
+  --aura-color-2: rgba(50, 200, 255, 0.80);
+  --aura-color-3: rgba(150, 255, 50, 0.80);
+  --aura-color-4: rgba(255, 255, 50, 0.80);
+
+  /* ألوان ثانوية وكهرمانية */
+  --accent-color-1: #FF0077;
+  --accent-color-2: #00CCFF;
+  --accent-color-3: #AAFF33;
+  --accent-color-4: #FFD700;
+
+  /* سرعات الرسوم */
+  --anim-speed-fast: 1s;
+  --anim-speed-medium: 3s;
+  --anim-speed-slow: 6s;
+  --anim-speed-ultra: 12s;
+
+  /* أحجام الظلال */
+  --shadow-glow-small: 0 0 20px;
+  --shadow-glow-medium: 0 0 40px;
+  --shadow-glow-large: 0 0 80px;
+  --shadow-glow-xlarge: 0 0 160px;
+
+  /* شفافية عامة */
+  --alpha-low: 0.15;
+  --alpha-med: 0.30;
+  --alpha-high: 0.60;
+  --alpha-max: 1.00;
+
+  /* تدرّج خلفية رئيسي */
+  --background-gradient: linear-gradient(135deg, #0A0F1A 0%, #1A2433 100%);
+}
+
+
+/*==================================================================
+  2. إعداد الهيكل العام للصفحة
+==================================================================*/
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  /* overflow: hidden; */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--background-gradient);
+  color: #EEE;
+}
+
+/* الحاوية الرئيسية */
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* بطاقة المحتوى */
+.card {
+  position: relative;
+  width: 90vw;
+  max-width: 800px;
+  padding: 40px;
+  border-radius: 24px;
+  background: rgba(20, 30, 50, var(--alpha-med));
+  box-shadow: var(--shadow-glow-large) var(--aura-color-1);
+  backdrop-filter: blur(20px) brightness(1.2);
+  z-index: 10;
+  /* overflow: hidden; */
+  animation: card-pulse var(--anim-speed-medium) infinite alternate;
+}
+
+/* تذبذب خفيف للبطاقة */
+@keyframes card-pulse {
+  0% {
+    box-shadow: var(--shadow-glow-large) var(--aura-color-1);
+  }
+  50% {
+    box-shadow: var(--shadow-glow-large) var(--aura-color-2);
+  }
+  100% {
+    box-shadow: var(--shadow-glow-large) var(--aura-color-3);
+  }
+}
+
+/*==================================================================
+  3. تأثيرات الجداول والخطوط العائمة في الخلفية (Background Overlays)
+==================================================================*/
+
+/* طبقة خطوط هندسية متقاطعة */
+.background-lines {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background-image:
+    linear-gradient(45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
+    linear-gradient(45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
+    linear-gradient(-45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: bg-move-lines var(--anim-speed-slow) infinite linear;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes bg-move-lines {
+  0%   { transform: translate(0, 0) rotate(0deg); }
+  100% { transform: translate(-80px, -80px) rotate(360deg); }
+}
+
+/* طبقة هالة نورانية متحركة */
+.background-aura {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center,
+      var(--aura-color-1) 0%,
+      var(--aura-color-2) 30%,
+      var(--aura-color-3) 60%,
+      var(--aura-color-4) 100%
+    );
+  opacity: var(--alpha-low);
+  filter: blur(100px);
+  animation: bg-pulse-aura var(--anim-speed-ultra) infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes bg-pulse-aura {
+  0% {
+    opacity: var(--alpha-low);
+    transform: scale(1);
+  }
+  50% {
+    opacity: var(--alpha-med);
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: var(--alpha-low);
+    transform: scale(1);
+  }
+}
+
+/* طبقة نقاط متفرقة (Particles) متحركة */
+.background-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.background-particles .particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, var(--alpha-low));
+  border-radius: 50%;
+  animation: particle-float var(--anim-speed-ultra) infinite ease-in-out;
+}
+
+/* توليد 50 جسيم عشوائي */
+@for $i from 1 through 50 {
+  .background-particles .particle:nth-child(#{$i}) {
+    top: random(100) + '%';
+    left: random(100) + '%';
+    animation-duration: calc(var(--anim-speed-ultra) * (random(5) / 5 + 0.5));
+    animation-delay: calc(var(--anim-speed-ultra) * (random(5) / 5 * -1));
+  }
+}
+
+@keyframes particle-float {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.2; }
+  50%  { transform: translate(5px, -5px) scale(1.3); opacity: 0.6; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+}
+
+/*==================================================================
+  4. تأثير الهالة المتوهجة حول النص والعناوين
+==================================================================*/
+.led-title, .button-title {
+  position: relative;
+  display: inline-block;
+  font-size: 2.5rem;
+  font-weight: bold;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, var(--accent-color-1), var(--accent-color-2), var(--accent-color-3), var(--accent-color-4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: title-glow var(--anim-speed-medium) infinite alternate;
+}
+
+@keyframes title-glow {
+  0% {
+    text-shadow: var(--shadow-glow-small) var(--accent-color-1),
+                 var(--shadow-glow-medium) var(--accent-color-2);
+  }
+  50% {
+    text-shadow: var(--shadow-glow-medium) var(--accent-color-3),
+                 var(--shadow-glow-large) var(--accent-color-4);
+  }
+  100% {
+    text-shadow: var(--shadow-glow-small) var(--accent-color-2),
+                 var(--shadow-glow-medium) var(--accent-color-1);
+  }
+}
+
+/*==================================================================
+  5. تصميم الدوائر المتحركة (Floating Orbs) داخل البطاقة
+==================================================================*/
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  opacity: var(--alpha-low);
+  filter: blur(30px);
+  animation: orb-drift var(--anim-speed-ultra) infinite ease-in-out;
+}
+
+.orb.orb-1 {
+  width: 200px;
+  height: 200px;
+  top: -50px;
+  right: -50px;
+  background: var(--aura-color-1);
+  animation-delay: 0s;
+}
+.orb.orb-2 {
+  width: 150px;
+  height: 150px;
+  bottom: -40px;
+  left: -40px;
+  background: var(--aura-color-2);
+  animation-delay: 1s;
+}
+.orb.orb-3 {
+  width: 120px;
+  height: 120px;
+  top: 20%;
+  left: 80%;
+  background: var(--aura-color-3);
+  animation-delay: 2s;
+}
+.orb.orb-4 {
+  width: 180px;
+  height: 180px;
+  bottom: 25%;
+  right: 15%;
+  background: var(--aura-color-4);
+  animation-delay: 3s;
+}
+
+@keyframes orb-drift {
+  0%   { transform: translate(0, 0) scale(1); opacity: var(--alpha-low); }
+  25%  { transform: translate(20px, -20px) scale(1.2); opacity: var(--alpha-med); }
+  50%  { transform: translate(0, -40px) scale(1.4); opacity: var(--alpha-high); }
+  75%  { transform: translate(-20px, -20px) scale(1.2); opacity: var(--alpha-med); }
+  100% { transform: translate(0, 0) scale(1); opacity: var(--alpha-low); }
+}
+
+
+/*==================================================================
+  6. تصميم الأزرار (Buttons) مع تأثير الهالة والألوان الديناميكية
+==================================================================*/
+button {
+  position: relative;
+  padding: 14px 28px;
+  margin: 10px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #FFF;
+  background: linear-gradient(135deg, var(--accent-color-1), var(--accent-color-2));
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  overflow: hidden;
+  z-index: 2;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: var(--shadow-glow-small) var(--accent-color-1);
+}
+
+button:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-glow-medium) var(--accent-color-2);
+}
+
+button:focus {
+  outline: none;
+  box-shadow: var(--shadow-glow-large) var(--accent-color-3);
+}
+
+/* إضافة تأثير نبض ثابت للأزرار النشطة */
+button.active {
+  animation: button-pulse var(--anim-speed-slow) infinite alternate;
+}
+
+@keyframes button-pulse {
+  0% {
+    box-shadow: var(--shadow-glow-small) var(--accent-color-4);
+  }
+  50% {
+    box-shadow: var(--shadow-glow-large) var(--accent-color-2);
+  }
+  100% {
+    box-shadow: var(--shadow-glow-small) var(--accent-color-1);
+  }
+}
+
+/* شبكة خطوط متحركة خلف الأزرار */
+button::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,var(--alpha-low)),
+    rgba(255,255,255,var(--alpha-low)) 1px,
+    transparent 1px,
+    transparent 10px
+  );
+  opacity: var(--alpha-low);
+  filter: blur(8px);
+  transform: rotate(0deg);
+  transition: opacity 0.5s ease;
+}
+button:hover::before {
+  animation: button-bg-rotate var(--anim-speed-ultra) infinite linear;
+  opacity: var(--alpha-med);
+}
+
+@keyframes button-bg-rotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+/*==================================================================
+  7. تأثيرات تفاعلية عند التمرير بالماوس (Cursor Interactions)
+==================================================================*/
+/* كرة تتبع مؤشر الفأرة */
+.cursor-orb {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 24px;
+  height: 24px;
+  background: radial-gradient(circle, var(--accent-color-1) 0%, transparent 60%);
+  border-radius: 50%;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  mix-blend-mode: screen;
+  animation: cursor-glow var(--anim-speed-slow) infinite alternate;
+  z-index: 1000;
+}
+
+@keyframes cursor-glow {
+  0% {
+    transform: translate(-50%, -50%) scale(0.6);
+    opacity: 0.4;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* تلميح نصي يظهر بجانب المؤشر (Tooltip) */
+.tooltip {
+  position: absolute;
+  padding: 6px 10px;
+  background: rgba(0, 0, 0, var(--alpha-high));
+  color: #FFF;
+  font-size: 0.8rem;
+  border-radius: 4px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -120%);
+  transition: opacity 0.2s ease;
+  z-index: 1000;
+}
+
+
+/*==================================================================
+  8. تأثيرات انتقالية للروابط والصور (Link & Image Transitions)
+==================================================================*/
+/* الروابط داخل البطاقة */
+.card a {
+  color: var(--accent-color-2);
+  text-decoration: none;
+  position: relative;
+  /* overflow: hidden; */
+  display: inline-block;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.card a::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: var(--accent-color-1);
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.card a:hover {
+  color: var(--accent-color-3);
+}
+
+.card a:hover::after {
+  width: 100%;
+  left: 0;
+}
+
+/* الصور داخل البطاقة */
+.card img {
+  width: 100%;
+  border-radius: 12px;
+  filter: brightness(0.8) contrast(1.2);
+  transition: filter 0.3s ease, transform 0.3s ease;
+}
+
+.card img:hover {
+  filter: brightness(1) contrast(1);
+  transform: scale(1.03);
+}
+
+
+/*==================================================================
+  9. تأثيرات لونية متغيرة على عناصر محددة (Color Wave Effects)
+==================================================================*/
+/* عداد دائري متحرك حول لون العرض */
+.color-display {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  margin: 0 auto 30px auto;
+  border-radius: 50%;
+  background: #000; /* القيمة الأولية نفسها، ستتغير بواسطة JS */
+  box-shadow: 0 0 30px rgba(255,255,255,0.2);
+  overflow: hidden;
+  transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+.color-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    var(--accent-color-1),
+    var(--accent-color-2),
+    var(--accent-color-3),
+    var(--accent-color-4),
+    var(--accent-color-1)
+  );
+  animation: color-ring-spin var(--anim-speed-slow) infinite linear;
+  opacity: 0.6;
+  filter: blur(20px);
+  z-index: -1;
+}
+
+@keyframes color-ring-spin {
+  0% { transform: rotate(0deg)   scale(1); }
+  50%{ transform: rotate(180deg) scale(1.2); }
+  100%{ transform: rotate(360deg) scale(1); }
+}
+
+/* النص داخل الدائرة يتوهج عند تغيير اللون */
+.color-display span {
+  position: relative;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: #FFF;
+  text-shadow: var(--shadow-glow-small) var(--accent-color-1);
+  animation: display-text-glow var(--anim-speed-medium) infinite alternate;
+}
+
+@keyframes display-text-glow {
+  0% {
+    text-shadow: var(--shadow-glow-small) var(--accent-color-2);
+  }
+  50% {
+    text-shadow: var(--shadow-glow-large) var(--accent-color-3);
+  }
+  100% {
+    text-shadow: var(--shadow-glow-small) var(--accent-color-4);
+  }
+}
+
+
+/*==================================================================
+  10. تأثير الحركة الأفقية العملاقة (Horizontal Wave Background)
+==================================================================*/
+/* موجة أفقية مخفية في الخلفية */
+.horizontal-wave {
+  position: absolute;
+  bottom: -50px;
+  left: -50px;
+  width: 200%;
+  height: 200px;
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, var(--alpha-low)) 0%,
+    rgba(255, 255, 255, 0) 25%,
+    rgba(255, 255, 255, var(--alpha-low)) 50%,
+    rgba(255, 255, 255, 0) 75%,
+    rgba(255, 255, 255, var(--alpha-low)) 100%
+  );
+  background-size: 200% 100%;
+  opacity: var(--alpha-low);
+  animation: wave-move var(--anim-speed-ultra) infinite linear;
+  filter: blur(50px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes wave-move {
+  0% { background-position: 0% 0%; }
+  100% { background-position: -200% 0%; }
+}
+
+/*==================================================================
+  11. تأثيرات عمودية على شكل “خطوط ضوئية” (Vertical Light Bars)
+==================================================================*/
+/* إنشاء 6 أعمدة ضوئية متوهجة */
+.light-bar {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--accent-color-1);
+  opacity: var(--alpha-low);
+  filter: blur(10px);
+  animation: bar-pulse var(--anim-speed-medium) infinite ease-in-out;
+}
+
+.light-bar:nth-child(1) { left: 10%; animation-delay: 0s; }
+.light-bar:nth-child(2) { left: 25%; animation-delay: 0.5s; }
+.light-bar:nth-child(3) { left: 40%; animation-delay: 1s; }
+.light-bar:nth-child(4) { left: 55%; animation-delay: 1.5s; }
+.light-bar:nth-child(5) { left: 70%; animation-delay: 2s; }
+.light-bar:nth-child(6) { left: 85%; animation-delay: 2.5s; }
+
+@keyframes bar-pulse {
+  0% {
+    height: 10%;
+    opacity: var(--alpha-low);
+  }
+  50% {
+    height: 100%;
+    opacity: var(--alpha-med);
+  }
+  100% {
+    height: 10%;
+    opacity: var(--alpha-low);
+  }
+}
+
+/*==================================================================
+  12. تأثيرات زجاجية لمجموعات الإدخال (Glass Input Fields)
+==================================================================*/
+input[type="color"],
+input[type="text"],
+select {
+  background: rgba(255, 255, 255, var(--alpha-low));
+  border: none;
+  border-radius: 8px;
+  padding: 10px 14px;
+  color: #000;
+  font-weight: bold;
+  box-shadow: var(--shadow-glow-small) rgba(255,255,255,var(--alpha-low));
+  backdrop-filter: blur(10px) brightness(1.1);
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+input[type="color"]:hover,
+input[type="text"]:hover,
+select:hover {
+  background: rgba(255, 255, 255, var(--alpha-med));
+  box-shadow: var(--shadow-glow-medium) rgba(255,255,255,var(--alpha-med));
+}
+
+input[type="text"]:focus,
+select:focus {
+  outline: none;
+  background: rgba(255, 255, 255, var(--alpha-high));
+  box-shadow: var(--shadow-glow-large) rgba(255,255,255,var(--alpha-high));
+}
+
+/*==================================================================
+  13. تأثير “أقراص دوارة” متحركة في الزوايا (Corner Spinners)
+==================================================================*/
+.corner-spinner {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border: 4px solid transparent;
+  border-top-color: var(--accent-color-1);
+  border-right-color: var(--accent-color-2);
+  border-radius: 50%;
+  animation: spinner-rotate var(--anim-speed-ultra) infinite linear;
+  opacity: var(--alpha-med);
+}
+
+.corner-spinner.top-left {
+  top: 20px;
+  left: 20px;
+}
+
+.corner-spinner.top-right {
+  top: 20px;
+  right: 20px;
+}
+
+.corner-spinner.bottom-left {
+  bottom: 20px;
+  left: 20px;
+}
+
+.corner-spinner.bottom-right {
+  bottom: 20px;
+  right: 20px;
+}
+
+@keyframes spinner-rotate {
+  0%   { transform: rotate(0deg)   scale(1); }
+  50%  { transform: rotate(180deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+
+/*==================================================================
+  14. تأثيرات “قماش ثلاثي الأبعاد” ديناميكي (3D Parallax Layers)
+==================================================================*/
+/* طبقة خلفية خلفية “سميكة” */
+.parallax-layer.bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 200%;
+  background-image: url('path/to/your/high-res-background.jpg');
+  background-size: cover;
+  background-blend-mode: overlay;
+  opacity: var(--alpha-low);
+  transform: translateZ(-2px) scale(3);
+  will-change: transform;
+  z-index: -3;
+}
+
+/* طبقة وسطى بها أقراص متحركة */
+.parallax-layer.mid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 150%;
+  height: 150%;
+  pointer-events: none;
+  transform: translateZ(-1px) scale(2);
+  will-change: transform;
+  z-index: -2;
+}
+
+.parallax-layer.mid .mid-orb {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: var(--aura-color-2);
+  opacity: var(--alpha-low);
+  filter: blur(80px);
+  animation: mid-orb-drift var(--anim-speed-ultra) infinite ease-in-out;
+}
+
+@keyframes mid-orb-drift {
+  0%   { transform: translate(0, 0) scale(1); }
+  33%  { transform: translate(200px, -100px) scale(1.3); }
+  66%  { transform: translate(-150px, 200px) scale(1.5); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
+/* طبقة محتوى أمامية */
+.parallax-layer.front {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateZ(0) scale(1);
+  will-change: transform;
+  z-index: -1;
+}
+
+
+/*==================================================================
+  15. تأثيرات “شبكة ثلاثية الأبعاد” (3D Grid / Wireframe)
+==================================================================*/
+/* شبكة خطوط ثنائية الأبعاد تتحول إلى وهم ثلاثي */
+.wireframe-grid {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 200%;
+  height: 200%;
+  transform: translate(-50%, -50%) rotateX(60deg) scale(2);
+  background-image:
+    linear-gradient(0deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: grid-scroll var(--anim-speed-ultra) infinite linear;
+  pointer-events: none;
+  z-index: -4;
+}
+
+@keyframes grid-scroll {
+  0% {
+    background-position: 0px 0px, 0px 0px;
+  }
+  100% {
+    background-position: -80px -80px, -80px -80px;
+  }
+}
+
+
+
+/*---------------------------------------
+  1. إعادة ضبط الخلفية الأساسية
+---------------------------------------*/
+body {
+  background: #000; /* اجعل الخلفية سوداء صافية لإبراز الأشكال والوهج */
+  /* overflow: hidden; إخفاء أي تجاوز */
+  position: relative;
+}
+
+/*---------------------------------------
+  2. حاوية الأشكال المتحركة (Shapes Container)
+---------------------------------------*/
+#aura-shapes {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/*---------------------------------------
+  3. الأشكال (Triangles | Squares | Circles)
+---------------------------------------*/
+/* شكل عام: يملك وميضاً، حركة انتقالية وصندوق توهج */
+.aura-shape {
+  position: absolute;
+  opacity: 0.0;
+  border-radius: 50%; /* سنستخدم دائماً وغير دائري عبر الدمج مع clip-path */
+  box-shadow: 0 0 30px rgba(255,255,255,0.2),
+              0 0 60px rgba(255,255,255,0.1);
+  animation: shape-fade-move var(--anim-speed-ultra) infinite ease-in-out;
+}
+
+/* مثلث */
+.aura-shape.triangle {
+  width: 0;
+  height: 0;
+  border-left: 60px solid transparent;
+  border-right: 60px solid transparent;
+  border-bottom: 100px solid rgba(255, 50, 200, 0.15);
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  animation-name: triangle-float;
+}
+
+/* مربع */
+.aura-shape.square {
+  width: 100px;
+  height: 100px;
+  background: rgba(50, 200, 255, 0.15);
+  animation-name: square-drift;
+}
+
+/* دائرة */
+.aura-shape.circle {
+  width: 80px;
+  height: 80px;
+  background: rgba(150, 255, 50, 0.15);
+  border-radius: 50%;
+  animation-name: circle-glide;
+}
+
+/*---------------------------------------
+  4. توليد الأشكال عبر ::before وأعداد كبيرة
+---------------------------------------*/
+.aura-shape::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: inherit;
+  height: inherit;
+  background: inherit;
+  clip-path: inherit;
+  border-radius: inherit;
+  box-shadow: inherit;
+  animation: inherit;
+}
+
+/*---------------------------------------
+  5. حركيّة الأشكال (Keyframes)
+---------------------------------------*/
+/* حركة عامة لظهور شكل، الإنتقال، ثم التلاشي */
+@keyframes shape-fade-move {
+  0%   { opacity: 0; transform: translate(var(--start-x), var(--start-y)) scale(0.5); }
+  10%  { opacity: 0.3; }
+  50%  { opacity: 0.6; transform: translate(var(--mid-x), var(--mid-y)) scale(1.2); }
+  90%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translate(var(--end-x), var(--end-y)) scale(0.5); }
+}
+
+/* حركة خاصة بالمثلث */
+@keyframes triangle-float {
+  0%   { --start-x: -10%; --start-y: -20%; --mid-x: 20%;  --mid-y: 30%;  --end-x: 110%; --end-y: 120%; }
+  100% { /* قيم ثابتة فقط ل shape-fade-move */ }
+}
+
+/* حركة خاصة بالمربع */
+@keyframes square-drift {
+  0%   { --start-x: 110%; --start-y: 10%;  --mid-x: 60%;  --mid-y: 70%;  --end-x: -20%; --end-y: 90%; }
+  100% { }
+}
+
+/* حركة خاصة بالدائرة */
+@keyframes circle-glide {
+  0%   { --start-x: 30%;  --start-y: 110%; --mid-x: 50%;  --mid-y: 40%;  --end-x: 70%;  --end-y: -30%; }
+  100% { }
+}
+
+/*---------------------------------------
+  6. تنويع درجات الألوان والحركات لأعداد كبيرة
+---------------------------------------*/
+/* ننسخ 20 مثلاً من الأشكال بمواقع وتأخيرات مختلفة */
+#aura-shapes .aura-shape:nth-child(1)  { animation-delay: 0s;   left: 10%;  top: 5%;   }
+#aura-shapes .aura-shape:nth-child(2)  { animation-delay: 2s;   left: 80%;  top: 15%;  }
+#aura-shapes .aura-shape:nth-child(3)  { animation-delay: 4s;   left: 50%;  top: 90%;  }
+#aura-shapes .aura-shape:nth-child(4)  { animation-delay: 1s;   left: 20%;  top: 80%;  }
+#aura-shapes .aura-shape:nth-child(5)  { animation-delay: 3s;   left: 70%;  top: 50%;  }
+#aura-shapes .aura-shape:nth-child(6)  { animation-delay: 5s;   left: 40%;  top: 30%;  }
+#aura-shapes .aura-shape:nth-child(7)  { animation-delay: 2.5s; left: 85%;  top: 75%;  }
+#aura-shapes .aura-shape:nth-child(8)  { animation-delay: 4.5s; left: 5%;   top: 60%;  }
+#aura-shapes .aura-shape:nth-child(9)  { animation-delay: 0.5s; left: 60%;  top: 20%;  }
+#aura-shapes .aura-shape:nth-child(10) { animation-delay: 3.5s; left: 30%;  top: 40%;  }
+#aura-shapes .aura-shape:nth-child(11) { animation-delay: 1.7s; left: 90%;  top: 90%;  }
+#aura-shapes .aura-shape:nth-child(12) { animation-delay: 6s;   left: 25%;  top: 10%;  }
+#aura-shapes .aura-shape:nth-child(13) { animation-delay: 4.2s; left: 55%;  top: 60%;  }
+#aura-shapes .aura-shape:nth-child(14) { animation-delay: 2.8s; left: 15%;  top: 35%;  }
+#aura-shapes .aura-shape:nth-child(15) { animation-delay: 5.5s; left: 75%;  top: 25%;  }
+#aura-shapes .aura-shape:nth-child(16) { animation-delay: 0.9s; left: 45%;  top: 85%;  }
+#aura-shapes .aura-shape:nth-child(17) { animation-delay: 3.9s; left: 95%;  top: 55%;  }
+#aura-shapes .aura-shape:nth-child(18) { animation-delay: 1.2s; left: 35%;  top: 15%;  }
+#aura-shapes .aura-shape:nth-child(19) { animation-delay: 4.8s; left: 65%;  top: 95%;  }
+#aura-shapes .aura-shape:nth-child(20) { animation-delay: 2.2s; left: 5%;   top: 85%;  }
+
+/*---------------------------------------
+  7. نمط مُلقَّط لإضافة وهج متزامن أثناء مرور المؤشر
+---------------------------------------*/
+body:hover #aura-shapes .aura-shape {
+  filter: brightness(1.5) blur(15px);
+  box-shadow: 0 0 50px rgba(255,255,255,0.3);
+}
+
+/*---------------------------------------
+  8. إضافة خطوط متوهجة عابرة (Neon Comets)
+---------------------------------------*/
+/* العنصر العام */
+.neon-comet {
+  position: absolute;
+  width: 4px;
+  height: 80px;
+  background: linear-gradient(to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  filter: blur(8px);
+  opacity: 0;
+  animation: comet-shoot var(--anim-speed-ultra) infinite linear;
+  z-index: 1;
+}
+
+/* تدرّجات وتأخيرات مختلفة لـ 6 مذنبات */
+#aura-shapes .neon-comet:nth-child(21) { animation-delay: 0.5s;  left: 50%;  top: 0%;  transform: rotate(15deg);  }
+#aura-shapes .neon-comet:nth-child(22) { animation-delay: 2s;    left: 20%;  top: 10%; transform: rotate(30deg);  }
+#aura-shapes .neon-comet:nth-child(23) { animation-delay: 3.5s;  left: 80%;  top: 5%;  transform: rotate(-10deg); }
+#aura-shapes .neon-comet:nth-child(24) { animation-delay: 1.2s;  left: 35%;  top: 15%; transform: rotate(45deg);  }
+#aura-shapes .neon-comet:nth-child(25) { animation-delay: 4s;    left: 65%;  top: 8%;  transform: rotate(-25deg); }
+#aura-shapes .neon-comet:nth-child(26) { animation-delay: 5.5s;  left: 10%;  top: 20%; transform: rotate(60deg);  }
+
+@keyframes comet-shoot {
+  0%   { opacity: 0;  transform-origin: bottom center; transform: rotate(var(--angle)) translateY(0); }
+  10%  { opacity: 1;  }
+  50%  { opacity: 0.8; transform: translateY(80vh) rotate(var(--angle)); }
+  90%  { opacity: 0.2; }
+  100% { opacity: 0;  transform: translateY(90vh) rotate(var(--angle)); }
+}
+
+/*---------------------------------------
+  9. إضافة موجة طاقة (Energy Wave) متموجة
+---------------------------------------*/
+.energy-wave {
+  position: absolute;
+  bottom: -50px;
+  left: -50%;
+  width: 200%;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.1);
+  filter: blur(20px);
+  animation: energy-wave-move var(--anim-speed-ultra) infinite ease-in-out;
+  z-index: 0;
+}
+
+@keyframes energy-wave-move {
+  0% { transform: translateX(-100%) skewX(20deg); }
+  50% { transform: translateX(0%) skewX(-20deg); }
+  100% { transform: translateX(100%) skewX(20deg); }
+}
+
+/*---------------------------------------
+  10. مولّد النقاط المتناثرة (Particle Generator) – نقوم بإنشاء 40 نقطة
+---------------------------------------*/
+.background-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.background-particles .particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  animation: particle-float-2 var(--anim-speed-ultra) infinite ease-in-out;
+}
+
+@keyframes particle-float-2 {
+  0%   { transform: translate(0, 0) scale(1); opacity: 0.1; }
+  50%  { transform: translate(10px, -10px) scale(1.3); opacity: 0.5; }
+  100% { transform: translate(0, 0) scale(1); opacity: 0.1; }
+}
+
+/* توزيعات عشوائية عن طريق CSS */
+@for $i from 1 through 40 {
+  .background-particles .particle:nth-child(#{$i}) {
+    top: random(100) + '%';
+    left: random(100) + '%';
+    animation-duration: calc(var(--anim-speed-ultra) * (random(5)/5 + 0.2));
+    animation-delay: calc(var(--anim-speed-ultra) * (random(5)/5 * -1));
+  }
+}
+
+/*---------------------------------------
+  11. إضافة ضباب ضوئي (Light Fog Overlay)
+---------------------------------------*/
+.light-fog {
+  position: absolute;
+  top: -20%;
+  left: -20%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(
+    circle at center,
+    rgba(255,255,255,0.04) 0%,
+    rgba(255,255,255,0) 70%
+  );
+  filter: blur(100px);
+  animation: fog-pulse var(--anim-speed-ultra) infinite alternate;
+  z-index: 0;
+}
+
+@keyframes fog-pulse {
+  0% { opacity: 0.02; }
+  50% { opacity: 0.08; }
+  100% { opacity: 0.02; }
+}
+
+
+body { background: #000; overflow: hidden; position: relative; }
+#aura-shapes { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 0; overflow: hidden; pointer-events: none; }
+/* Initial shapes definitions */
+.aura-shape:nth-child(1) { /* shape 1 type square */ }
+.aura-shape:nth-child(2) { /* shape 2 type circle */ }
+.aura-shape:nth-child(3) { /* shape 3 type triangle */ }
+.aura-shape:nth-child(4) { /* shape 4 type square */ }
+.aura-shape:nth-child(5) { /* shape 5 type circle */ }
+.aura-shape:nth-child(6) { /* shape 6 type triangle */ }
+.aura-shape:nth-child(7) { /* shape 7 type square */ }
+.aura-shape:nth-child(8) { /* shape 8 type circle */ }
+.aura-shape:nth-child(9) { /* shape 9 type triangle */ }
+.aura-shape:nth-child(10) { /* shape 10 type square */ }
+.aura-shape:nth-child(11) { /* shape 11 type circle */ }
+.aura-shape:nth-child(12) { /* shape 12 type triangle */ }
+.aura-shape:nth-child(13) { /* shape 13 type square */ }
+.aura-shape:nth-child(14) { /* shape 14 type circle */ }
+.aura-shape:nth-child(15) { /* shape 15 type triangle */ }
+.aura-shape:nth-child(16) { /* shape 16 type square */ }
+.aura-shape:nth-child(17) { /* shape 17 type circle */ }
+.aura-shape:nth-child(18) { /* shape 18 type triangle */ }
+.aura-shape:nth-child(19) { /* shape 19 type square */ }
+.aura-shape:nth-child(20) { /* shape 20 type circle */ }
+.aura-shape:nth-child(21) { /* shape 21 type triangle */ }
+.aura-shape:nth-child(22) { /* shape 22 type square */ }
+.aura-shape:nth-child(23) { /* shape 23 type circle */ }
+.aura-shape:nth-child(24) { /* shape 24 type triangle */ }
+.aura-shape:nth-child(25) { /* shape 25 type square */ }
+.aura-shape:nth-child(26) { /* shape 26 type circle */ }
+.aura-shape:nth-child(27) { /* shape 27 type triangle */ }
+.aura-shape:nth-child(28) { /* shape 28 type square */ }
+.aura-shape:nth-child(29) { /* shape 29 type circle */ }
+.aura-shape:nth-child(30) { /* shape 30 type triangle */ }
+.aura-shape:nth-child(31) { /* shape 31 type square */ }
+.aura-shape:nth-child(32) { /* shape 32 type circle */ }
+.aura-shape:nth-child(33) { /* shape 33 type triangle */ }
+.aura-shape:nth-child(34) { /* shape 34 type square */ }
+.aura-shape:nth-child(35) { /* shape 35 type circle */ }
+.aura-shape:nth-child(36) { /* shape 36 type triangle */ }
+.aura-shape:nth-child(37) { /* shape 37 type square */ }
+.aura-shape:nth-child(38) { /* shape 38 type circle */ }
+.aura-shape:nth-child(39) { /* shape 39 type triangle */ }
+.aura-shape:nth-child(40) { /* shape 40 type square */ }
+.aura-shape:nth-child(41) { /* shape 41 type circle */ }
+.aura-shape:nth-child(42) { /* shape 42 type triangle */ }
+.aura-shape:nth-child(43) { /* shape 43 type square */ }
+.aura-shape:nth-child(44) { /* shape 44 type circle */ }
+.aura-shape:nth-child(45) { /* shape 45 type triangle */ }
+.aura-shape:nth-child(46) { /* shape 46 type square */ }
+.aura-shape:nth-child(47) { /* shape 47 type circle */ }
+.aura-shape:nth-child(48) { /* shape 48 type triangle */ }
+.aura-shape:nth-child(49) { /* shape 49 type square */ }
+.aura-shape:nth-child(50) { /* shape 50 type circle */ }
+/* Particles definitions */
+.background-particles .particle:nth-child(1) { top: 1%; left: 3%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(2) { top: 2%; left: 6%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(3) { top: 3%; left: 9%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(4) { top: 4%; left: 12%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(5) { top: 5%; left: 15%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(6) { top: 6%; left: 18%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(7) { top: 7%; left: 21%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(8) { top: 8%; left: 24%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(9) { top: 9%; left: 27%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(10) { top: 10%; left: 30%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(11) { top: 11%; left: 33%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(12) { top: 12%; left: 36%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(13) { top: 13%; left: 39%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(14) { top: 14%; left: 42%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(15) { top: 15%; left: 45%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(16) { top: 16%; left: 48%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(17) { top: 17%; left: 51%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(18) { top: 18%; left: 54%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(19) { top: 19%; left: 57%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(20) { top: 20%; left: 60%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(21) { top: 21%; left: 63%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(22) { top: 22%; left: 66%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(23) { top: 23%; left: 69%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(24) { top: 24%; left: 72%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(25) { top: 25%; left: 75%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(26) { top: 26%; left: 78%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(27) { top: 27%; left: 81%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(28) { top: 28%; left: 84%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(29) { top: 29%; left: 87%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(30) { top: 30%; left: 90%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(31) { top: 31%; left: 93%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(32) { top: 32%; left: 96%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(33) { top: 33%; left: 99%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(34) { top: 34%; left: 2%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(35) { top: 35%; left: 5%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(36) { top: 36%; left: 8%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(37) { top: 37%; left: 11%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(38) { top: 38%; left: 14%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(39) { top: 39%; left: 17%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(40) { top: 40%; left: 20%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(41) { top: 41%; left: 23%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(42) { top: 42%; left: 26%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(43) { top: 43%; left: 29%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(44) { top: 44%; left: 32%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(45) { top: 45%; left: 35%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(46) { top: 46%; left: 38%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(47) { top: 47%; left: 41%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(48) { top: 48%; left: 44%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(49) { top: 49%; left: 47%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(50) { top: 50%; left: 50%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(51) { top: 51%; left: 53%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(52) { top: 52%; left: 56%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(53) { top: 53%; left: 59%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(54) { top: 54%; left: 62%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(55) { top: 55%; left: 65%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(56) { top: 56%; left: 68%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(57) { top: 57%; left: 71%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(58) { top: 58%; left: 74%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(59) { top: 59%; left: 77%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(60) { top: 60%; left: 80%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(61) { top: 61%; left: 83%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(62) { top: 62%; left: 86%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(63) { top: 63%; left: 89%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(64) { top: 64%; left: 92%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(65) { top: 65%; left: 95%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(66) { top: 66%; left: 98%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(67) { top: 67%; left: 1%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(68) { top: 68%; left: 4%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(69) { top: 69%; left: 7%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(70) { top: 70%; left: 10%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(71) { top: 71%; left: 13%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(72) { top: 72%; left: 16%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(73) { top: 73%; left: 19%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(74) { top: 74%; left: 22%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(75) { top: 75%; left: 25%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(76) { top: 76%; left: 28%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(77) { top: 77%; left: 31%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(78) { top: 78%; left: 34%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(79) { top: 79%; left: 37%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(80) { top: 80%; left: 40%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(81) { top: 81%; left: 43%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(82) { top: 82%; left: 46%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(83) { top: 83%; left: 49%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(84) { top: 84%; left: 52%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(85) { top: 85%; left: 55%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(86) { top: 86%; left: 58%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(87) { top: 87%; left: 61%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(88) { top: 88%; left: 64%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(89) { top: 89%; left: 67%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(90) { top: 90%; left: 70%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(91) { top: 91%; left: 73%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(92) { top: 92%; left: 76%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(93) { top: 93%; left: 79%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(94) { top: 94%; left: 82%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(95) { top: 95%; left: 85%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(96) { top: 96%; left: 88%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(97) { top: 97%; left: 91%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(98) { top: 98%; left: 94%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(99) { top: 99%; left: 97%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(100) { top: 0%; left: 0%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(101) { top: 1%; left: 3%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(102) { top: 2%; left: 6%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(103) { top: 3%; left: 9%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(104) { top: 4%; left: 12%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(105) { top: 5%; left: 15%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(106) { top: 6%; left: 18%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(107) { top: 7%; left: 21%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(108) { top: 8%; left: 24%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(109) { top: 9%; left: 27%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(110) { top: 10%; left: 30%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(111) { top: 11%; left: 33%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(112) { top: 12%; left: 36%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(113) { top: 13%; left: 39%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(114) { top: 14%; left: 42%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(115) { top: 15%; left: 45%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(116) { top: 16%; left: 48%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(117) { top: 17%; left: 51%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(118) { top: 18%; left: 54%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(119) { top: 19%; left: 57%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(120) { top: 20%; left: 60%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(121) { top: 21%; left: 63%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(122) { top: 22%; left: 66%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(123) { top: 23%; left: 69%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(124) { top: 24%; left: 72%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(125) { top: 25%; left: 75%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(126) { top: 26%; left: 78%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(127) { top: 27%; left: 81%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(128) { top: 28%; left: 84%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(129) { top: 29%; left: 87%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(130) { top: 30%; left: 90%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(131) { top: 31%; left: 93%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(132) { top: 32%; left: 96%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(133) { top: 33%; left: 99%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(134) { top: 34%; left: 2%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(135) { top: 35%; left: 5%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(136) { top: 36%; left: 8%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(137) { top: 37%; left: 11%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(138) { top: 38%; left: 14%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(139) { top: 39%; left: 17%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(140) { top: 40%; left: 20%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(141) { top: 41%; left: 23%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(142) { top: 42%; left: 26%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(143) { top: 43%; left: 29%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(144) { top: 44%; left: 32%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(145) { top: 45%; left: 35%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(146) { top: 46%; left: 38%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(147) { top: 47%; left: 41%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(148) { top: 48%; left: 44%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(149) { top: 49%; left: 47%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(150) { top: 50%; left: 50%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(151) { top: 51%; left: 53%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(152) { top: 52%; left: 56%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(153) { top: 53%; left: 59%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(154) { top: 54%; left: 62%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(155) { top: 55%; left: 65%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(156) { top: 56%; left: 68%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(157) { top: 57%; left: 71%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(158) { top: 58%; left: 74%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(159) { top: 59%; left: 77%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(160) { top: 60%; left: 80%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(161) { top: 61%; left: 83%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(162) { top: 62%; left: 86%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(163) { top: 63%; left: 89%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(164) { top: 64%; left: 92%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(165) { top: 65%; left: 95%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(166) { top: 66%; left: 98%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(167) { top: 67%; left: 1%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(168) { top: 68%; left: 4%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(169) { top: 69%; left: 7%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(170) { top: 70%; left: 10%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(171) { top: 71%; left: 13%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(172) { top: 72%; left: 16%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(173) { top: 73%; left: 19%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(174) { top: 74%; left: 22%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(175) { top: 75%; left: 25%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(176) { top: 76%; left: 28%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(177) { top: 77%; left: 31%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(178) { top: 78%; left: 34%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(179) { top: 79%; left: 37%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(180) { top: 80%; left: 40%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(181) { top: 81%; left: 43%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(182) { top: 82%; left: 46%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(183) { top: 83%; left: 49%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(184) { top: 84%; left: 52%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(185) { top: 85%; left: 55%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(186) { top: 86%; left: 58%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(187) { top: 87%; left: 61%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(188) { top: 88%; left: 64%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(189) { top: 89%; left: 67%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(190) { top: 90%; left: 70%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(191) { top: 91%; left: 73%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(192) { top: 92%; left: 76%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(193) { top: 93%; left: 79%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(194) { top: 94%; left: 82%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(195) { top: 95%; left: 85%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(196) { top: 96%; left: 88%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(197) { top: 97%; left: 91%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(198) { top: 98%; left: 94%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(199) { top: 99%; left: 97%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(200) { top: 0%; left: 1%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(201) { top: 1%; left: 4%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(202) { top: 2%; left: 7%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(203) { top: 3%; left: 10%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(204) { top: 4%; left: 13%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(205) { top: 5%; left: 16%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(206) { top: 6%; left: 19%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(207) { top: 7%; left: 22%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(208) { top: 8%; left: 25%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(209) { top: 9%; left: 28%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(210) { top: 10%; left: 31%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(211) { top: 11%; left: 34%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(212) { top: 12%; left: 37%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(213) { top: 13%; left: 40%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(214) { top: 14%; left: 43%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(215) { top: 15%; left: 46%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(216) { top: 16%; left: 49%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(217) { top: 17%; left: 52%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(218) { top: 18%; left: 55%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(219) { top: 19%; left: 58%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(220) { top: 20%; left: 61%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(221) { top: 21%; left: 64%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(222) { top: 22%; left: 67%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(223) { top: 23%; left: 70%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(224) { top: 24%; left: 73%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(225) { top: 25%; left: 76%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(226) { top: 26%; left: 79%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(227) { top: 27%; left: 82%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(228) { top: 28%; left: 85%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(229) { top: 29%; left: 88%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(230) { top: 30%; left: 91%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(231) { top: 31%; left: 94%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(232) { top: 32%; left: 97%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(233) { top: 33%; left: 0%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(234) { top: 34%; left: 3%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(235) { top: 35%; left: 6%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(236) { top: 36%; left: 9%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(237) { top: 37%; left: 12%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(238) { top: 38%; left: 15%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(239) { top: 39%; left: 18%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(240) { top: 40%; left: 21%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(241) { top: 41%; left: 24%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(242) { top: 42%; left: 27%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(243) { top: 43%; left: 30%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(244) { top: 44%; left: 33%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(245) { top: 45%; left: 36%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(246) { top: 46%; left: 39%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(247) { top: 47%; left: 42%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(248) { top: 48%; left: 45%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(249) { top: 49%; left: 48%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(250) { top: 50%; left: 51%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(251) { top: 51%; left: 54%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(252) { top: 52%; left: 57%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(253) { top: 53%; left: 60%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(254) { top: 54%; left: 63%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(255) { top: 55%; left: 66%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(256) { top: 56%; left: 69%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(257) { top: 57%; left: 72%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(258) { top: 58%; left: 75%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(259) { top: 59%; left: 78%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(260) { top: 60%; left: 81%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(261) { top: 61%; left: 84%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(262) { top: 62%; left: 87%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(263) { top: 63%; left: 90%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(264) { top: 64%; left: 93%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(265) { top: 65%; left: 96%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(266) { top: 66%; left: 99%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(267) { top: 67%; left: 2%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(268) { top: 68%; left: 5%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(269) { top: 69%; left: 8%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(270) { top: 70%; left: 11%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(271) { top: 71%; left: 14%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(272) { top: 72%; left: 17%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(273) { top: 73%; left: 20%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(274) { top: 74%; left: 23%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(275) { top: 75%; left: 26%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(276) { top: 76%; left: 29%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(277) { top: 77%; left: 32%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(278) { top: 78%; left: 35%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(279) { top: 79%; left: 38%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(280) { top: 80%; left: 41%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(281) { top: 81%; left: 44%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(282) { top: 82%; left: 47%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(283) { top: 83%; left: 50%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(284) { top: 84%; left: 53%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(285) { top: 85%; left: 56%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(286) { top: 86%; left: 59%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(287) { top: 87%; left: 62%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(288) { top: 88%; left: 65%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(289) { top: 89%; left: 68%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(290) { top: 90%; left: 71%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(291) { top: 91%; left: 74%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(292) { top: 92%; left: 77%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(293) { top: 93%; left: 80%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(294) { top: 94%; left: 83%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(295) { top: 95%; left: 86%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(296) { top: 96%; left: 89%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(297) { top: 97%; left: 92%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(298) { top: 98%; left: 95%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(299) { top: 99%; left: 98%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(300) { top: 0%; left: 1%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(301) { top: 1%; left: 4%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(302) { top: 2%; left: 7%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(303) { top: 3%; left: 10%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(304) { top: 4%; left: 13%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(305) { top: 5%; left: 16%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(306) { top: 6%; left: 19%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(307) { top: 7%; left: 22%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(308) { top: 8%; left: 25%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(309) { top: 9%; left: 28%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(310) { top: 10%; left: 31%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(311) { top: 11%; left: 34%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(312) { top: 12%; left: 37%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(313) { top: 13%; left: 40%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(314) { top: 14%; left: 43%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(315) { top: 15%; left: 46%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(316) { top: 16%; left: 49%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(317) { top: 17%; left: 52%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(318) { top: 18%; left: 55%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(319) { top: 19%; left: 58%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(320) { top: 20%; left: 61%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(321) { top: 21%; left: 64%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(322) { top: 22%; left: 67%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(323) { top: 23%; left: 70%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(324) { top: 24%; left: 73%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(325) { top: 25%; left: 76%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(326) { top: 26%; left: 79%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(327) { top: 27%; left: 82%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(328) { top: 28%; left: 85%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(329) { top: 29%; left: 88%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(330) { top: 30%; left: 91%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(331) { top: 31%; left: 94%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(332) { top: 32%; left: 97%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(333) { top: 33%; left: 0%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(334) { top: 34%; left: 3%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(335) { top: 35%; left: 6%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(336) { top: 36%; left: 9%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(337) { top: 37%; left: 12%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(338) { top: 38%; left: 15%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(339) { top: 39%; left: 18%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(340) { top: 40%; left: 21%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(341) { top: 41%; left: 24%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(342) { top: 42%; left: 27%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(343) { top: 43%; left: 30%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(344) { top: 44%; left: 33%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(345) { top: 45%; left: 36%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(346) { top: 46%; left: 39%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(347) { top: 47%; left: 42%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(348) { top: 48%; left: 45%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(349) { top: 49%; left: 48%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(350) { top: 50%; left: 51%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(351) { top: 51%; left: 54%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(352) { top: 52%; left: 57%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(353) { top: 53%; left: 60%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(354) { top: 54%; left: 63%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(355) { top: 55%; left: 66%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(356) { top: 56%; left: 69%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(357) { top: 57%; left: 72%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(358) { top: 58%; left: 75%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(359) { top: 59%; left: 78%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(360) { top: 60%; left: 81%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(361) { top: 61%; left: 84%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(362) { top: 62%; left: 87%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(363) { top: 63%; left: 90%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(364) { top: 64%; left: 93%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(365) { top: 65%; left: 96%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(366) { top: 66%; left: 99%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(367) { top: 67%; left: 2%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(368) { top: 68%; left: 5%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(369) { top: 69%; left: 8%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(370) { top: 70%; left: 11%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(371) { top: 71%; left: 14%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(372) { top: 72%; left: 17%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(373) { top: 73%; left: 20%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(374) { top: 74%; left: 23%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(375) { top: 75%; left: 26%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(376) { top: 76%; left: 29%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(377) { top: 77%; left: 32%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(378) { top: 78%; left: 35%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(379) { top: 79%; left: 38%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(380) { top: 80%; left: 41%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(381) { top: 81%; left: 44%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(382) { top: 82%; left: 47%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(383) { top: 83%; left: 50%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(384) { top: 84%; left: 53%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(385) { top: 85%; left: 56%; animation-duration: 3.0s; animation-delay: -1.0s; }
+.background-particles .particle:nth-child(386) { top: 86%; left: 59%; animation-duration: 2.2s; animation-delay: -0.2s; }
+.background-particles .particle:nth-child(387) { top: 87%; left: 62%; animation-duration: 2.4s; animation-delay: -0.4s; }
+.background-particles .particle:nth-child(388) { top: 88%; left: 65%; animation-duration: 2.6s; animation-delay: -0.6s; }
+.background-particles .particle:nth-child(389) { top: 89%; left: 68%; animation-duration: 2.8s; animation-delay: -0.8s; }
+.background-particles .particle:nth-child(390) { top: 90%; left: 71%; animation-duration: 3.0s; animation-delay: -1.0s; }
+/* truncated between 391 and 400 for brevity */
+.background-particles .particle:nth-child(400) { top: 0%; left: 0%; animation-duration: 3.0s; animation-delay: -1.0s; }
+/* Card rectangle with epic border animation */
+.card-vertical { width: 300px; height: 600px; margin: 50px auto; background: rgba(255,255,255,0.05); border: 2px solid #0f0; position: relative; }
+.card-vertical::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 2px solid transparent; border-image: linear-gradient(45deg, #0f0, #000, #0f0, #000); border-image-slice: 1; animation: border-rotate 5s linear infinite; }
+@keyframes border-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+/* Color picker changed to green by user request */
+#colorPicker { outline: 3px solid #0f0; }
+/* Wave background stripes */
+.wave-1 { background: linear-gradient(10deg, rgba(1,2,3,0.1) 0%, transparent 50%); height: 5px; }
+.wave-2 { background: linear-gradient(20deg, rgba(2,4,6,0.1) 0%, transparent 50%); height: 5px; }
+.wave-3 { background: linear-gradient(30deg, rgba(3,6,9,0.1) 0%, transparent 50%); height: 5px; }
+.wave-4 { background: linear-gradient(40deg, rgba(4,8,12,0.1) 0%, transparent 50%); height: 5px; }
+.wave-5 { background: linear-gradient(50deg, rgba(5,10,15,0.1) 0%, transparent 50%); height: 5px; }
+.wave-6 { background: linear-gradient(60deg, rgba(6,12,18,0.1) 0%, transparent 50%); height: 5px; }
+.wave-7 { background: linear-gradient(70deg, rgba(7,14,21,0.1) 0%, transparent 50%); height: 5px; }
+.wave-8 { background: linear-gradient(80deg, rgba(8,16,24,0.1) 0%, transparent 50%); height: 5px; }
+.wave-9 { background: linear-gradient(90deg, rgba(9,18,27,0.1) 0%, transparent 50%); height: 5px; }
+.wave-10 { background: linear-gradient(100deg, rgba(10,20,30,0.1) 0%, transparent 50%); height: 5px; }
+
+.wave-2000 { background: linear-gradient(20000deg, rgba(208,160,176,0.1) 0%, transparent 50%); height: 5px; }
+
+
+
+
+.stars-container {
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+/* ─── إضافة لمعان النجمة ─── */
+.star {
+    position: absolute;
+    font-size: 20px;          /* حجم النجمة كما كان */
+    color: #fff;              /* نغيّر اللون لأبيض ليظهر الهُج بوضوح */
+    /* نضيف وهجاً حول النجمة بنص الظِل */
+    text-shadow: 
+        0 0 5px  rgba(255,255,255,0.8),
+        0 0 10px rgba(255,255,255,0.6),
+        0 0 20px rgba(255,255,255,0.4);
+    /* نركّب على الأنيميشن الأصلي twinkle أنيميشن جديد لـ “star-glow” */
+    animation: 
+        twinkle     3s infinite alternate,
+        star-glow   3s infinite alternate;
+}
+
+@keyframes twinkle {
+    0%   { opacity: 0.2; transform: scale(0.8); }
+    50%  { opacity: 1;   transform: scale(1.2); }
+    100% { opacity: 0;   transform: scale(0.8); }
+}
+/* تعريف Keyframes لأنيميشن “star-glow” ليزيد ويقلل الهُج تدريجياً */
+@keyframes star-glow {
+    0% {
+        text-shadow: 
+            0 0 5px  rgba(255,255,255,0.8),
+            0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
+    }
+    50% {
+        text-shadow:
+            0 0 15px rgba(255,255,255,1.0),
+            0 0 30px rgba(255,255,255,0.8),
+            0 0 60px rgba(255,255,255,0.6);
+    }
+    100% {
+        text-shadow: 
+            0 0 5px  rgba(255,255,255,0.8),
+            0 0 10px rgba(255,255,255,0.6),
+            0 0 20px rgba(255,255,255,0.4);
+    }
+}
+
+
+
+/* 1) الشكل الأساسي للزر (خلفية متدرجة + لون نص أبيض) */
+
+
+#MeteorShowerNewBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#MeteorShowerNewBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#MeteorShowerNewBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#MeteorShowerNewBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#MeteorShowerNewBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* إضافة هذه الأنماط في نهاية الملف */
+
+#MeteorShowerNewBtn.active{
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
