@@ -1,31 +1,29 @@
 import time
 import board
 import neopixel
+import random
 import digitalio
 
 num_pixels = 10
 pixels = neopixel.NeoPixel(board.NEOPIXEL, num_pixels, auto_write=False)
 
-# ألوان
-red_low = (50, 0, 0)
-red_high = (255, 0, 0)
-blue = (0, 0, 255)
 off = (0, 0, 0)
 
-# السويتش على D7
+snake_head = (255, 255, 255)
+tail1 = (180, 180, 180)
+tail2 = (100, 100, 100)
+tail3 = (30, 30, 30)
+
+low_white = (150, 150, 150)
+high_white = (255, 255, 255)
+
+# سويتش
 switch = digitalio.DigitalInOut(board.D7)
 switch.direction = digitalio.Direction.INPUT
 switch.pull = digitalio.Pull.UP
 
-# مشهد الترحيب: أفعى بيضاء + وميض
 def welcome_snake():
-    snake_head = (255, 0, 0)     # رأس الأفعى - أحمر قوي
-    tail1 = (180, 0, 0)          # الذيل 1 - أخف
-    tail2 = (100, 0, 0)          # الذيل 2 - أخف
-    tail3 = (30, 0, 0)           # الذيل 3 - ضعيف جداً
-    off = (0, 0, 0)
-
-    for _ in range(2):  # تمر مرتين
+    for _ in range(2):
         for i in range(num_pixels):
             pixels.fill(off)
             if i < num_pixels:
@@ -41,38 +39,53 @@ def welcome_snake():
 
 def welcome_flash():
     for _ in range(2):
-        pixels.fill((255, 255, 255))
+        pixels.fill(high_white)
         pixels.show()
         time.sleep(0.1)
         pixels.fill(off)
         pixels.show()
         time.sleep(0.1)
 
+def police_front_animation():
+    # Flash أحمر مرتين
+    for _ in range(2):
+        pixels.fill((255, 0, 0))
+        pixels.show()
+        time.sleep(0.1)
+        pixels.fill(off)
+        pixels.show()
+        time.sleep(0.1)
+
+    # Flash أزرق مرتين
+    for _ in range(2):
+        pixels.fill((0, 0, 255))
+        pixels.show()
+        time.sleep(0.1)
+        pixels.fill(off)
+        pixels.show()
+        time.sleep(0.1)
+
+    # Sweep
+    for i in range(num_pixels):
+        pixels.fill(off)
+        pixels[i] = (255, 0, 0) if i % 2 == 0 else (0, 0, 255)
+        pixels.show()
+        time.sleep(0.05)
+
+# تنفيذ الترحيب مرة
 welcome_snake()
 welcome_flash()
 
-# وميض أحمر دائم (الوضع العادي)
-def red_flash():
-    pixels.fill(red_low)
-    pixels.show()
-    time.sleep(0.3)
-    pixels.fill(red_high)
-    pixels.show()
-    time.sleep(0.2)
+# نار بيضاء ديناميكية
+states = [True] * num_pixels
 
-# شرطة خلفية: ومضات سريعة أحمر/أزرق
-def police_mode():
-    for color in [(255, 0, 0), (0, 0, 255)]:
-        pixels.fill(color)
-        pixels.show()
-        time.sleep(0.15)
-        pixels.fill(off)
-        pixels.show()
-        time.sleep(0.1)
-
-# حلقة رئيسية
 while True:
-    if not switch.value:  # switch = OFF
-        red_flash()
-    else:  # switch = ON
-        police_mode()
+    if not switch.value:  # OFF = أنميشن نار
+        for i in range(num_pixels):
+            if random.random() < 0.1:
+                states[i] = not states[i]
+            pixels[i] = high_white if states[i] else low_white
+        pixels.show()
+        time.sleep(0.2)
+    else:  # ON = شرطة
+        police_front_animation()
