@@ -65,4 +65,4 @@ while True:
         pixels[i] = color
 
     pixels.show()
-    time.sleep(0.2)
+    time.sleep(0.2) 
