@@ -89,3 +89,8 @@ while True:
         time.sleep(0.2)
     else:
         police_front_animation()
+
+
+
+
+pip install adafruit-circuitplayground
