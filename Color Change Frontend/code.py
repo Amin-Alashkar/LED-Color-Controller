@@ -64,21 +64,21 @@ def welcome_flash():
         time.sleep(0.1)
 
 def police_front_animation():
-    for _ in range(2):
-        pixels.fill((255, 0, 0))
-        pixels.show()
-        time.sleep(0.1)
-        pixels.fill(off)
-        pixels.show()
-        time.sleep(0.1)
+    # for _ in range(2):
+    #     pixels.fill((255, 0, 0))
+    #     pixels.show()
+    #     time.sleep(0.1)
+    #     pixels.fill(off)
+    #     pixels.show()
+    #     time.sleep(0.1)
 
-    for _ in range(2):
-        pixels.fill((0, 0, 255))
-        pixels.show()
-        time.sleep(0.1)
-        pixels.fill(off)
-        pixels.show()
-        time.sleep(0.1)
+    # for _ in range(2):
+    #     pixels.fill((0, 0, 255))
+    #     pixels.show()
+    #     time.sleep(0.1)
+    #     pixels.fill(off)
+    #     pixels.show()
+    #     time.sleep(0.1)
 
     for i in range(num_pixels):
         pixels.fill(off)
@@ -94,9 +94,8 @@ states = [True] * num_pixels
 
 while True:
     # تابع الضغط على الزرين (كبسة وحدة للتبديل)
-    current_a = button_a.value
-    current_b = button_b.value
-
+    current_a = button_a
+    current_b = button_b
     if (not current_a and last_a) or (not current_b and last_b):
         leds_on = not leds_on  # اقلب الحالة
         if not leds_on:
