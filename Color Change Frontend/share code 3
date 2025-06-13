@@ -1,0 +1,97 @@
+async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
+    """
+    تأثير Larson Scanner (ضوء يتنقل ذهابًا وإيابًا مع ذيل لوني):
+    - يتحرك رأس الضوء ذهابًا وإيابًا
+    - خلف كل رأس ضوئي ذيل يتلاشى تدريجيًا
+    - يتغير اللون بعد كل دورة كاملة
+    """
+    global stop_requested
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (255, 192, 203),# وردي
+        (138, 43, 226), # أزرق بنفسجي
+        (50, 205, 50)   # أخضر ليموني
+    ]
+    position = 0
+    direction = 1
+    trail_length = 5
+    color_index = 0
+
+    while not stop_requested:
+        r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+        neo.clear_strip()
+        for t in range(trail_length):
+            pos = position - (t * direction)
+            if 0 <= pos < NUM_LEDS:
+                factor = (trail_length - t) / trail_length
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(
+                        pos,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        position += direction
+        if position >= NUM_LEDS - 1 or position <= 0:
+            direction *= -1
+            color_index += 1
+    neo.clear_strip()
+    neo.update_strip()
+
+async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
+    global stop_requested
+    brightness = 0.5
+    step = 0.0
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            hue = (i / NUM_LEDS + step) % 1.0
+            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
+            r = int(r_f * 255)
+            g = int(g_f * 255)
+            b = int(b_f * 255)
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        step = (step + wave_speed) % 1.0
+        await asyncio.sleep(delay)
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
+    global stop_requested
+    step = 0
+    while not stop_requested:
+        hue = (step % steps) / steps
+        r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        r = int(r_f * 255)
+        g = int(g_f * 255)
+        b = int(b_f * 255)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        step += 1
+        await asyncio.sleep(delay)
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
