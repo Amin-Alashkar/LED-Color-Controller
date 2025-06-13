@@ -1,9 +1,8 @@
-async def pulse_sync_loop(delay: float = .6000 // 2, steps: int = 20):
+async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
     """
     تأثير Larson Scanner (ضوء يتنقل ذهابًا وإيابًا مع ذيل لوني):
-    - يتحرك رأس الضوء ذهابًا وإيابًا
-    - خلف كل رأس ضوئي ذيل يتلاشى تدريجيًا
-    - يتغير اللون بعد كل دورة كاملة
+    - يتغير اللون بعد كل دورة كاملة بسلاسة
+    - يتم تنظيف الذيل القديم قبل إظهار اللون الجديد
     """
     global stop_requested
     COLORS = [
@@ -25,6 +24,7 @@ async def pulse_sync_loop(delay: float = .6000 // 2, steps: int = 20):
 
     while not stop_requested:
         r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
         neo.clear_strip()
         for t in range(trail_length):
             pos = position - (t * direction)
@@ -34,16 +34,24 @@ async def pulse_sync_loop(delay: float = .6000 // 2, steps: int = 20):
                 g = int(g_base * factor)
                 b = int(b_base * factor)
                 neo.set_led_color(
-                        pos,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
+                    pos,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+
         neo.update_strip()
         await asyncio.sleep(delay)
         position += direction
+
+        # عند الوصول إلى نهاية الشريط
         if position >= NUM_LEDS - 1 or position <= 0:
-            direction *= -1
+            await asyncio.sleep(delay * 2)  # لمسة بصرية
+            neo.clear_strip()
+            neo.update_strip()
+            await asyncio.sleep(delay * 2)  # نضمن اختفاء الذيل
             color_index += 1
+            direction *= -1  # نعكس الاتجاه
+
     neo.clear_strip()
     neo.update_strip()
