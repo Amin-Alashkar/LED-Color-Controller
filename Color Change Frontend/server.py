@@ -111,7 +111,7 @@ async def fade_colors_loop(delay: float = 0.0001, steps: int = 10):
                 neo.update_strip()
                 await asyncio.sleep(delay)
 
-async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
+async def pulse_sync_loop(delay: float = .6000 // 2, steps: int = 20):
     """
     تأثير Larson Scanner (ضوء يتنقل ذهابًا وإيابًا مع ذيل لوني):
     - يتحرك رأس الضوء ذهابًا وإيابًا
@@ -133,7 +133,7 @@ async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
     ]
     position = 0
     direction = 1
-    trail_length = 5
+    trail_length = 20
     color_index = 0
 
     while not stop_requested:
