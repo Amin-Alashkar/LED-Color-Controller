@@ -1,15 +1,16 @@
-async def single_snake_loop(delay_per_step: float = 0.0001):
+async def single_snake_loop():
     """
-    انيميشن الأفعى الوحيدة (Snake One):
-    - تنتظر وقتاً عشوائياً بين 0 و 30 ثانية قبل الانطلاق
-    - تتحرك الأفعى من الـ LED رقم 19 إلى LED رقم -trail_length
-    - سرعتها مضاعفة (لذلك استخدمنا delay_per_step = 0.0001)
-    - بعد الانتهاء تنتظر مجدداً وقتاً عشوائياً جديداً في الدورة التالية
+    إنيميشن الأفعى السريعة جداً:
+    - تمشي من LED 150 إلى 0 خلال 3 ثواني فقط
+    - طولها 40 LED
+    - تنتظر وقت عشوائي من 0 إلى 10 ثواني قبل أن تبدأ مرة ثانية
     """
     global stop_requested
-    trail_length = 12
+    trail_length = 40
+    delay_per_step = 3 / (NUM_LEDS + trail_length)  # تقريبًا 0.0157 ثانية
+
     while not stop_requested:
-        wait_time = random.uniform(0, 30)
+        wait_time = random.uniform(0, 10)  # بدل 30، خليناه من 0 إلى 10
         await asyncio.sleep(wait_time)
         
         color = (
@@ -32,9 +33,9 @@ async def single_snake_loop(delay_per_step: float = 0.0001):
                     b = int(color[2] * factor)
                     neo.set_led_color(
                         led_pos,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
                     )
             
             neo.update_strip()
@@ -42,3 +43,4 @@ async def single_snake_loop(delay_per_step: float = 0.0001):
 
     neo.clear_strip()
     neo.update_strip()
+
