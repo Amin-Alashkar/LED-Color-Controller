@@ -1,97 +1,109 @@
-async def pulse_sync_loop(delay: float = 0.05, steps: int = 20):
+async def fireworks_burst_loop(delay: float = 0.05):
     """
-    تأثير Larson Scanner (ضوء يتنقل ذهابًا وإيابًا مع ذيل لوني):
-    - يتحرك رأس الضوء ذهابًا وإيابًا
-    - خلف كل رأس ضوئي ذيل يتلاشى تدريجيًا
-    - يتغير اللون بعد كل دورة كاملة
+    تأثير الألعاب النارية المعدل:
+    1. “الصاروخ” (ثلاثة أضواء) يبدأ من نهاية الشريط (أعلى مؤشر) ويتحرك سريعًا نحو منتصفه:
+       - الرأس بسطوع خافت جدًا (~20%)
+       - الضوء الثاني خلف الرأس بسطوع أخف (~10%)
+       - الضوء الثالث خلف الثاني بسطوع خافت للغاية (~5%)
+    2. عند وصول الرأس إلى منتصف عدد الـ LEDs، يحدث الانفجار بكامل السطوع (100%).
+    3. بعد الانفجار، نطبق تلاشي تدريجي (Fade-out) حتى تنطفئ الأضواء.
     """
     global stop_requested
     COLORS = [
         (255, 0, 0),    # أحمر
-        (0, 255, 0),    # أخضر
         (0, 0, 255),    # أزرق
+        (0, 255, 0),    # أخضر
         (255, 255, 0),  # أصفر
         (255, 0, 255),  # أرجواني
         (0, 255, 255),  # سماوي
         (255, 165, 0),  # برتقالي
-        (255, 192, 203),# وردي
-        (138, 43, 226), # أزرق بنفسجي
-        (50, 205, 50)   # أخضر ليموني
     ]
-    position = 0
-    direction = 1
-    trail_length = 5
-    color_index = 0
+    
+    ROCKET_BRIGHTNESSES = [
+        0.2,  # سطوع الرأس (~20%)
+        0.1,  # سطوع الضوء الثاني (~10%)
+        0.05  # سطوع الضوء الثالث (~5%)
+    ]
+    EXPLOSION_BRIGHTNESS = 1.0
+    FADE_STEPS = 20
+    midpoint = NUM_LEDS // 3
 
     while not stop_requested:
-        r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
-        neo.clear_strip()
-        for t in range(trail_length):
-            pos = position - (t * direction)
-            if 0 <= pos < NUM_LEDS:
-                factor = (trail_length - t) / trail_length
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
+        for color in COLORS:
+            if stop_requested:
+                break
+
+            # 1. حركة “الصاروخ” من نهاية الشريط إلى منتصفه
+            for head_pos in range(NUM_LEDS - 1, -1, -1):
+                if stop_requested:
+                    break
+                if head_pos == midpoint:
+                    break
+
+                neo.clear_strip()
+                for idx in range(3):
+                    led_pos = head_pos + idx
+                    if 0 <= led_pos < NUM_LEDS:
+                        factor = ROCKET_BRIGHTNESSES[idx]
+                        r = int(color[0] * factor)
+                        g = int(color[1] * factor)
+                        b = int(color[2] * factor)
+                        neo.set_led_color(
+                        led_pos,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+
+                neo.update_strip()
+                await asyncio.sleep(delay * 0.5)
+
+            if stop_requested:
+                break
+
+            # 2. الانفجار عند منتصف الشريط (100% سطوع)
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                r = int(color[0] * EXPLOSION_BRIGHTNESS)
+                g = int(color[1] * EXPLOSION_BRIGHTNESS)
+                b = int(color[2] * EXPLOSION_BRIGHTNESS)
                 neo.set_led_color(
-                        pos,
+                        i,
                         int(r* BRIGHTNESS_SCALE),
                         int(g* BRIGHTNESS_SCALE),
                         int(b* BRIGHTNESS_SCALE)
                     )
-        neo.update_strip()
-        await asyncio.sleep(delay)
-        position += direction
-        if position >= NUM_LEDS - 1 or position <= 0:
-            direction *= -1
-            color_index += 1
+            neo.update_strip()
+            await asyncio.sleep(0.2)
+
+            if stop_requested:
+                break
+
+            # 3. التلاشي التدريجي بعد الانفجار
+            for fade_step in range(FADE_STEPS):
+                if stop_requested:
+                    break
+                factor = 1 - (fade_step / FADE_STEPS)
+                neo.clear_strip()
+                for i in range(NUM_LEDS):
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+
+            neo.clear_strip()
+            neo.update_strip()
+            await asyncio.sleep(0.2)
+
+        if stop_requested:
+            break
+
     neo.clear_strip()
-    neo.update_strip()
-
-async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
-    global stop_requested
-    brightness = 0.5
-    step = 0.0
-
-    while not stop_requested:
-        for i in range(NUM_LEDS):
-            hue = (i / NUM_LEDS + step) % 1.0
-            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
-            r = int(r_f * 255)
-            g = int(g_f * 255)
-            b = int(b_f * 255)
-            neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-        neo.update_strip()
-        step = (step + wave_speed) % 1.0
-        await asyncio.sleep(delay)
-    for i in range(NUM_LEDS):
-        neo.set_led_color(i, 0, 0, 0)
-    neo.update_strip()
-
-async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
-    global stop_requested
-    step = 0
-    while not stop_requested:
-        hue = (step % steps) / steps
-        r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
-        r = int(r_f * 255)
-        g = int(g_f * 255)
-        b = int(b_f * 255)
-        for i in range(NUM_LEDS):
-            neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-        neo.update_strip()
-        step += 1
-        await asyncio.sleep(delay)
-    for i in range(NUM_LEDS):
-        neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
