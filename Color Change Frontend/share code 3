@@ -1,28 +1,27 @@
-async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
+async def meteor_shower_modified_loop():
     """
-    تأثير الشهاب المعدل - أسرع وأطول مع ذيل متوهج
-    - طول الشهاب: 17 LED
-    - سرعة أعلى بـ 40% من الإصدار الأصلي
-    - ذيل متدرج الشدة مع توهج إضافي
+    تأثير شهاب سريع جدًا: يقطع من LED 150 إلى 0 خلال 3 ثواني فقط
+    - طول الشهاب: 40 LED
+    - توهج متدرج جميل
     """
     global stop_requested
-    trail_length = 30
-    fade_steps = 5
-    
+    trail_length = 40
+    delay_per_step = 3 / 151  # تقريبًا 0.0198 ثانية لكل خطوة
+
     while not stop_requested:
-        start_pos = random.randint(15, NUM_LEDS + trail_length)
+        start_pos = random.randint(150, 160)
         color = (
             random.randint(150, 255),
             random.randint(150, 255),
             random.randint(200, 255)
         )
-        
+
         for pos in range(start_pos, -trail_length, -1):
             if stop_requested:
                 break
-            
+
             neo.clear_strip()
-            
+
             for i in range(trail_length):
                 led_pos = pos - i
                 if 0 <= led_pos < NUM_LEDS:
@@ -31,20 +30,20 @@ async def meteor_shower_modified_loop(delay_per_step: float = 0.03):
                     r = int(color[0] * intensity)
                     g = int(color[1] * intensity)
                     b = int(color[2] * intensity)
-                    
+
                     r = min(r + int(100 * glow_intensity), 255)
                     g = min(g + int(100 * glow_intensity), 255)
                     b = min(b + int(255 * glow_intensity), 255)
-                    
+
                     neo.set_led_color(
                         led_pos,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
                     )
-            
+
             neo.update_strip()
             await asyncio.sleep(delay_per_step)
-    
+
     neo.clear_strip()
     neo.update_strip()
