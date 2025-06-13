@@ -10,3 +10,7 @@ try:
     print(f"Request sent at 5:00 AM, status: {res.status_code}, response: {res.text}")
 except Exception as e:
     print(f"Error sending request: {e}")
+
+
+
+#crontab -e
