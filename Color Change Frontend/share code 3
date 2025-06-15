@@ -1,82 +1,141 @@
-async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
-    """
-    Larson Scanner (Smooth + Color Shift on Final Head Pixel):
-    - يتغير اللون فقط عندما يختفي الذيل وتبقى آخر لمعة (الرأس)
-    """
-    global stop_requested
+const API_BASE_URL = `http://${window.location.hostname}:8000`;
 
-    COLORS = [
-        (255, 0, 0),    # أحمر
-        (0, 255, 0),    # أخضر
-        (0, 0, 255),    # أزرق
-        (255, 255, 0),  # أصفر
-        (255, 0, 255),  # أرجواني
-        (0, 255, 255),  # سماوي
-        (255, 165, 0),  # برتقالي
-        (255, 192, 203),# وردي
-        (138, 43, 226), # أزرق بنفسجي
-        (50, 205, 50)   # أخضر ليموني
-    ]
+// helper: يضيف input[type=color] مؤقتاً للزر ويديره
+function pickColorFromButton(button, callback) {
+    const input = document.createElement('input');
+    input.type = 'color';
+    input.value = '#ffffff';
+    // نجعل الـ input شفافاً ويغطي الزر ليفتح المكان ذاته
+    input.style.position = 'absolute';
+    input.style.left = '0';
+    input.style.top = '0';
+    input.style.width = '100%';
+    input.style.height = '100%';
+    input.style.opacity = '0';
+    input.style.cursor = 'pointer';
+    button.style.position = 'relative';
+    button.appendChild(input);
+    input.click();
+    input.addEventListener('input', (e) => {
+        callback(e.target.value);
+        button.removeChild(input);
+    }, { once: true });
+}
 
-    position = 0
-    direction = 1
-    trail_length = 20
-    color_index = 0
+// DOM Elements
+const colorDisplay         = document.getElementById('colorDisplay');
+const lightOneBtn          = document.getElementById('lightOneBtn');
+const offBtn               = document.getElementById('offBtn');
+const off2Btn              = document.getElementById('off2Btn');
+const colorPicker          = document.getElementById('colorPicker');
 
-    r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+// ... (بقية تعريف الأزرار بدون تغيير) ...
+const customHeartBeatBtn        = document.getElementById('customHeartBeatBtn');
+// ... والبقية ...
 
-    while not stop_requested:
-        neo.clear_strip()
+let isAnimationRunning = false;
+let currentAnim = null;
 
-        # رسم الرأس والذيل
-        for t in range(trail_length):
-            pos = position - (t * direction)
-            if 0 <= pos < NUM_LEDS:
-                factor = (trail_length - t) / trail_length
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(
-                    pos,
-                    int(r * BRIGHTNESS_SCALE),
-                    int(g * BRIGHTNESS_SCALE),
-                    int(b * BRIGHTNESS_SCALE)
-                )
+// نداء عام لإرسال طلبات POST
+async function sendRequest(endpoint, data) {
+    try {
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        return { status: "error", message: e.message };
+    }
+}
 
-        neo.update_strip()
-        await asyncio.sleep(delay)
+// … دوال fetchAndApplyState() و stopAnimation() و updateUI() بدون تغيير …
 
-        position += direction
+// ─── NEW: دوال Create Your Own معدّلة لاستخدام pickColorFromButton ───
 
-        # إذا وصل الطرف:
-        if position >= NUM_LEDS - 1 or position <= 0:
-            # بعد هالخطوة، رح يبقى الرأس فقط مضيء والباقي يتلاشى
-            for i in range(trail_length):
-                neo.clear_strip()
+// مثال على Heart Beat:
+async function startCustomHeartBeat() {
+    if (isAnimationRunning && currentAnim === "custom_heart_beat") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_heart_beat") {
+        await stopAnimation();
+    }
+    // افتح color picker مباشرة على الزر
+    pickColorFromButton(customHeartBeatBtn, async (chosenColor) => {
+        isAnimationRunning = true;
+        currentAnim = "custom_heart_beat";
+        customHeartBeatBtn.classList.add('active');
+        customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Heart Beat - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_heart_beat",
+            hex_color: chosenColor
+        });
+    });
+}
 
-                # فقط الرأس يبقى، الباقي يتلاشى
-                for t in range(trail_length - i):
-                    pos = position - (t * direction)
-                    if 0 <= pos < NUM_LEDS:
-                        factor = (trail_length - i - t) / trail_length
-                        r = int(r_base * factor)
-                        g = int(g_base * factor)
-                        b = int(b_base * factor)
-                        neo.set_led_color(
-                            pos,
-                            int(r * BRIGHTNESS_SCALE),
-                            int(g * BRIGHTNESS_SCALE),
-                            int(b * BRIGHTNESS_SCALE)
-                        )
-                neo.update_strip()
-                await asyncio.sleep(delay)
+// نفس الشيء لكل دالة Create Your Own الأخرى:
+async function startCustomFadeAnimation() {
+    if (isAnimationRunning && currentAnim === "custom_fade") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_fade") {
+        await stopAnimation();
+    }
+    pickColorFromButton(customFadeBtn, async (chosenColor) => {
+        isAnimationRunning = true;
+        currentAnim = "custom_fade";
+        customFadeBtn.classList.add('active');
+        customFadeBtn.textContent = 'Fade Colors - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Fade Colors - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_fade",
+            hex_color: chosenColor
+        });
+    });
+}
 
-            # بعد ما الرأس يضل لحاله → نغير اللون
-            color_index += 1
-            r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+async function startCustomBlinkAnimation() {
+    if (isAnimationRunning && currentAnim === "custom_blink") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_blink") {
+        await stopAnimation();
+    }
+    pickColorFromButton(customBlinkBtn, async (chosenColor) => {
+        isAnimationRunning = true;
+        currentAnim = "custom_blink";
+        customBlinkBtn.classList.add('active');
+        customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Blinking - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_blink",
+            hex_color: chosenColor
+        });
+    });
+}
 
-            # نعكس الاتجاه
-            direction *= -1
+// ... وكرر نفس النمط لجميع دوال startCustom… الأخرى ...
 
-    neo.clear_strip()
-    neo.update_strip()
+// ─── ربط الأحداث ───
+customHeartBeatBtn   .addEventListener("click", startCustomHeartBeat);
+customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
+customBlinkBtn       .addEventListener("click", startCustomBlinkAnimation);
+// ... وبقية أزرار Create Your Own ...
+
+// احتفظ ببقية روابط الأزرار الأصلية بدون تغيير
+lightOneBtn          .addEventListener("click", startFadeAnimation);
+pulseSyncBtn         .addEventListener("click", startPulseSyncAnimation);
+// ...
+
+// لاحظ: تمت إزالة إضافة listener عامة على colorPicker في أسفل الملف
+// بحيث لا يُستخدم المربع العام إطلاقاً لاختيار ألوان أنيميشنات “Create Your Own”.
