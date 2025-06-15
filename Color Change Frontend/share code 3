@@ -1,8 +1,7 @@
 async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail: int = 20):
     """
-    🔥 Pro Tunnel Effect 🔥:
-    - موجة ضوء تمشي من الأطراف إلى المنتصف ثم ترجع، مع ذيول تتلاشى تدريجياً.
-    - الشكل النهائي ناعم وسلس كأنك داخل نفق مضيء.
+    Advanced Tunnel Effect:
+    - الموجتين يلتقوا ثم يتقلصوا لنقطة ثم ينفجروا بنفس الطريقة بالعكس.
     """
     global stop_requested
 
@@ -11,10 +10,10 @@ async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail:
     b_base = int(hex_color[5:7], 16)
 
     while not stop_requested:
-        # من الأطراف للوسط
+        # ====== المرحلة 1: من الأطراف إلى المركز ======
         for step in range(NUM_LEDS // 2 + trail):
             if stop_requested:
-                break
+                return
             neo.clear_strip()
 
             for t in range(trail):
@@ -36,27 +35,77 @@ async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail:
             neo.update_strip()
             await asyncio.sleep(delay)
 
-        # من المركز للطرفين
-        for step in range(NUM_LEDS // 2 + trail):
+        # ====== المرحلة 2: تجميع للمركز (ينضغطوا لنقطة) ======
+        for shrink in range(trail):
             if stop_requested:
-                break
+                return
+            neo.clear_strip()
+
+            for t in range(trail - shrink):
+                offset = t
+                fade = (trail - shrink - t) / trail
+
+                left = (NUM_LEDS // 2) - 1 - offset
+                right = (NUM_LEDS // 2) + offset
+
+                r = int(r_base * fade * BRIGHTNESS_SCALE)
+                g = int(g_base * fade * BRIGHTNESS_SCALE)
+                b = int(b_base * fade * BRIGHTNESS_SCALE)
+
+                if 0 <= left < NUM_LEDS:
+                    neo.set_led_color(left, r, g, b)
+                if 0 <= right < NUM_LEDS:
+                    neo.set_led_color(right, r, g, b)
+
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+        # ====== المرحلة 3: الانفجار للخارج (عكس ما صار) ======
+        for expand in range(trail):
+            if stop_requested:
+                return
+            neo.clear_strip()
+
+            for t in range(expand + 1):
+                offset = t
+                fade = (expand - t + 1) / trail
+
+                left = (NUM_LEDS // 2) - 1 - offset
+                right = (NUM_LEDS // 2) + offset
+
+                r = int(r_base * fade * BRIGHTNESS_SCALE)
+                g = int(g_base * fade * BRIGHTNESS_SCALE)
+                b = int(b_base * fade * BRIGHTNESS_SCALE)
+
+                if 0 <= left < NUM_LEDS:
+                    neo.set_led_color(left, r, g, b)
+                if 0 <= right < NUM_LEDS:
+                    neo.set_led_color(right, r, g, b)
+
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+        # ====== المرحلة 4: كل واحد يرجع لطرفه ======
+        for step in range(NUM_LEDS // 2 + trail - 1, -1, -1):
+            if stop_requested:
+                return
             neo.clear_strip()
 
             for t in range(trail):
                 offset = step - t
                 fade = (trail - t) / trail
 
-                center_left = (NUM_LEDS // 2) - 1 - offset
-                center_right = (NUM_LEDS // 2) + offset
+                left = offset
+                right = NUM_LEDS - 1 - offset
 
                 r = int(r_base * fade * BRIGHTNESS_SCALE)
                 g = int(g_base * fade * BRIGHTNESS_SCALE)
                 b = int(b_base * fade * BRIGHTNESS_SCALE)
 
-                if 0 <= center_left < NUM_LEDS:
-                    neo.set_led_color(center_left, r, g, b)
-                if 0 <= center_right < NUM_LEDS:
-                    neo.set_led_color(center_right, r, g, b)
+                if 0 <= left < NUM_LEDS:
+                    neo.set_led_color(left, r, g, b)
+                if 0 <= right < NUM_LEDS:
+                    neo.set_led_color(right, r, g, b)
 
             neo.update_strip()
             await asyncio.sleep(delay)
