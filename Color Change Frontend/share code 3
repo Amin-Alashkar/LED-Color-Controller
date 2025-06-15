@@ -80,3 +80,53 @@ async def custom_pulse_sync_loop(hex_color: str, delay: float = 0.02, steps: int
 
     neo.clear_strip()
     neo.update_strip()
+
+
+
+"""-----------------------------------------------------------"""
+
+async def single_snake_loop():
+    """
+    إنيميشن الأفعى السريعة جداً:
+    - تمشي من LED 150 إلى 0 خلال 3 ثواني فقط
+    - طولها 40 LED
+    - تنتظر وقت عشوائي من 0 إلى 10 ثواني قبل أن تبدأ مرة ثانية
+    """
+    global stop_requested
+    trail_length = 40
+    delay_per_step = 3 / (NUM_LEDS + trail_length)  # تقريبًا 0.0157 ثانية
+
+    while not stop_requested:
+        wait_time = random.uniform(0, 10)  # بدل 30، خليناه من 0 إلى 10
+        await asyncio.sleep(wait_time)
+        
+        color = (
+            random.randint(100, 255),
+            random.randint(100, 255),
+            random.randint(100, 255)
+        )
+        
+        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
+            if stop_requested:
+                break
+            
+            neo.clear_strip()
+            for t in range(trail_length):
+                led_pos = head_pos + t
+                if 0 <= led_pos < NUM_LEDS:
+                    factor = (trail_length - t) / trail_length
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+            
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+    neo.clear_strip()
+    neo.update_strip()
