@@ -1,12 +1,9 @@
-import random
-
-async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail: int = 20):
+async def custom_tunnel_explode_on_touch(hex_color: str, delay: float = 0.015, trail: int = 20):
     """
-    Tunnel Effect with Explosion + Fade and Random Restart:
+    Tunnel Effect – انفجار عند الالتقاء:
     - ضوء من الطرفين للمنتصف
-    - عند الالتقاء: انفجار ضوء يتلاشى تدريجياً
-    - انتظار عشوائي (حتى 10 ثواني)
-    - إعادة النميشن
+    - عند الالتقاء يتم انفجار ضوئي مباشر
+    - ثم يتلاشى، وينتظر وقت عشوائي قبل إعادة التأثير
     """
     global stop_requested
 
@@ -14,12 +11,16 @@ async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail:
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
+    middle = NUM_LEDS // 2
+
     while not stop_requested:
-        # ====== 1. الطرفين نحو المنتصف ======
-        for step in range(NUM_LEDS // 2 + trail):
+        # الحركة من الطرفين إلى المنتصف
+        for step in range(middle + trail):
             if stop_requested:
                 return
+
             neo.clear_strip()
+
             for t in range(trail):
                 offset = step - t
                 fade = (trail - t) / trail
@@ -34,16 +35,21 @@ async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail:
                     neo.set_led_color(left, r, g, b)
                 if 0 <= right < NUM_LEDS:
                     neo.set_led_color(right, r, g, b)
+
             neo.update_strip()
             await asyncio.sleep(delay)
 
-        # ====== 💥 انفجار: كل الشريط يضوي بلون الانفجار ======
+            # 💥 لحظة الالتقاء – الانفجار الفوري
+            if left >= right or step >= middle:
+                break
+
+        # ====== 💥 انفجار كامل مباشر ======
         for i in range(NUM_LEDS):
             neo.set_led_color(i, int(r_base * BRIGHTNESS_SCALE), int(g_base * BRIGHTNESS_SCALE), int(b_base * BRIGHTNESS_SCALE))
         neo.update_strip()
         await asyncio.sleep(0.1)
 
-        # ====== ✨ Fade تدريجي للانفجار حتى يختفي ======
+        # ====== ✨ Fade تدريجي للانفجار ======
         fade_steps = 30
         for f in range(fade_steps):
             factor = 1 - (f / fade_steps)
@@ -60,6 +66,6 @@ async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail:
         neo.clear_strip()
         neo.update_strip()
 
-        # ====== 💤 انتظار عشوائي قبل الإعادة ======
-        wait_time = random.uniform(2, 10)  # من 2 إلى 10 ثواني
+        # 💤 انتظار عشوائي قبل الإعادة
+        wait_time = random.uniform(2, 10)
         await asyncio.sleep(wait_time)
