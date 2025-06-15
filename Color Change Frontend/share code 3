@@ -45,3 +45,90 @@ async def custom_pulse_sync_loop(hex_color: str, delay: float = 0.02, steps: int
 
     neo.clear_strip()
     neo.update_strip()
+
+
+
+
+"""--------------------------------------------"""
+async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
+    """
+    Larson Scanner (Smooth + Color Shift on Final Head Pixel):
+    - يتغير اللون فقط عندما يختفي الذيل وتبقى آخر لمعة (الرأس)
+    """
+    global stop_requested
+
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (255, 192, 203),# وردي
+        (138, 43, 226), # أزرق بنفسجي
+        (50, 205, 50)   # أخضر ليموني
+    ]
+
+    position = 0
+    direction = 1
+    trail_length = 20
+    color_index = 0
+
+    r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
+    while not stop_requested:
+        neo.clear_strip()
+
+        # رسم الرأس والذيل
+        for t in range(trail_length):
+            pos = position - (t * direction)
+            if 0 <= pos < NUM_LEDS:
+                factor = (trail_length - t) / trail_length
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(
+                    pos,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+        position += direction
+
+        # إذا وصل الطرف:
+        if position >= NUM_LEDS - 1 or position <= 0:
+            # بعد هالخطوة، رح يبقى الرأس فقط مضيء والباقي يتلاشى
+            for i in range(trail_length):
+                neo.clear_strip()
+
+                # فقط الرأس يبقى، الباقي يتلاشى
+                for t in range(trail_length - i):
+                    pos = position - (t * direction)
+                    if 0 <= pos < NUM_LEDS:
+                        factor = (trail_length - i - t) / trail_length
+                        r = int(r_base * factor)
+                        g = int(g_base * factor)
+                        b = int(b_base * factor)
+                        neo.set_led_color(
+                            pos,
+                            int(r * BRIGHTNESS_SCALE),
+                            int(g * BRIGHTNESS_SCALE),
+                            int(b * BRIGHTNESS_SCALE)
+                        )
+                neo.update_strip()
+                # await asyncio.sleep(delay)
+
+            # بعد ما الرأس يضل لحاله → نغير اللون
+            color_index += 1
+            r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
+            # نعكس الاتجاه
+            direction *= -1
+
+    neo.clear_strip()
+    neo.update_strip()
