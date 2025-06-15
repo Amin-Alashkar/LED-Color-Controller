@@ -1,50 +1,63 @@
-async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.02, tail: int = 10):
+async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.015, trail: int = 20):
     """
-    Improved Tunnel Effect:
-    - Light flows smoothly from both ends toward the center and back.
-    - Uses a fading trail for better visual style.
+    🔥 Pro Tunnel Effect 🔥:
+    - موجة ضوء تمشي من الأطراف إلى المنتصف ثم ترجع، مع ذيول تتلاشى تدريجياً.
+    - الشكل النهائي ناعم وسلس كأنك داخل نفق مضيء.
     """
     global stop_requested
+
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
     while not stop_requested:
-        # من الأطراف إلى المركز
-        for step in range(NUM_LEDS // 2 + tail):
+        # من الأطراف للوسط
+        for step in range(NUM_LEDS // 2 + trail):
             if stop_requested:
                 break
             neo.clear_strip()
-            for t in range(tail):
-                left = step - t
-                right = NUM_LEDS - 1 - step + t
-                fade = max(0, (tail - t) / tail)
+
+            for t in range(trail):
+                offset = step - t
+                fade = (trail - t) / trail
+
+                left = offset
+                right = NUM_LEDS - 1 - offset
+
                 r = int(r_base * fade * BRIGHTNESS_SCALE)
                 g = int(g_base * fade * BRIGHTNESS_SCALE)
                 b = int(b_base * fade * BRIGHTNESS_SCALE)
+
                 if 0 <= left < NUM_LEDS:
                     neo.set_led_color(left, r, g, b)
                 if 0 <= right < NUM_LEDS:
                     neo.set_led_color(right, r, g, b)
+
             neo.update_strip()
             await asyncio.sleep(delay)
 
-        # من المركز إلى الأطراف
-        for step in range(NUM_LEDS // 2 + tail):
+        # من المركز للطرفين
+        for step in range(NUM_LEDS // 2 + trail):
             if stop_requested:
                 break
             neo.clear_strip()
-            for t in range(tail):
-                center_left = (NUM_LEDS // 2) - step + t
-                center_right = (NUM_LEDS // 2) + step - t
-                fade = max(0, (tail - t) / tail)
+
+            for t in range(trail):
+                offset = step - t
+                fade = (trail - t) / trail
+
+                center_left = (NUM_LEDS // 2) - 1 - offset
+                center_right = (NUM_LEDS // 2) + offset
+
                 r = int(r_base * fade * BRIGHTNESS_SCALE)
                 g = int(g_base * fade * BRIGHTNESS_SCALE)
                 b = int(b_base * fade * BRIGHTNESS_SCALE)
+
                 if 0 <= center_left < NUM_LEDS:
                     neo.set_led_color(center_left, r, g, b)
                 if 0 <= center_right < NUM_LEDS:
                     neo.set_led_color(center_right, r, g, b)
+
             neo.update_strip()
             await asyncio.sleep(delay)
 
