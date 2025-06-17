@@ -1,40 +1,37 @@
 async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
-    """
-    تأثير ألعاب نارية مطوّر:
-    - صاروخ من 7 أضواء.
-    - ينفجر في موقع عشوائي.
-    - بعد كل انفجار، انتظار عشوائي (حتى 10 ثواني).
-    """
     global stop_requested
 
     COLORS = [
-        (255, 0, 0),    # أحمر
-        (0, 0, 255),    # أزرق
-        (0, 255, 0),    # أخضر
-        (255, 255, 0),  # أصفر
-        (255, 0, 255),  # أرجواني
-        (0, 255, 255),  # سماوي
-        (255, 165, 0),  # برتقالي
+        (255, 0, 0), (0, 0, 255), (0, 255, 0),
+        (255, 255, 0), (255, 0, 255), (0, 255, 255), (255, 165, 0),
     ]
 
     ROCKET_LENGTH = 7
-    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]  # تدرج سطوع
+    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]
     EXPLOSION_BRIGHTNESS = 1.0
     FADE_STEPS = 20
+
+    blink_state = True  # حالة وميض الرأس
 
     while not stop_requested:
         color = random.choice(COLORS)
         explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
 
-        # 1. حركة الصاروخ باتجاه موقع الانفجار
+        # 1. صعود الصاروخ مع رأس يومض
         for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
             if stop_requested:
                 break
             neo.clear_strip()
+
             for i in range(ROCKET_LENGTH):
                 led_pos = head_pos + i
                 if 0 <= led_pos < NUM_LEDS:
                     brightness = ROCKET_BRIGHTNESSES[i]
+
+                    # الرأس يومض
+                    if i == 0:
+                        if not blink_state:
+                            continue  # لا تضيء الرأس الآن
                     r = int(color[0] * brightness)
                     g = int(color[1] * brightness)
                     b = int(color[2] * brightness)
@@ -44,13 +41,15 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
                         int(g * BRIGHTNESS_SCALE),
                         int(b * BRIGHTNESS_SCALE)
                     )
+
+            blink_state = not blink_state  # نقلب حالة الوميض
             neo.update_strip()
-            # await asyncio.sleep(delay)
+            await asyncio.sleep(delay)
 
         if stop_requested:
             break
 
-        # 2. الانفجار الكامل
+        # 2. الانفجار
         neo.clear_strip()
         for i in range(NUM_LEDS):
             r = int(color[0] * EXPLOSION_BRIGHTNESS)
@@ -65,7 +64,7 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
         neo.update_strip()
         await asyncio.sleep(0.2)
 
-        # 3. التلاشي التدريجي
+        # 3. التلاشي
         for fade_step in range(FADE_STEPS):
             if stop_requested:
                 break
@@ -82,12 +81,11 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
                     int(b * BRIGHTNESS_SCALE)
                 )
             neo.update_strip()
-            pass
 
         neo.clear_strip()
         neo.update_strip()
 
-        # 4. انتظار عشوائي قبل إطلاق صاروخ جديد
+        # 4. استراحة عشوائية
         wait_time = random.uniform(0.5, 10.0)
         await asyncio.sleep(wait_time)
 
