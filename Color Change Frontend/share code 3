@@ -1,21 +1,64 @@
-async def custom_sparkling_stars_loop(hex_color: str, interval: float = 0.1):
+import asyncio
+import random
+
+class SparkleStar:
+    def __init__(self, index, r, g, b):
+        self.index = index
+        self.r = r
+        self.g = g
+        self.b = b
+        self.active = False
+
+    async def sparkle(self):
+        while True:
+            # Random wait before next sparkle
+            await asyncio.sleep(random.uniform(0.1, 2.5))
+
+            # Fade In
+            self.active = True
+            for step in range(10):
+                factor = step / 10
+                neo.set_led_color(self.index, int(self.r * factor), int(self.g * factor), int(self.b * factor))
+                neo.update_strip()
+                await asyncio.sleep(0.02)
+
+            # Fade Out
+            for step in range(10, -1, -1):
+                factor = step / 10
+                neo.set_led_color(self.index, int(self.r * factor), int(self.g * factor), int(self.b * factor))
+                neo.update_strip()
+                await asyncio.sleep(0.02)
+
+            # Turn off
+            neo.set_led_color(self.index, 0, 0, 0)
+            neo.update_strip()
+            self.active = False
+
+
+async def custom_sparkling_stars_loop(hex_color: str, num_stars: int = 90):
     """
-    Custom Sparkling Stars:
-    - Random LEDs light up briefly in chosen color.
+    Enhanced Sparkling Stars Animation:
+    - Up to 90 independent stars randomly fade in/out.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
-    while not stop_requested:
-        neo.clear_strip()
-        num_stars = random.randint(1, NUM_LEDS // 3)
-        for _ in range(num_stars):
-            idx = random.randint(0, NUM_LEDS - 1)
-            neo.set_led_color(idx, r_base, g_base, b_base)
-        neo.update_strip()
-        await asyncio.sleep(interval)
+    # اختار مواقع النجوم بدون تكرار
+    star_indices = random.sample(range(NUM_LEDS), min(num_stars, NUM_LEDS))
 
-    neo.clear_strip()
-    neo.update_strip()
+    # أنشئ كل النجوم ككائنات مستقلة
+    tasks = []
+    for idx in star_indices:
+        star = SparkleStar(idx, r_base, g_base, b_base)
+        tasks.append(asyncio.create_task(star.sparkle()))
+
+    try:
+        while not stop_requested:
+            await asyncio.sleep(0.1)
+    finally:
+        for task in tasks:
+            task.cancel()
+        neo.clear_strip()
+        neo.update_strip()
