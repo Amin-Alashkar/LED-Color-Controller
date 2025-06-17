@@ -512,7 +512,7 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
                         int(b * BRIGHTNESS_SCALE)
                     )
             neo.update_strip()
-            await asyncio.sleep(delay)
+            # await asyncio.sleep(delay)
 
         if stop_requested:
             break
@@ -652,7 +652,7 @@ async def single_snake_loop():
                     )
             
             neo.update_strip()
-            await asyncio.sleep(delay_per_step)
+            # await asyncio.sleep(delay_per_step)
 
     neo.clear_strip()
     neo.update_strip()
@@ -779,18 +779,22 @@ async def custom_breathing_loop(hex_color: str, delay: float = 0.02, steps: int 
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_meteor_shower_loop(hex_color: str, delay_per_step: float = 0.05, trail_length: int = 12):
+async def custom_meteor_shower_loop(hex_color: str, delay_per_step: float = None, trail_length: int = 40):
     """
-    Custom Meteor Shower – single-colored:
-    - A small “meteor” of length trail_length moves across the strip
-    - All LEDs light up in chosen hex_color
+    Custom Meteor Shower – single-colored, same speed and length as single_snake_loop.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
+    if delay_per_step is None:
+        delay_per_step = 3 / (NUM_LEDS + trail_length)
+
     while not stop_requested:
+        wait_time = random.uniform(0, 10)  # زي الأفعى، كل شوطة meteoooor تأخير عشوائي
+        await asyncio.sleep(wait_time)
+
         for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
             if stop_requested:
                 break
@@ -804,26 +808,35 @@ async def custom_meteor_shower_loop(hex_color: str, delay_per_step: float = 0.05
                     b = int(b_base * factor)
                     neo.set_led_color(
                         led_pos,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
                     )
             neo.update_strip()
-            await asyncio.sleep(delay_per_step)
+            # await asyncio.sleep(delay_per_step)
 
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_pulse_sync_loop(hex_color: str, delay: float = 0.02, steps: int = 20):
+async def custom_pulse_sync_loop(hex_color: str, delay: float = None, steps: int = 20):
     """
     Custom Pulse Sync – all LEDs pulse in the chosen color.
+    Matches the speed and steps of pulse_sync_loop.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
+    if delay is None:
+        delay = 0.03  # زي النسخة الأصلية
+
     while not stop_requested:
+        # تأخير عشوائي بين كل نبضة
+        wait_time = random.uniform(0, 10)
+        await asyncio.sleep(wait_time)
+
+        # التصاعد (إضاءة تدريجية)
         for step in range(steps):
             if stop_requested:
                 break
@@ -833,15 +846,15 @@ async def custom_pulse_sync_loop(hex_color: str, delay: float = 0.02, steps: int
             b = int(b_base * factor)
             for i in range(NUM_LEDS):
                 neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
             neo.update_strip()
             await asyncio.sleep(delay)
-        if stop_requested:
-            break
+
+        # التناقص (الانطفاء تدريجي)
         for step in range(steps):
             if stop_requested:
                 break
@@ -851,29 +864,30 @@ async def custom_pulse_sync_loop(hex_color: str, delay: float = 0.02, steps: int
             b = int(b_base * factor)
             for i in range(NUM_LEDS):
                 neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
             neo.update_strip()
             await asyncio.sleep(delay)
 
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_glitch_flash_loop(hex_color: str, duration: float = 5.0, interval: float = 0.05):
+    
+async def custom_glitch_flash_loop(hex_color: str, interval: float = 0.05):
     """
-    Glitch Flash with custom color:
-    - Randomly flash chosen color or off across all LEDs for duration seconds.
+    Endless Glitch Flash (no stop/repeat feeling):
+    - Continuously flashes the given color randomly on/off across all LEDs.
+    - No noticeable loop or pause – feels like it's always running.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
-    start_time = time.time()
-    while time.time() - start_time < duration and not stop_requested:
+    while not stop_requested:
         for i in range(NUM_LEDS):
             if random.random() < 0.5:
                 neo.set_led_color(i, 0, 0, 0)
@@ -940,43 +954,59 @@ async def custom_heart_beat_loop(hex_color: str, delay: float = 0.1):
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.05):
-    """
-    Custom Tunnel Effect:
-    - Light moves from both ends toward center in chosen color.
-    """
+
+
+async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.05, snake_length: int = 5):
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    mid = NUM_LEDS // 2
 
     while not stop_requested:
-        for step in range((NUM_LEDS // 2) + 1):
+        # Phase 1: الأفعى من الطرفين تدخل نحو المركز
+        for step in range(mid + snake_length):
             if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
                 return
             neo.clear_strip()
-            for i in range(NUM_LEDS):
-                if i == step or i == NUM_LEDS - 1 - step:
-                    neo.set_led_color(i, r_base, g_base, b_base)
-            neo.update_strip()
-            await asyncio.sleep(delay)
-        # ثم يعود
-        for step in range((NUM_LEDS // 2) + 1):
-            if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
-            neo.clear_strip()
-            for i in range(NUM_LEDS):
-                if i == (NUM_LEDS // 2) - step or i == (NUM_LEDS // 2) + step:
-                    neo.set_led_color(i, r_base, g_base, b_base)
+
+            # يمين → يسار
+            for i in range(snake_length):
+                pos = step - i
+                if 0 <= pos < mid:
+                    factor = (snake_length - i) / snake_length
+                    neo.set_led_color(pos, int(r * factor), int(g * factor), int(b * factor))
+
+            # يسار → يمين
+            for i in range(snake_length):
+                pos = NUM_LEDS - 1 - (step - i)
+                if mid <= pos < NUM_LEDS:
+                    factor = (snake_length - i) / snake_length
+                    neo.set_led_color(pos, int(r * factor), int(g * factor), int(b * factor))
+
             neo.update_strip()
             await asyncio.sleep(delay)
 
-    neo.clear_strip()
-    neo.update_strip()
+        # Phase 2: انفجار في المنتصف
+        if stop_requested:
+            return
+
+        for brightness in range(255, -1, -15):  # يتلاشى بالتدريج
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, int(r * brightness / 255), int(g * brightness / 255), int(b * brightness / 255))
+            neo.update_strip()
+            await asyncio.sleep(0.03)
+
+        neo.clear_strip()
+        neo.update_strip()
+
+        # Phase 3: استراحة عشوائية قبل التكرار
+        wait_time = random.uniform(1, 10)
+        for _ in range(int(wait_time / 0.1)):
+            if stop_requested:
+                return
+            # await asyncio.sleep(0.1)
 
 async def custom_laser_shot_loop(hex_color: str, delay: float = 0.02):
     """
