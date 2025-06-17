@@ -1,4 +1,4 @@
-async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
+async def fireworks_burst_loop(delay: float = 0.005):  # أسرع بـ1000%
     global stop_requested
 
     COLORS = [
@@ -17,7 +17,7 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
         color = random.choice(COLORS)
         explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
 
-        # 1. صعود الصاروخ مع رأس يومض
+        # صعود الصاروخ مع وميض الرأس
         for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
             if stop_requested:
                 break
@@ -27,14 +27,20 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
                 led_pos = head_pos + i
                 if 0 <= led_pos < NUM_LEDS:
                     brightness = ROCKET_BRIGHTNESSES[i]
-
+                    
                     # الرأس يومض
                     if i == 0:
-                        if not blink_state:
-                            continue  # لا تضيء الرأس الآن
-                    r = int(color[0] * brightness)
-                    g = int(color[1] * brightness)
-                    b = int(color[2] * brightness)
+                        if blink_state:
+                            r = int(color[0] * brightness)
+                            g = int(color[1] * brightness)
+                            b = int(color[2] * brightness)
+                        else:
+                            r, g, b = 0, 0, 0  # طافي
+                    else:
+                        r = int(color[0] * brightness)
+                        g = int(color[1] * brightness)
+                        b = int(color[2] * brightness)
+
                     neo.set_led_color(
                         led_pos,
                         int(r * BRIGHTNESS_SCALE),
@@ -42,14 +48,14 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
                         int(b * BRIGHTNESS_SCALE)
                     )
 
-            blink_state = not blink_state  # نقلب حالة الوميض
+            blink_state = not blink_state  # قلب حالة الوميض
             neo.update_strip()
             await asyncio.sleep(delay)
 
         if stop_requested:
             break
 
-        # 2. الانفجار
+        # الانفجار الكامل
         neo.clear_strip()
         for i in range(NUM_LEDS):
             r = int(color[0] * EXPLOSION_BRIGHTNESS)
@@ -64,7 +70,7 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
         neo.update_strip()
         await asyncio.sleep(0.2)
 
-        # 3. التلاشي
+        # التلاشي
         for fade_step in range(FADE_STEPS):
             if stop_requested:
                 break
@@ -85,7 +91,6 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
         neo.clear_strip()
         neo.update_strip()
 
-        # 4. استراحة عشوائية
         wait_time = random.uniform(0.5, 10.0)
         await asyncio.sleep(wait_time)
 
