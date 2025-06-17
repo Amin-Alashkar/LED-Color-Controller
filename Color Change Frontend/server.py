@@ -1008,10 +1008,10 @@ async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.05, snake_l
                 return
             # await asyncio.sleep(0.1)
 
-async def custom_laser_shot_loop(hex_color: str, delay: float = 0.02):
+async def custom_laser_shot_loop(hex_color: str, delay: float = 0.02, trail_length: int = 4):
     """
-    Custom Laser Shot:
-    - A single bright “laser” LED moves from start to end in chosen color.
+    Enhanced Laser Shot:
+    - Bright "laser" moves forward and backward with fading trail effect.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
@@ -1019,38 +1019,116 @@ async def custom_laser_shot_loop(hex_color: str, delay: float = 0.02):
     b_base = int(hex_color[5:7], 16)
 
     while not stop_requested:
+        # Forward
         for i in range(NUM_LEDS):
             if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
+                break
             neo.clear_strip()
-            neo.set_led_color(i, r_base, g_base, b_base)
+            for t in range(trail_length):
+                index = i - t
+                if 0 <= index < NUM_LEDS:
+                    fade = 1.0 - (t / trail_length)
+                    r = int(r_base * fade)
+                    g = int(g_base * fade)
+                    b = int(b_base * fade)
+                    neo.set_led_color(index, r, g, b)
             neo.update_strip()
             await asyncio.sleep(delay)
+
+        # Backward
+        for i in range(NUM_LEDS - 2, -1, -1):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            for t in range(trail_length):
+                index = i + t
+                if 0 <= index < NUM_LEDS:
+                    fade = 1.0 - (t / trail_length)
+                    r = int(r_base * fade)
+                    g = int(g_base * fade)
+                    b = int(b_base * fade)
+                    neo.set_led_color(index, r, g, b)
+            neo.update_strip()
+            # await asyncio.sleep(delay)
 
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_sparkling_stars_loop(hex_color: str, interval: float = 0.1):
-    """
-    Custom Sparkling Stars:
-    - Random LEDs light up briefly in chosen color.
-    """
+class Star:
+    def __init__(self, color):
+        self.color = color
+        self.index = None
+        self.duration = random.uniform(2.5, 4.5)  # كل نجمة إلها مدة لمعان مختلفة
+        self.brightness = 0
+        self.fading_in = True
+        self.active = True
+
+    async def sparkle_forever(self):
+        step_time = 0.05
+        steps = int(self.duration / step_time / 2)
+
+        # تأخير عشوائي قبل بداية كل نجمة عشان يضهروا تدريجيًا
+        await asyncio.sleep(random.uniform(0.2, 4.0))
+
+        while self.active:
+            # كل دورة بمكان عشوائي
+            self.index = random.randint(0, NUM_LEDS - 1)
+
+            # Fade in
+            for i in range(steps):
+                if not self.active:
+                    break
+                self.brightness = int(255 * (i / steps))
+                neo.set_led_color(
+                    self.index,
+                    (self.color[0] * self.brightness) // 255,
+                    (self.color[1] * self.brightness) // 255,
+                    (self.color[2] * self.brightness) // 255
+                )
+                await asyncio.sleep(step_time)
+
+            await asyncio.sleep(random.uniform(0.1, 0.3))  # لمعة سريعة
+
+            # Fade out
+            for i in range(steps):
+                if not self.active:
+                    break
+                self.brightness = int(255 * ((steps - i) / steps))
+                neo.set_led_color(
+                    self.index,
+                    (self.color[0] * self.brightness) // 255,
+                    (self.color[1] * self.brightness) // 255,
+                    (self.color[2] * self.brightness) // 255
+                )
+                await asyncio.sleep(step_time)
+
+            # إطفاء
+            neo.set_led_color(self.index, 0, 0, 0)
+
+            # استراحة قبل الدورة الجديدة
+            await asyncio.sleep(random.uniform(0.2, 0.5))
+
+# حلقة الأنميشن الرئيسية
+async def custom_sparkling_stars_loop(hex_color: str):
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    neo.clear_strip()
+    neo.update_strip()
+
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    stars = [Star((r, g, b)) for _ in range(80)]
+    tasks = [asyncio.create_task(star.sparkle_forever()) for star in stars]
 
     while not stop_requested:
-        neo.clear_strip()
-        num_stars = random.randint(1, NUM_LEDS // 3)
-        for _ in range(num_stars):
-            idx = random.randint(0, NUM_LEDS - 1)
-            neo.set_led_color(idx, r_base, g_base, b_base)
         neo.update_strip()
-        await asyncio.sleep(interval)
+        await asyncio.sleep(0.05)
 
+    # لما يتوقف كل شي
+    for star in stars:
+        star.active = False
+    await asyncio.gather(*tasks)
     neo.clear_strip()
     neo.update_strip()
 
