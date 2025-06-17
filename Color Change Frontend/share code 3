@@ -1,52 +1,13 @@
-class Star:
-    def __init__(self, color):
-        self.color = color
-        self.index = None
-        self.duration = random.uniform(2.5, 4.5)
-        self.brightness = 0
-        self.active = True
-
-    async def sparkle_forever(self):
-        step_time = 0.05
-        steps = int(self.duration / step_time / 2)
-
-        # ⭐ تأخير عشوائي قبل أول لمعان
-        await asyncio.sleep(random.uniform(0.1, 5))
-
-        while self.active:
-            # اختر موقع عشوائي جديد
-            self.index = random.randint(0, NUM_LEDS - 1)
-
-            # Fade in
-            for i in range(steps):
-                if not self.active:
-                    return
-                self.brightness = int(255 * (i / steps))
-                neo.set_led_color(
-                    self.index,
-                    (self.color[0] * self.brightness) // 255,
-                    (self.color[1] * self.brightness) // 255,
-                    (self.color[2] * self.brightness) // 255
-                )
-                await asyncio.sleep(step_time)
-
-            await asyncio.sleep(random.uniform(0.1, 0.3))
-
-            # Fade out
-            for i in range(steps):
-                if not self.active:
-                    return
-                self.brightness = int(255 * ((steps - i) / steps))
-                neo.set_led_color(
-                    self.index,
-                    (self.color[0] * self.brightness) // 255,
-                    (self.color[1] * self.brightness) // 255,
-                    (self.color[2] * self.brightness) // 255
-                )
-                await asyncio.sleep(step_time)
-
-            # طفي النجمة
-            neo.set_led_color(self.index, 0, 0, 0)
-
-            # استراحة قبل المرة الجاية
-            await asyncio.sleep(random.uniform(0.2, 0.5))
+   INFO   192.168.1.247:45394 - "GET /state HTTP/1.1" 200
+      INFO   192.168.1.247:45394 - "POST /color HTTP/1.1" 200
+      INFO   192.168.1.247:56644 - "POST /animate HTTP/1.1" 200
+Task exception was never retrieved
+future: <Task finished name='Task-3' coro=<animation_worker() done, defined at /home/student/pixel_project/server.py:1467> exception=TypeError("Star.__init__() got an unexpected keyword argument 'duration'")>
+Traceback (most recent call last):
+  File "/home/student/pixel_project/server.py", line 1546, in animation_worker
+    await custom_sparkling_stars_loop(req.hex_color)
+  File "/home/student/pixel_project/server.py", line 1129, in custom_sparkling_stars_loop
+    star = Star(idx, (r, g, b), duration=random.uniform(1.5, 3.5))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: Star.__init__() got an unexpected keyword argument 'duration'
+      INFO   192.168.1.247:56644 - "GET /state HTTP/1.1" 200
