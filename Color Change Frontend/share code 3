@@ -30,6 +30,7 @@ class Star:
                     (self.color[2] * self.brightness) // 255
                 )
                 await asyncio.sleep(step_time)
+            await asyncio.sleep(random.uniform(0, 4))
 
             await asyncio.sleep(random.uniform(0.1, 0.3))  # pause at max brightness
 
