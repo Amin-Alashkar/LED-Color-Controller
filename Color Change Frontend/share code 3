@@ -4,17 +4,20 @@ class Star:
         self.r, self.g, self.b = color
         self.duration = duration  # Total time for one cycle
         self.brightness = 0
-        self.fading_in = True
         self.active = True
 
     async def sparkle(self):
-        step_time = 0.05  # time between brightness updates
+        step_time = 0.05
         steps = int(self.duration / step_time / 2)
 
+        # كل نجمة تنتظر بشكل عشوائي قبل أول لمعان
+        await asyncio.sleep(random.uniform(0, 4))
+
         while self.active:
+            # Fade in
             for i in range(steps):
                 if not self.active:
-                    break
+                    return
                 self.brightness = int(255 * (i / steps))
                 neo.set_led_color(self.index,
                                   (self.r * self.brightness) // 255,
@@ -22,13 +25,12 @@ class Star:
                                   (self.b * self.brightness) // 255)
                 await asyncio.sleep(step_time)
 
-            
+            await asyncio.sleep(random.uniform(0.1, 0.4))
 
-            await asyncio.sleep(0.1)
-
+            # Fade out
             for i in range(steps):
                 if not self.active:
-                    break
+                    return
                 self.brightness = int(255 * ((steps - i) / steps))
                 neo.set_led_color(self.index,
                                   (self.r * self.brightness) // 255,
@@ -36,10 +38,10 @@ class Star:
                                   (self.b * self.brightness) // 255)
                 await asyncio.sleep(step_time)
 
-            # بعد ما تخلص النجمة، تتطفي
             neo.set_led_color(self.index, 0, 0, 0)
-            self.active = False
 
+            # راحة عشوائية بين الدورات
+            await asyncio.sleep(random.uniform(0.5, 2))
 
 async def custom_sparkling_stars_loop(hex_color: str):
     global stop_requested
@@ -55,19 +57,19 @@ async def custom_sparkling_stars_loop(hex_color: str):
 
     while not stop_requested:
         if len(stars) < 80:
-            # اختر مكان عشوائي ما عليه نجمة حاليا
-            used_indexes = [s.index for s in stars if s.active]
+            # أماكن غير مستخدمة
+            used_indexes = [s.index for s in stars]
             available_indexes = [i for i in range(NUM_LEDS) if i not in used_indexes]
             if available_indexes:
                 idx = random.choice(available_indexes)
-                star = Star(idx, (r, g, b), duration=random.uniform(1.5, 3.5))
+                duration = random.uniform(1.5, 3.5)
+                star = Star(idx, (r, g, b), duration)
                 stars.append(star)
                 tasks.append(asyncio.create_task(star.sparkle()))
 
-        neo.update_strip()
         await asyncio.sleep(0.1)
 
-    # نوقف كل النجوم
+    # إيقاف الأنميشن عند الطلب
     for star in stars:
         star.active = False
     await asyncio.gather(*tasks)
