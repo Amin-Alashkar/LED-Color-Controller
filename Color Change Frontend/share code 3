@@ -1,38 +1,38 @@
-async def custom_knight_rider_loop(hex_color: str, delay: float = 0.03):
+async def custom_neural_pulse_storm(hex_color: str):
     """
-    Advanced Knight Rider:
-    - LED with glowing tail moves back and forth smoothly.
+    Neural Pulse Storm:
+    - Pulses radiate from the center in both directions like electric waves.
     """
     global stop_requested
+    center = NUM_LEDS // 2
+
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
-    position = 0
-    direction = 1
-    tail_length = 6  # عدد الليدات يلي يشكلو الذيل
-
     while not stop_requested:
-        neo.clear_strip()
+        pulse_width = random.randint(3, 8)
+        duration = random.uniform(0.8, 1.8)
+        steps = int(duration / 0.05)
 
-        for i in range(tail_length):
-            idx = position - i * direction
-            if 0 <= idx < NUM_LEDS:
-                # تأثير تدريجي للذيل
-                brightness = max(0, 255 - i * (255 // tail_length))
-                neo.set_led_color(
-                    idx,
-                    (r_base * brightness) // 255,
-                    (g_base * brightness) // 255,
-                    (b_base * brightness) // 255
-                )
+        for step in range(steps):
+            neo.clear_strip()
+            brightness = int(255 * (1 - abs(step - steps // 2) / (steps // 2)))
 
-        neo.update_strip()
-        await asyncio.sleep(delay)
+            for i in range(pulse_width):
+                for offset in [center - i, center + i]:
+                    if 0 <= offset < NUM_LEDS:
+                        neo.set_led_color(
+                            offset,
+                            (r_base * brightness) // 255,
+                            (g_base * brightness) // 255,
+                            (b_base * brightness) // 255
+                        )
 
-        position += direction
-        if position >= NUM_LEDS - 1 or position <= 0:
-            direction *= -1  # غيّر الاتجاه لما توصل الأطراف
+            neo.update_strip()
+            await asyncio.sleep(0.05)
+
+        await asyncio.sleep(random.uniform(0.2, 0.6))
 
     neo.clear_strip()
     neo.update_strip()
