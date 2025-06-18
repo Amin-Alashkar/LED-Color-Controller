@@ -1,4 +1,4 @@
-async def custom_neural_pulse_storm(hex_color: str):
+async def custom_knight_rider_loop(hex_color: str):
     """
     Neural Pulse Storm:
     - Pulses radiate from the center in both directions like electric waves.
