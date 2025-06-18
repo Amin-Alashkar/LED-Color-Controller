@@ -1,52 +1,39 @@
-async def custom_knight_rider_loop(hex_color: str):
+async def custom_knight_rider_loop(hex_color: str, delay: float = 0.03):
     """
-    Electric Sparks Storm:
-    - Random LED clusters spark and fade out like electric bursts.
-    - Best for long LED strips.
+    Custom Knight Rider:
+    - Multiple pulses moving inward and outward in a dancing pattern.
     """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
 
-    class Spark:
-        def __init__(self):
-            self.center = random.randint(0, NUM_LEDS - 1)
-            self.width = random.randint(2, 6)
-            self.duration = random.uniform(0.4, 1.0)
-            self.steps = int(self.duration / 0.05)
-            self.alive = True
-
-        async def animate(self):
-            for step in range(self.steps):
-                brightness = int(255 * (1 - step / self.steps))
-                for i in range(-self.width, self.width + 1):
-                    idx = self.center + i
-                    if 0 <= idx < NUM_LEDS:
-                        factor = 1 - abs(i) / (self.width + 1)
-                        neo.set_led_color(
-                            idx,
-                            (r_base * brightness * factor) // 255,
-                            (g_base * brightness * factor) // 255,
-                            (b_base * brightness * factor) // 255
-                        )
-                await asyncio.sleep(0.05)
-            self.alive = False
-
-    sparks = []
+    mid = NUM_LEDS // 2
+    offset = 0
+    expand = True  # True: outwards, False: inwards
 
     while not stop_requested:
-        # شغّل شرارات جديدة
-        if len(sparks) < 10:  # عدد الشرارات بنفس اللحظة
-            spark = Spark()
-            sparks.append(spark)
-            asyncio.create_task(spark.animate())
+        neo.clear_strip()
 
-        # نظّف الشرارات القديمة
-        sparks = [s for s in sparks if s.alive]
+        # نرسم أزواج من المنتصف للخارج والعكس
+        for i in range(5):  # عدد النقاط المتقابلة
+            left = mid - offset - i * 4
+            right = mid + offset + i * 4
+            for idx in [left, right]:
+                if 0 <= idx < NUM_LEDS:
+                    neo.set_led_color(idx, r, g, b)
 
         neo.update_strip()
-        await asyncio.sleep(0.02)
+        await asyncio.sleep(delay)
+
+        if expand:
+            offset += 1
+            if mid + offset >= NUM_LEDS - 1 or mid - offset <= 0:
+                expand = False
+        else:
+            offset -= 1
+            if offset <= 0:
+                expand = True
 
     neo.clear_strip()
     neo.update_strip()
