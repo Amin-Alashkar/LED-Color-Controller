@@ -1,37 +1,52 @@
-async def custom_knight_rider_loop(hex_color: str, delay: float = 0.01):
+async def custom_electric_sparks_loop(hex_color: str):
     """
-    Custom Knight Rider:
-    - Moving pulse with tail effect, good for long LED strips.
+    Electric Sparks Storm:
+    - Random LED clusters spark and fade out like electric bursts.
+    - Best for long LED strips.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
-    tail_length = 20  # كل ما كان أطول، الذيل أطول (مناسب للـ150 LED)
-    position = 0
-    direction = 1
+    class Spark:
+        def __init__(self):
+            self.center = random.randint(0, NUM_LEDS - 1)
+            self.width = random.randint(2, 6)
+            self.duration = random.uniform(0.4, 1.0)
+            self.steps = int(self.duration / 0.05)
+            self.alive = True
+
+        async def animate(self):
+            for step in range(self.steps):
+                brightness = int(255 * (1 - step / self.steps))
+                for i in range(-self.width, self.width + 1):
+                    idx = self.center + i
+                    if 0 <= idx < NUM_LEDS:
+                        factor = 1 - abs(i) / (self.width + 1)
+                        neo.set_led_color(
+                            idx,
+                            (r_base * brightness * factor) // 255,
+                            (g_base * brightness * factor) // 255,
+                            (b_base * brightness * factor) // 255
+                        )
+                await asyncio.sleep(0.05)
+            self.alive = False
+
+    sparks = []
 
     while not stop_requested:
-        neo.clear_strip()
+        # شغّل شرارات جديدة
+        if len(sparks) < 10:  # عدد الشرارات بنفس اللحظة
+            spark = Spark()
+            sparks.append(spark)
+            asyncio.create_task(spark.animate())
 
-        for i in range(tail_length):
-            idx = position - i * direction
-            if 0 <= idx < NUM_LEDS:
-                brightness = int(255 * (1 - i / tail_length))
-                neo.set_led_color(
-                    idx,
-                    (r_base * brightness) // 255,
-                    (g_base * brightness) // 255,
-                    (b_base * brightness) // 255
-                )
+        # نظّف الشرارات القديمة
+        sparks = [s for s in sparks if s.alive]
 
         neo.update_strip()
-        await asyncio.sleep(delay)
-
-        position += direction
-        if position >= NUM_LEDS - 1 or position <= 0:
-            direction *= -1  # غير الاتجاه عند الأطراف
+        await asyncio.sleep(0.02)
 
     neo.clear_strip()
     neo.update_strip()
