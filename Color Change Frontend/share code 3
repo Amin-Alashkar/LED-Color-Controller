@@ -21,7 +21,7 @@ class Snake:
         if self.get_tail() > NUM_LEDS:
             self.done = True
 
-async def custom_snake_army_loop(hex_color: str, delay: float = 0.05):
+async def custom_color_wipe_loop(hex_color: str, delay: float = 0.05):
     """
     Snake Army V2:
     - Background stays on (dimmed)
