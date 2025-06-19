@@ -49,3 +49,4 @@ Device Descriptor:
         wMaxPacketSize     0x0001  1x 1 bytes
         bInterval             255
 student@raspberrypi:~ $ 
+
