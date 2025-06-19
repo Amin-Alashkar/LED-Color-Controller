@@ -1,1 +1,103 @@
-dmesg | tail -n 50
+student@raspberrypi:~ $ dmesg | tail -n 50 #this is before
+[ 4803.054885] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4803.054892] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4803.054895] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4803.054898] usb 1-2.2: Manufacturer: Logitech
+[ 4803.054900] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4803.443900] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.000E/input/input36
+[ 4803.444052] hid-generic 0003:046D:C08F.000E: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4803.452332] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.000F/input/input37
+[ 4803.504933] hid-generic 0003:046D:C08F.000F: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4803.831935] usb 1-2.2: USB disconnect, device number 7
+[ 4805.600801] usb 1-2.2: new full-speed USB device number 8 using xhci-hcd
+[ 4805.711047] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4805.711055] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4805.711059] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4805.711062] usb 1-2.2: Manufacturer: Logitech
+[ 4805.711064] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4806.132105] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.0010/input/input40
+[ 4806.132271] hid-generic 0003:046D:C08F.0010: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4806.140540] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.0011/input/input41
+[ 4806.192961] hid-generic 0003:046D:C08F.0011: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4827.129342] usb 1-2.2: USB disconnect, device number 8
+[ 4827.585062] usb 1-2.2: new full-speed USB device number 9 using xhci-hcd
+[ 4827.695365] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4827.695371] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4827.695374] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4827.695377] usb 1-2.2: Manufacturer: Logitech
+[ 4827.695379] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4828.149440] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.0012/input/input44
+[ 4828.149731] hid-generic 0003:046D:C08F.0012: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4828.157931] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.0013/input/input45
+[ 4828.213272] hid-generic 0003:046D:C08F.0013: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4828.537420] usb 1-2.2: USB disconnect, device number 9
+[ 4828.865083] usb 1-2.2: new full-speed USB device number 10 using xhci-hcd
+[ 4828.975444] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4828.975452] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4828.975455] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4828.975458] usb 1-2.2: Manufacturer: Logitech
+[ 4828.975460] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4829.429490] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.0014/input/input48
+[ 4829.429648] hid-generic 0003:046D:C08F.0014: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4829.437907] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.0015/input/input49
+[ 4829.493285] hid-generic 0003:046D:C08F.0015: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4830.073512] usb 1-2.2: USB disconnect, device number 10
+[ 4831.037122] usb 1-2: USB disconnect, device number 2
+[ 4889.605757] usb 1-2: new full-speed USB device number 11 using xhci-hcd
+[ 4889.766068] usb 1-2: New USB device found, idVendor=0a05, idProduct=7211, bcdDevice= 1.00
+[ 4889.766077] usb 1-2: New USB device strings: Mfr=0, Product=1, SerialNumber=0
+[ 4889.766080] usb 1-2: Product: USB2.0 HUB
+[ 4889.978173] hub 1-2:1.0: USB hub found
+[ 4889.982080] hub 1-2:1.0: 4 ports detected
+student@raspberrypi:~ $ dmesg | tail -n 50 #this is after 
+[ 4803.054885] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4803.054892] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4803.054895] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4803.054898] usb 1-2.2: Manufacturer: Logitech
+[ 4803.054900] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4803.443900] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.000E/input/input36
+[ 4803.444052] hid-generic 0003:046D:C08F.000E: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4803.452332] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.000F/input/input37
+[ 4803.504933] hid-generic 0003:046D:C08F.000F: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4803.831935] usb 1-2.2: USB disconnect, device number 7
+[ 4805.600801] usb 1-2.2: new full-speed USB device number 8 using xhci-hcd
+[ 4805.711047] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4805.711055] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4805.711059] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4805.711062] usb 1-2.2: Manufacturer: Logitech
+[ 4805.711064] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4806.132105] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.0010/input/input40
+[ 4806.132271] hid-generic 0003:046D:C08F.0010: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4806.140540] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.0011/input/input41
+[ 4806.192961] hid-generic 0003:046D:C08F.0011: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4827.129342] usb 1-2.2: USB disconnect, device number 8
+[ 4827.585062] usb 1-2.2: new full-speed USB device number 9 using xhci-hcd
+[ 4827.695365] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4827.695371] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4827.695374] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4827.695377] usb 1-2.2: Manufacturer: Logitech
+[ 4827.695379] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4828.149440] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.0012/input/input44
+[ 4828.149731] hid-generic 0003:046D:C08F.0012: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4828.157931] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.0013/input/input45
+[ 4828.213272] hid-generic 0003:046D:C08F.0013: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4828.537420] usb 1-2.2: USB disconnect, device number 9
+[ 4828.865083] usb 1-2.2: new full-speed USB device number 10 using xhci-hcd
+[ 4828.975444] usb 1-2.2: New USB device found, idVendor=046d, idProduct=c08f, bcdDevice=45.01
+[ 4828.975452] usb 1-2.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
+[ 4828.975455] usb 1-2.2: Product: G403 HERO Gaming Mouse
+[ 4828.975458] usb 1-2.2: Manufacturer: Logitech
+[ 4828.975460] usb 1-2.2: SerialNumber: 1477394D3933
+[ 4829.429490] input: Logitech G403 HERO Gaming Mouse as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.0/0003:046D:C08F.0014/input/input48
+[ 4829.429648] hid-generic 0003:046D:C08F.0014: input,hidraw3: USB HID v1.11 Mouse [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input0
+[ 4829.437907] input: Logitech G403 HERO Gaming Mouse Keyboard as /devices/platform/axi/1000120000.pcie/1f00200000.usb/xhci-hcd.0/usb1/1-2/1-2.2/1-2.2:1.1/0003:046D:C08F.0015/input/input49
+[ 4829.493285] hid-generic 0003:046D:C08F.0015: input,hiddev97,hidraw4: USB HID v1.11 Keyboard [Logitech G403 HERO Gaming Mouse] on usb-xhci-hcd.0-2.2/input1
+[ 4830.073512] usb 1-2.2: USB disconnect, device number 10
+[ 4831.037122] usb 1-2: USB disconnect, device number 2
+[ 4889.605757] usb 1-2: new full-speed USB device number 11 using xhci-hcd
+[ 4889.766068] usb 1-2: New USB device found, idVendor=0a05, idProduct=7211, bcdDevice= 1.00
+[ 4889.766077] usb 1-2: New USB device strings: Mfr=0, Product=1, SerialNumber=0
+[ 4889.766080] usb 1-2: Product: USB2.0 HUB
+[ 4889.978173] hub 1-2:1.0: USB hub found
+[ 4889.982080] hub 1-2:1.0: 4 ports detected
+student@raspberrypi:~ $ 
