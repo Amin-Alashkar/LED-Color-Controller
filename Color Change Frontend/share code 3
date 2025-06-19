@@ -1,5 +1,5 @@
 class Snake:
-    def __init__(self, start_pos, length=10):
+    def __init__(self, start_pos=0, length=10):
         self.position = start_pos
         self.length = length
         self.done = False
@@ -15,17 +15,18 @@ class Snake:
 
     def move(self):
         self.position += 1
-        if self.get_tail() > NUM_LEDS:
+        if self.get_tail() >= NUM_LEDS:
             self.done = True
 
 
 async def custom_color_wipe_loop(hex_color: str, delay: float = 0.05):
     """
-    Snake Army V2 (Final Version for Daddy TG 😎🐍):
-    - Background stays on (dimmed)
-    - Snakes move forward from start to end
-    - Snakes have random gaps between them (3 to 10 LEDs)
-    - Snakes have full brightness
+    Super Ghost Mode 🗿:
+    - خلفية ثابتة بنصف السطوع
+    - أفاعي بطول 10، تمشي من البداية للنهاية
+    - كل أفعى بسطوع كامل
+    - بعد مرورها ترجع الخلفية كما كانت
+    - فجوة عشوائية بين الأفاعي (3 إلى 10)
     """
     global stop_requested
 
@@ -33,51 +34,50 @@ async def custom_color_wipe_loop(hex_color: str, delay: float = 0.05):
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
-    DIM_LEVEL = 100  # نصف السطوع
-    BRIGHT_LEVEL = 255  # سطوع الأفعى
-
+    DIM_LEVEL = 100
     background_color = (
         (r_base * DIM_LEVEL) // 255,
         (g_base * DIM_LEVEL) // 255,
         (b_base * DIM_LEVEL) // 255
     )
 
-    # اضاءة الخلفية أول مرة
+    # إضاءة الخلفية الثابتة (البلاط)
     for i in range(NUM_LEDS):
         neo.set_led_color(i, *background_color)
     neo.update_strip()
 
     snakes = []
-    snake_gap_counter = 0
-    current_gap = random.randint(3, 10)  # ✅ تعديل هنا
+    gap_counter = 0
+    current_gap = random.randint(3, 10)
 
     while not stop_requested:
-        # أضف أفعى جديدة إذا وصلنا للمسافة المطلوبة
-        if snake_gap_counter >= current_gap:
-            snakes.append(Snake(start_pos=0))
-            snake_gap_counter = 0
-            current_gap = random.randint(3, 10)  # ✅ تعديل هنا
+        if gap_counter >= current_gap:
+            snakes.append(Snake())
+            gap_counter = 0
+            current_gap = random.randint(3, 10)
         else:
-            snake_gap_counter += 1
+            gap_counter += 1
 
         # تحديث الأفاعي
         for snake in snakes:
-            # أرجع الذيل للسطر العادي (خلفية)
+            # إعادة الذيل للخلفية
             tail = snake.get_tail()
             if 0 <= tail < NUM_LEDS:
                 neo.set_led_color(tail, *background_color)
 
-            # اضئ جسم الأفعى بسطوع كامل
+            # اضاءة جسم الأفعى بالكامل
             for i in snake.get_body_indexes():
                 neo.set_led_color(i, r_base, g_base, b_base)
 
+            # تحريك الأفعى
             snake.move()
 
-        # إزالة الأفاعي اللي خلصت
+        # حذف الأفاعي المنتهية
         snakes = [s for s in snakes if not s.done]
 
         neo.update_strip()
         await asyncio.sleep(delay)
 
+    # عند الإيقاف، نظف الشريط
     neo.clear_strip()
     neo.update_strip()
