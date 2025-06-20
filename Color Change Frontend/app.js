@@ -57,6 +57,7 @@ const customColorEchoBtn        = document.getElementById('customColorEchoBtn');
 const customTimeWarpBtn         = document.getElementById('customTimeWarpBtn');
 const customQuantumFlickerBtn   = document.getElementById('customQuantumFlickerBtn');
 const customRunningLightsBtn2   = document.getElementById('customRunningLightsBtn');
+const customFireworksBurstBtn = document.getElementById('customFireworksBurstBtn');
 
 // نداء عام لإرسال طلبات POST
 async function sendRequest(endpoint, data) {
@@ -491,6 +492,19 @@ async function fetchAndApplyState() {
             customRunningLightsBtn2.textContent = 'Running Lights';
         }
 
+        if (animation === "custom_fireworks_burst") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fireworks_burst";
+            customFireworksBurstBtn.classList.add('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fireworks Burst - Custom";
+        } else {
+            customFireworksBurstBtn.classList.remove('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+
     } catch (err) {
         console.error("Error fetching state:", err);
         updateUI('#000000');
@@ -640,6 +654,8 @@ async function stopAnimation() {
     customQuantumFlickerBtn.textContent = 'Quantum Flicker';
     customRunningLightsBtn2.classList.remove('active');
     customRunningLightsBtn2.textContent = 'Running Lights';
+    customFireworksBurstBtn.classList.remove('active');
+    customFireworksBurstBtn.textContent = 'Fireworks Burst';
     colorDisplay.textContent = 'Off';
     cardElement.style.background = "";
     await sendRequest("/stop", {});
@@ -1425,6 +1441,35 @@ async function startCustomRunningLights() {
     colorPicker.addEventListener("input", onColorChosen);
 }
 
+
+async function startCustomFireworksBurst() {
+    if (isAnimationRunning && currentAnim === "custom_fireworks_burst") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_fireworks_burst") {
+        await stopAnimation();
+    }
+    customFireworksBurstBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_fireworks_burst";
+        customFireworksBurstBtn.classList.add('active');
+        customFireworksBurstBtn.textContent = 'Fireworks Burst (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Fireworks Burst - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_fireworks_burst",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+
 // تحديث الواجهة إلى اللون المعطى
 function updateUI(color) {
     document.body.style.background     = color;
@@ -1512,6 +1557,9 @@ customQuantumFlickerBtn.addEventListener("click", startCustomQuantumFlicker);
 
 // ──── NEW: ربط زرّ “Running Lights (Custom)” ────
 customRunningLightsBtn2.addEventListener("click", startCustomRunningLights);
+
+customFireworksBurstBtn.addEventListener("click", startCustomFireworksBurst);
+
 
 // عند تغيير اللون عبر Color Picker
 colorPicker.addEventListener("input", e => {
@@ -1912,6 +1960,19 @@ evtSource.onmessage = e => {
             customRunningLightsBtn2.classList.remove('active');
             customRunningLightsBtn2.textContent = 'Running Lights';
         }
+
+        if (animation === "custom_fireworks_burst") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fireworks_burst";
+            customFireworksBurstBtn.classList.add('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fireworks Burst - Custom";
+        } else {
+            customFireworksBurstBtn.classList.remove('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
 
     } catch (err) {
         console.error("SSE onmessage parse error:", err);
