@@ -1,1 +1,483 @@
+# server.py
+
+from fastapi import FastAPI
+from pydantic import BaseModel
+from pi5neo import Pi5Neo
+import asyncio
+from collections import deque
+from fastapi.middleware.cors import CORSMiddleware
+import threading
+import time
+import json
+import colorsys
+import math
+import random 
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import HTTPException, status
+import secrets
+import os
+import json
+from fastapi import Depends
+from fastapi import Request
+
+
+
+NUM_LEDS = 150
+neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
+
+BRIGHTNESS_SCALE = 0.25
+
+
+app = FastAPI()
+security = HTTPBearer()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+animation_queue = deque()
+animation_lock = threading.Lock()
+stop_requested = False
+current_hex: str | None = "#000000"
+current_anim: str | None = None
+
+class AnimationRequest(BaseModel):
+    animation_type: str
+    color_index: int = 0
+    hex_color: str | None = None   # <-- we already need this
+
+class ColorRequest(BaseModel):
+    hex_color: str
+
+    
+# admin setting
+ADMIN_PASSWORD = "RoomB107"  # كلمة مرور الأدمن (يمكن تغييرها)
+ADMIN_TOKEN = None
+SERVER_LOCKED = False
+FREEZE_COLOR = False
+VISITOR_MESSAGE = ""
+DEMO_MODE = False
+login_attempts = {}
+MAX_ATTEMPTS = 5
+BLOCK_TIME = 300  # 5 دقائق
+
+
+@app.on_event("startup")
+async def on_startup():
+    # تحميل حالة السيرفر من ملف
+    load_server_state()
+    asyncio.create_task(animation_worker())
+    
+    # تشغيل وضع الاستعراض إذا كان مفعلاً
+    if DEMO_MODE:
+        asyncio.create_task(start_demo_mode())
+
+def load_server_state():
+    global SERVER_LOCKED, FREEZE_COLOR, VISITOR_MESSAGE, DEMO_MODE
+    try:
+        with open("server_state.json", "r") as f:
+            state = json.load(f)
+            SERVER_LOCKED = state.get("locked", False)
+            FREEZE_COLOR = state.get("frozen", False)
+            VISITOR_MESSAGE = state.get("message", "")
+            DEMO_MODE = state.get("demo_mode", False)
+    except FileNotFoundError:
+        save_server_state()
+
+def save_server_state():
+    state = {
+        "locked": SERVER_LOCKED,
+        "frozen": FREEZE_COLOR,
+        "message": VISITOR_MESSAGE,
+        "demo_mode": DEMO_MODE
+    }
+    with open("server_state.json", "w") as f:
+        json.dump(state, f)
+
+# وظيفة التحقق من توكن الأدمن
+def verify_admin_token(credentials: HTTPAuthorizationCredentials):
+    global ADMIN_TOKEN
+    if not credentials or credentials.credentials != ADMIN_TOKEN:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid admin token"
+        )
+    return True
+
+# تحديث نقاط النهاية لتفعيل القفل
+@app.post("/animate")
+async def start_animation(req: AnimationRequest):
+    global SERVER_LOCKED, FREEZE_COLOR
+    if SERVER_LOCKED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="التحكم مغلق مؤقتًا من قبل المسؤول"
+        )
+    if FREEZE_COLOR:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="اللون الحالي مثبت ولا يمكن تغييره"
+        )
+    
+@app.post("/color")
+async def set_color(req: ColorRequest):
+    global SERVER_LOCKED, FREEZE_COLOR
+    if SERVER_LOCKED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="التحكم مغلق مؤقتًا من قبل المسؤول"
+        )
+    if FREEZE_COLOR:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="اللون الحالي مثبت ولا يمكن تغييره"
+        )
+
+@app.post("/stop")
+async def stop_animation():
+    global SERVER_LOCKED
+    if SERVER_LOCKED:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="التحكم مغلق مؤقتًا من قبل المسؤول"
+        )
+# نقاط النهاية الجديدة للأدمن
+class AdminLoginRequest(BaseModel):
+    password: str
+
+class AdminMessageRequest(BaseModel):
+    message: str
+
+@app.post("/admin/login")
+async def admin_login(req: AdminLoginRequest):
+    global ADMIN_TOKEN, login_attempts
+    client_ip = Request.client.host
+    
+    # التحقق من عدد المحاولات
+    if client_ip in login_attempts:
+        attempts, first_attempt = login_attempts[client_ip]
+        if attempts >= MAX_ATTEMPTS and time.time() - first_attempt < BLOCK_TIME:
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail="تم تجاوز عدد المحاولات المسموح بها، يرجى المحاولة لاحقًا"
+            )
+    
+    if req.password == ADMIN_PASSWORD:
+        # إنشاء توكن جديد
+        ADMIN_TOKEN = secrets.token_urlsafe(32)
+        login_attempts[client_ip] = [0, time.time()]
+        return {"token": ADMIN_TOKEN}
+    else:
+        # تحديث عدد المحاولات الفاشلة
+        if client_ip in login_attempts:
+            login_attempts[client_ip][0] += 1
+        else:
+            login_attempts[client_ip] = [1, time.time()]
+        
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="كلمة المرور غير صحيحة"
+        )
+
+@app.post("/admin/lock")
+async def admin_lock(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    global SERVER_LOCKED
+    verify_admin_token(credentials)
+    SERVER_LOCKED = True
+    save_server_state()
+    return {"status": "locked"}
+
+@app.post("/admin/unlock")
+async def admin_unlock(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    global SERVER_LOCKED
+    verify_admin_token(credentials)
+    SERVER_LOCKED = False
+    save_server_state()
+    return {"status": "unlocked"}
+
+@app.post("/admin/freeze")
+async def admin_freeze(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    global FREEZE_COLOR
+    verify_admin_token(credentials)
+    FREEZE_COLOR = True
+    save_server_state()
+    return {"status": "frozen"}
+
+@app.post("/admin/unfreeze")
+async def admin_unfreeze(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    global FREEZE_COLOR
+    verify_admin_token(credentials)
+    FREEZE_COLOR = False
+    save_server_state()
+    return {"status": "unfrozen"}
+
+@app.post("/admin/panic")
+async def admin_panic(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    verify_admin_token(credentials)
+    # إيقاف كل شيء وإرجاع للون الأسود
+    global stop_requested
+    stop_requested = True
+    neo.clear_strip()
+    neo.update_strip()
+    return {"status": "panic"}
+
+@app.post("/admin/message")
+async def admin_message(req: AdminMessageRequest, credentials: HTTPAuthorizationCredentials = Depends(security)):
+    global VISITOR_MESSAGE
+    verify_admin_token(credentials)
+    VISITOR_MESSAGE = req.message
+    save_server_state()
+    return {"status": "message_set"}
+
+@app.post("/admin/demo")
+async def admin_demo_mode(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    global DEMO_MODE
+    verify_admin_token(credentials)
+    DEMO_MODE = not DEMO_MODE
+    save_server_state()
+    
+    if DEMO_MODE:
+        asyncio.create_task(start_demo_mode())
+    
+    return {"status": "demo_mode", "active": DEMO_MODE}
+
+@app.post("/admin/shutdown")
+async def admin_shutdown(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    verify_admin_token(credentials)
+    # إيقاف الخادم
+    os._exit(0)
+
+# وظيفة وضع الاستعراض التلقائي
+async def start_demo_mode():
+    global DEMO_MODE, stop_requested
+    animations = [
+        "fade_colors", "wave_effect", "rainbow_flow", 
+        "blinking_pattern", "pulse_sync", "fireworks_burst"
+    ]
+    
+    while DEMO_MODE:
+        anim = random.choice(animations)
+        req = AnimationRequest(animation_type=anim)
+        
+        with animation_lock:
+            animation_queue.clear()
+            animation_queue.append(req)
+        
+        # الانتظار لمدة 20-30 ثانية قبل الانتقال للأنيميشن التالي
+        await asyncio.sleep(random.randint(20, 30))
+        
+        # إيقاف مؤقت إذا تم تعطيل وضع الاستعراض
+        if not DEMO_MODE:
+            break
+
+# تحديث نقطة /state
+@app.get("/state")
+async def get_state():
+    return {
+        "animation": current_anim,
+        "color": current_hex,
+        "locked": SERVER_LOCKED,
+        "frozen": FREEZE_COLOR,
+        "message": VISITOR_MESSAGE,
+        "demo_mode": DEMO_MODE
+    }
+
+
+
+
+
+
+#app.js
+
+
+
+const vipBtn = document.getElementById('vipBtn');
+const panicBtn = document.getElementById('panicBtn');
+const adminModal = document.getElementById('adminModal');
+const closeModal = document.querySelector('.close');
+const lockBtn = document.getElementById('lockBtn');
+const unlockBtn = document.getElementById('unlockBtn');
+const freezeBtn = document.getElementById('freezeBtn');
+const unfreezeBtn = document.getElementById('unfreezeBtn');
+const panicAdminBtn = document.getElementById('panicAdminBtn');
+const demoBtn = document.getElementById('demoBtn');
+const shutdownBtn = document.getElementById('shutdownBtn');
+const messageInput = document.getElementById('messageInput');
+const setMessageBtn = document.getElementById('setMessageBtn');
+const adminPassword = document.getElementById('adminPassword');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminStatus = document.getElementById('adminStatus');
+const messageBar = document.getElementById('message-bar');
+
+let adminToken = null;
+let isAdmin = false;
+
+// فتح/إغلاق نافذة الأدمن
+vipBtn.addEventListener('click', () => {
+    adminModal.style.display = 'block';
+});
+
+closeModal.addEventListener('click', () => {
+    adminModal.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === adminModal) {
+        adminModal.style.display = 'none';
+    }
+});
+
+// زر الطوارئ
+panicBtn.addEventListener('click', async () => {
+    await sendRequest("/admin/panic", {}, true);
+    
+    // تأثير الهز
+    panicBtn.classList.add('shake');
+    setTimeout(() => {
+        panicBtn.classList.remove('shake');
+    }, 500);
+});
+
+// تسجيل دخول الأدمن
+adminLoginBtn.addEventListener('click', async () => {
+    const password = adminPassword.value;
+    if (!password) return;
+    
+    try {
+        const res = await sendRequest("/admin/login", { password });
+        adminToken = res.token;
+        localStorage.setItem('adminToken', adminToken);
+        adminStatus.textContent = "Login successful!";
+        adminStatus.style.color = "green";
+        isAdmin = true;
+        activateAdminControls(true);
+    } catch (e) {
+        adminStatus.textContent = e.message || "Login failed";
+        adminStatus.style.color = "red";
+    }
+});
+
+// تفعيل/تعطيل عناصر التحكم
+function activateAdminControls(active) {
+    const controls = [
+        lockBtn, unlockBtn, freezeBtn, unfreezeBtn, 
+        panicAdminBtn, demoBtn, shutdownBtn, setMessageBtn
+    ];
+    
+    controls.forEach(btn => {
+        btn.disabled = !active;
+    });
+}
+
+// التحقق من توكن الأدمن عند تحميل الصفحة
+window.addEventListener('DOMContentLoaded', () => {
+    const savedToken = localStorage.getItem('adminToken');
+    if (savedToken) {
+        adminToken = savedToken;
+        isAdmin = true;
+        activateAdminControls(true);
+    }
+});
+
+// وظائف الأدمن
+lockBtn.addEventListener('click', () => sendAdminCommand("/admin/lock"));
+unlockBtn.addEventListener('click', () => sendAdminCommand("/admin/unlock"));
+freezeBtn.addEventListener('click', () => sendAdminCommand("/admin/freeze"));
+unfreezeBtn.addEventListener('click', () => sendAdminCommand("/admin/unfreeze"));
+panicAdminBtn.addEventListener('click', () => sendAdminCommand("/admin/panic"));
+demoBtn.addEventListener('click', () => sendAdminCommand("/admin/demo"));
+shutdownBtn.addEventListener('click', () => {
+    if (confirm("Are you sure you want to shutdown the server?")) {
+        sendAdminCommand("/admin/shutdown");
+    }
+});
+
+setMessageBtn.addEventListener('click', async () => {
+    const message = messageInput.value;
+    if (!message) return;
+    
+    await sendAdminCommand("/admin/message", { message });
+});
+
+async function sendAdminCommand(endpoint, data = {}) {
+    try {
+        await sendRequest(endpoint, data, true);
+    } catch (e) {
+        adminStatus.textContent = e.message || "Command failed";
+        adminStatus.style.color = "red";
+    }
+}
+
+// وظيفة إرسال الطلبات المعدلة
+async function sendRequest(endpoint, data, isAdmin = false) {
+    const headers = {
+        "Content-Type": "application/json"
+    };
+    
+    if (isAdmin && adminToken) {
+        headers["Authorization"] = `Bearer ${adminToken}`;
+    }
+    
+    try {
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify(data)
+        });
+        
+        if (!res.ok) {
+            const error = await res.json();
+            throw new Error(error.detail || "Request failed");
+        }
+        
+        return await res.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        throw e;
+    }
+}
+
+
+
+// جلب الحالة الحالية من /state وتحديث الواجهة
+async function fetchAndApplyState() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/state`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const state = await res.json();
+
+        if (state.locked) {
+            document.querySelectorAll('.button-container button:not(.admin-control)').forEach(btn => {
+                btn.disabled = true;
+                btn.title = "التحكم مغلق مؤقتًا من قبل المسؤول";
+            });
+            colorPicker.disabled = true;
+        } else {
+            document.querySelectorAll('.button-container button').forEach(btn => {
+                btn.disabled = false;
+                btn.title = "";
+            });
+            colorPicker.disabled = false;
+        }
+
+        // تحديث شريط الرسائل
+        if (state.message) {
+            messageBar.textContent = state.message;
+            messageBar.style.display = "block";
+            
+            // تأثير التمرير
+            const textWidth = messageBar.scrollWidth;
+            const containerWidth = messageBar.clientWidth;
+            
+            if (textWidth > containerWidth) {
+                const duration = textWidth / 50; // سرعة التمرير
+                messageBar.style.animation = `scroll ${duration}s linear infinite`;
+            }
+        } else {
+            messageBar.style.display = "none";
+        }
 
