@@ -1156,89 +1156,161 @@ async def custom_strobe_flash_loop(hex_color: str, on_duration: float = 0.05, of
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_knight_rider_loop(hex_color: str, delay: float = 0.05):
+async def custom_knight_rider_loop(hex_color: str, delay: float = 0.03):
     """
     Custom Knight Rider:
-    - A single LED bounces back and forth in chosen color.
+    - Multiple pulses moving inward and outward in a dancing pattern.
     """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
 
-    position = 0
-    direction = 1
+    mid = NUM_LEDS // 2
+    offset = 0
+    expand = True  # True: outwards, False: inwards
 
     while not stop_requested:
         neo.clear_strip()
-        neo.set_led_color(position, r_base, g_base, b_base)
+
+        # نرسم أزواج من المنتصف للخارج والعكس
+        for i in range(5):  # عدد النقاط المتقابلة
+            left = mid - offset - i * 4
+            right = mid + offset + i * 4
+            for idx in [left, right]:
+                if 0 <= idx < NUM_LEDS:
+                    neo.set_led_color(idx, r, g, b)
+
         neo.update_strip()
         await asyncio.sleep(delay)
-        position += direction
-        if position >= NUM_LEDS - 1 or position <= 0:
-            direction *= -1
+
+        if expand:
+            offset += 1
+            if mid + offset >= NUM_LEDS - 1 or mid - offset <= 0:
+                expand = False
+        else:
+            offset -= 1
+            if offset <= 0:
+                expand = True
 
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_bounce_back_loop(hex_color: str, delay: float = 0.05):
+class Segment:
+    def __init__(self, start, size, color):
+        self.position = start
+        self.size = size
+        self.color = color
+        self.active = True
+
+    def draw(self):
+        for i in range(self.size):
+            idx = self.position + i
+            if 0 <= idx < NUM_LEDS:
+                neo.set_led_color(idx, *self.color)
+
+    def move(self, step=1):
+        self.position += step
+        if self.position >= NUM_LEDS:
+            self.active = False
+
+
+async def custom_bounce_back_loop(hex_color: str, delay: float = 0.03):
     """
-    Custom Bounce Back:
-    - Similar to Knight Rider but pauses briefly at each end.
+    Endless Segments Parade with Random Spacing:
+    - Segments appear randomly with spacing up to 10 LEDs apart.
     """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
 
-    position = 0
-    direction = 1
+    segments = []
+    last_spawn_time = asyncio.get_event_loop().time()
+    next_spawn_delay = random.uniform(0.3, 1.0)  # up to 10 LEDs depending on speed
 
     while not stop_requested:
         neo.clear_strip()
-        neo.set_led_color(position, r_base, g_base, b_base)
+
+        now = asyncio.get_event_loop().time()
+        if now - last_spawn_time >= next_spawn_delay:
+            segment_size = random.randint(4, 7)
+            segments.append(Segment(start=-segment_size, size=segment_size, color=(r, g, b)))
+            last_spawn_time = now
+            next_spawn_delay = random.uniform(0.2, 1.0)  # << مسافة عشوائية
+
+        # Move and draw all segments
+        for segment in segments:
+            if segment.active:
+                segment.move(step=1)
+                segment.draw()
+
+        # Remove ones that are off the strip
+        segments = [s for s in segments if s.active]
+
         neo.update_strip()
         await asyncio.sleep(delay)
-        if position == 0 or position == NUM_LEDS - 1:
-            await asyncio.sleep(0.2)
-        position += direction
-        if position > NUM_LEDS - 1:
-            position = NUM_LEDS - 1
-            direction = -1
-        if position < 0:
-            position = 0
-            direction = 1
 
     neo.clear_strip()
     neo.update_strip()
 
-async def custom_ripple_touch_loop(hex_color: str, delay: float = 0.05):
+class Ripple:
+    def __init__(self, center, color):
+        self.center = center
+        self.radius = 0
+        self.color = color
+        self.active = True
+
+    def draw(self):
+        left = self.center - self.radius
+        right = self.center + self.radius
+
+        brightness = max(0, 255 - self.radius * 20)
+
+        r = (self.color[0] * brightness) // 255
+        g = (self.color[1] * brightness) // 255
+        b = (self.color[2] * brightness) // 255
+
+        if 0 <= left < NUM_LEDS:
+            neo.set_led_color(left, r, g, b)
+        if 0 <= right < NUM_LEDS:
+            neo.set_led_color(right, r, g, b)
+
+        self.radius += 1
+        if left < 0 and right >= NUM_LEDS:
+            self.active = False
+
+
+async def custom_ripple_touch_loop(hex_color: str, delay: float = 0.03):
     """
-    Custom Ripple Touch:
-    - Ripple originates from center in chosen color.
+    Custom Ripple Touch (Epic Multi-Center Edition)
+    - Multiple ripples from random centers, continuous and dramatic.
     """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
 
-    center = NUM_LEDS // 2
+    ripples = []
+    last_spawn = asyncio.get_event_loop().time()
+    next_spawn_delay = random.uniform(0.1, 0.4)
 
     while not stop_requested:
-        for radius in range(center + 1):
-            if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
-            neo.clear_strip()
-            left = center - radius
-            right = center + radius
-            if 0 <= left < NUM_LEDS:
-                neo.set_led_color(left, r_base, g_base, b_base)
-            if 0 <= right < NUM_LEDS:
-                neo.set_led_color(right, r_base, g_base, b_base)
-            neo.update_strip()
-            await asyncio.sleep(delay)
+        now = asyncio.get_event_loop().time()
+        if now - last_spawn >= next_spawn_delay:
+            center = random.randint(20, NUM_LEDS - 20)  # لا نخليها على الأطراف
+            ripples.append(Ripple(center=center, color=(r, g, b)))
+            last_spawn = now
+            next_spawn_delay = random.uniform(0.1, 0.5)
+
+        neo.clear_strip()
+        for ripple in ripples:
+            if ripple.active:
+                ripple.draw()
+        ripples = [r for r in ripples if r.active]
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
 
     neo.clear_strip()
     neo.update_strip()
@@ -1271,28 +1343,103 @@ async def custom_fire_flicker_loop(hex_color: str, interval: float = 0.1):
     neo.clear_strip()
     neo.update_strip()
 
+class Snake:
+    def __init__(self, start_pos=0, length=10):
+        self.position = start_pos
+        self.length = length
+        self.done = False
+
+    def get_tail(self):
+        return self.position - self.length
+
+    def get_body_indexes(self):
+        return [
+            idx for idx in range(self.position, self.position - self.length, -1)
+            if 0 <= idx < NUM_LEDS
+        ]
+
+    def move(self):
+        self.position += 1
+        if self.get_tail() >= NUM_LEDS:
+            self.done = True
+
+
 async def custom_color_wipe_loop(hex_color: str, delay: float = 0.05):
-    """
-    Custom Color Wipe:
-    - LEDs light up one by one in chosen color across the strip.
-    """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+
+    # استخراج قيم اللون من HEX
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    # إعداد لون الخلفية (نصف السطوع)
+    DIM_LEVEL = 100  # 100/255 ≈ 39% سطوع
+    background_color = (
+        (r * DIM_LEVEL) // 255,
+        (g * DIM_LEVEL) // 255,
+        (b * DIM_LEVEL) // 255
+    )
+
+    # إضاءة الخلفية الأولية
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, *background_color)
+    neo.update_strip()
+
+    snakes = []
+    gap_counter = 0
+    next_gap = 0  # سيتم تعيينه عند إضافة أول ثعبان
 
     while not stop_requested:
-        for i in range(NUM_LEDS):
-            if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
-            neo.set_led_color(i, r_base, g_base, b_base)
-            neo.update_strip()
-            await asyncio.sleep(delay)
+        # إضافة ثعبان جديد عند انتهاء الفجوة
+        if gap_counter <= 0:
+            snakes.append(Snake(start_pos=0))
+            gap_in_space = random.randint(3, 10)  # الفجوة المرئية بين الثعابين
+            next_gap = 10 + gap_in_space  # الانتظار حتى يترك الثعبان السابق مسافة كافية
+            gap_counter = next_gap
+        else:
+            gap_counter -= 1
 
+        # معالجة كل ثعبان
+        for s in snakes:
+            # إعادة لون الخلفية لموضع الذيل
+            tail_idx = s.get_tail()
+            if 0 <= tail_idx < NUM_LEDS:
+                neo.set_led_color(tail_idx, *background_color)
+            
+            # حساب التدرج اللوني لجسم الثعبان
+            body_indexes = s.get_body_indexes()
+            if body_indexes:  # التأكد من وجود جسم ظاهر
+                head_pos = s.position
+                tail_pos = s.get_tail() + 1  # بداية الذيل الفعلية
+                
+                for idx in body_indexes:
+                    # حساب المسافة من الرأس (0 = الرأس, 1 = الذيل)
+                    distance_from_head = abs(head_pos - idx) / (s.length - 1)
+                    
+                    # حساب عامل التخفيف (1.0 عند الرأس, 0.6 عند الذيل)
+                    fade_factor = 1.0 - (0.1 * distance_from_head)
+                    
+                    # تطبيق التدرج على اللون
+                    led_color = (
+                        int(r * fade_factor),
+                        int(g * fade_factor),
+                        int(b * fade_factor)
+                    )
+                    neo.set_led_color(idx, *led_color)
+            
+            # تحريك الثعبان
+            s.move()
+
+        # إزالة الثعابين المنتهية
+        snakes = [s for s in snakes if not s.done]
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+    # تنظيف الشريط عند الطلب
     neo.clear_strip()
     neo.update_strip()
+
 
 async def custom_static_glow_loop(hex_color: str, flicker_interval: float = 0.2):
     """
@@ -1322,40 +1469,68 @@ async def custom_static_glow_loop(hex_color: str, flicker_interval: float = 0.2)
     neo.clear_strip()
     neo.update_strip()
 
+class Echo:
+    def __init__(self, center, color, max_radius):
+        self.center = center
+        self.color = color
+        self.radius = 0
+        self.max_radius = max_radius
+        self.alive = True
+
+    def update(self):
+        self.radius += 1
+        if self.radius > self.max_radius:
+            self.alive = False
+
+    def apply(self, strip):
+        for offset in range(-self.radius, self.radius + 1):
+            pos = self.center + offset
+            if 0 <= pos < NUM_LEDS:
+                fade = max(0, (self.max_radius - abs(offset)) / self.max_radius)
+                r = int(self.color[0] * fade)
+                g = int(self.color[1] * fade)
+                b = int(self.color[2] * fade)
+                strip[pos] = (r, g, b)
+
+
 async def custom_color_echo_loop(hex_color: str, delay: float = 0.05):
     """
-    Custom Color Echo:
-    - A single LED lights up in chosen color, then “echo” spreads to next LEDs with fading.
+    Echo with multiple expanding ripples from random origins.
+    Designed for long LED strips (150+ LEDs).
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
-    echo_steps = 5
+
+    color = (r_base, g_base, b_base)
+    echoes = []
 
     while not stop_requested:
-        for start in range(NUM_LEDS):
-            if stop_requested:
-                neo.clear_strip()
-                neo.update_strip()
-                return
-            neo.clear_strip()
-            for step in range(echo_steps):
-                pos = start + step
-                if 0 <= pos < NUM_LEDS:
-                    factor = (echo_steps - step) / echo_steps
-                    r = int(r_base * factor)
-                    g = int(g_base * factor)
-                    b = int(b_base * factor)
-                    neo.set_led_color(
-                        pos,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-            neo.update_strip()
-            await asyncio.sleep(delay)
+        # إضافة صدى جديد من مركز عشوائي
+        if random.random() < 0.2:  # نسبة ظهور موجة جديدة
+            center = random.randint(0, NUM_LEDS - 1)
+            echoes.append(Echo(center, color, max_radius=10))
 
+        # مسح الشريط (كتم اللمبات)
+        strip = [(0, 0, 0)] * NUM_LEDS
+
+        # تحديث الموجات الحالية
+        for echo in echoes:
+            echo.apply(strip)
+            echo.update()
+
+        # إزالة الموجات الميتة
+        echoes = [e for e in echoes if e.alive]
+
+        # تحديث الشريط الفعلي
+        for i, (r, g, b) in enumerate(strip):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+        await asyncio.sleep(delay)
+
+    # عند الإيقاف
     neo.clear_strip()
     neo.update_strip()
 
@@ -1435,7 +1610,7 @@ async def custom_running_lights_loop(hex_color: str, delay: float = 0.05):
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
 
-    spawn_positions = list(range(19, -1, -3))
+    spawn_positions = list(range(150, -1, -3))
     sparks = []
     for p in spawn_positions:
         sparks.append({'start': p, 'pos': p, 'color': (r_base, g_base, b_base)})
