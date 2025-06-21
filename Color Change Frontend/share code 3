@@ -10,3 +10,80 @@
     <button id="loginBtn">Login</button>
   </div>
 </div>
+
+
+/* الأساس */
+.vip-container {
+  text-align: center;
+  margin-top: 50px;
+  position: relative;
+}
+
+/* الزر */
+.vip-Btn {
+  padding: 15px 30px;
+  font-size: 18px;
+  font-weight: bold;
+  background: linear-gradient(45deg, #FFD700, #FFA500, #FFCC00);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 0 15px 4px rgba(255, 215, 0, 0.7);
+  cursor: pointer;
+  text-shadow: 0 0 5px white;
+}
+
+/* لوحة الدخول */
+.admin-panel {
+  position: absolute;
+  top: 70px;
+  left: 50%;
+  transform: translateX(-50%) scale(0.8);
+  width: 300px;
+  padding: 20px;
+  background: rgba(255, 215, 0, 0.1);
+  border: 2px solid #FFD700;
+  border-radius: 15px;
+  box-shadow: 0 0 20px #FFD700;
+  color: #fff;
+  backdrop-filter: blur(10px);
+  transition: all 0.4s ease;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* تظهر عند الضغط */
+.admin-panel.show {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateX(-50%) scale(1);
+}
+
+/* حقل الباسوورد وزر الدخول */
+.admin-panel input {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #FFD700;
+  background: transparent;
+  color: #fff;
+}
+
+.admin-panel button {
+  width: 100%;
+  padding: 10px;
+  background: #FFD700;
+  color: #000;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+
+
+document.getElementById("vipBtn").addEventListener("click", () => {
+  document.getElementById("adminPanel").classList.toggle("show");
+});
