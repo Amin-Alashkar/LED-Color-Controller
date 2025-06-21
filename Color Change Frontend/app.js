@@ -2003,3 +2003,69 @@ document.addEventListener("DOMContentLoaded", function () {
         starsContainer.appendChild(star);
     }
 });
+
+
+// Get modal elements
+const modal = document.getElementById('adminModal');
+const vipBtn = document.getElementById('vipBtn');
+const closeBtn = document.querySelector('.close-btn');
+const modalContent = document.querySelector('.modal-content');
+
+// Show modal when VIP button is clicked
+vipBtn.addEventListener('click', function() {
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevent scrolling
+    
+    // Reset closing state
+    modal.classList.remove('closing');
+});
+
+// Function to close modal with animation
+function closeModal() {
+    // Add closing class to trigger animations
+    modal.classList.add('closing');
+    
+    // After animation completes, hide the modal
+    setTimeout(() => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restore scrolling
+    }, 600); // Match animation duration
+}
+
+// Hide modal when close button is clicked
+closeBtn.addEventListener('click', closeModal);
+
+// Hide modal when clicking outside the modal content
+modal.addEventListener('click', function(e) {
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// Close with ESC key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && modal.style.display === 'flex') {
+        closeModal();
+    }
+});
+
+// Handle login form submission
+document.querySelector('.submit-btn').addEventListener('click', function() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    if(username && password) {
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Accessing...';
+        this.disabled = true;
+        
+        // Simulate login process
+        setTimeout(() => {
+            alert('Login successful! Welcome ' + username);
+            closeModal();
+            this.innerHTML = 'Access Dashboard';
+            this.disabled = false;
+        }, 1500);
+    } else {
+        alert('Please enter both username and password');
+    }
+});
