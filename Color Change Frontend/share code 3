@@ -1,41 +1,38 @@
-/* حاوية الزر في الأسفل */
-.vip-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 100px;
-  padding-bottom: 30px;
-}
+    .vip-button {
+      position: relative;
+      padding: 15px 40px;
+      font-size: 20px;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 1;
+    }
 
-/* الزر الذهبي اللامع */
-.vip-btn {
-  background: linear-gradient(45deg, gold, #f6d365, gold);
-  border: none;
-  border-radius: 8px;
-  padding: 12px 30px;
-  cursor: pointer;
-  animation: gold-glow 2s infinite alternate;
-  box-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-  position: relative;
-  overflow: hidden;
-}
+    .vip-button::before,
+    .vip-button::after {
+      content: "";
+      position: absolute;
+      border: 2px solid #f0c420;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: -1;
+      animation: borderAnim 2s linear infinite;
+    }
 
-/* النص الفضي اللامع */
-.vip-text {
-  font-weight: bold;
-  font-size: 18px;
-  color: silver;
-  text-shadow: 0 0 5px #ccc, 0 0 10px white;
-}
+    .vip-button::after {
+      filter: blur(4px);
+      opacity: 0.6;
+    }
 
-/* حركة الإضاءة */
-@keyframes gold-glow {
-  from {
-    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-    transform: scale(1);
-  }
-  to {
-    box-shadow: 0 0 25px rgba(255, 223, 0, 1);
-    transform: scale(1.05);
-  }
-}
+    @keyframes borderAnim {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
