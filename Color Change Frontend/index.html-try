@@ -5,7 +5,10 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="image.icon">
     <link rel="stylesheet" href="s.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <title>LED Color Controller</title>
 </head>
 <body>
@@ -50,9 +53,9 @@
             <input type="color" id="colorPicker" value="#000000">
         </div>
 
-        <h2 class="button-title">Create Your Own</h2>
+        <h2 class="button-title">Custom animation</h2>
         <div class="button-container">
-            <button id="customFadeBtn">Fade Colors - Custom</button>
+            <button id="customFadeBtn">Fade Colors </button>
             <button id="customBlinkBtn">Blinking Pattern</button>
             <button id="customBreathingBtn">Breathing Effect</button>
             <button id="customMeteorShowerBtn">Meteor Shower</button>
@@ -73,6 +76,68 @@
             <button id="customTimeWarpBtn">Time Warp</button>
             <button id="customQuantumFlickerBtn">Quantum Flicker</button>
             <button id="customRunningLightsBtn">Running Lights</button>
+            <button id="customFireworksBurstBtn">Fireworks Burst</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+
+        </div>
+        <!-- <div class="container">
+        <div class="header">
+            <h1>Premium Dashboard</h1>
+            <p>Access exclusive content and powerful management tools with your VIP privileges</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="content-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Advanced Analytics</h3>
+                <p>Gain insights with real-time data visualization and performance metrics for your business.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-users-cog"></i>
+                <h3>User Management</h3>
+                <p>Control access levels, permissions, and roles for all users in your organization.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security Center</h3>
+                <p>Monitor security events, configure firewalls, and protect your valuable assets.</p>
+            </div>
+        </div> -->
+        
+        <div class="vip-container">
+            <button id="vipBtn" class="vip-Btn">
+                <i class="fas fa-crown"></i>
+                <span class="vip-text">VIP Admin Panel</span>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="adminModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Panel</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="password-input" placeholder="Enter admin username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="password-input" placeholder="Enter your password">
+                </div>
+                
+                <button class="submit-btn">Access Dashboard</button>
+                
+                <div class="footer-note">
+                    <p>Restricted access. Unauthorized use is prohibited.</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -97,6 +162,8 @@
 
     <div class="stars-container">
     </div>
+
+
 
     <script src="app.js"></script>
 </body>
