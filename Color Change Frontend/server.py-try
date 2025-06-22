@@ -397,7 +397,7 @@ async def admin_login(request: Request,
                      password: str = Form(...)):
     if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
         request.session["is_admin"] = True
-        return {"status": "success", "redirect": "/admin/dashboard"}
+        return {"status": "success", "redirect": "http://127.0.0.1:5502/admin_panel.html"}
     else:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
