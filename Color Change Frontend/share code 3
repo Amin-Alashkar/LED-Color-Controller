@@ -67,3 +67,22 @@ async function adminLogout() {
   updateUIForAdmin();
   alert('You have been logged out');
 }
+
+
+
+
+async function checkAdminStatus() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/status`, {
+      credentials: 'include'
+    });
+    const data = await res.json();
+    is_admin = data.is_admin;
+    updateUIForAdmin(); // دالة تتحكم بظهور أزرار الأدمن
+  } catch (error) {
+    console.error('فشل التحقق من حالة الأدمن:', error);
+  }
+}
+
+// شغّلها عند بداية التشغيل
+checkAdminStatus();
