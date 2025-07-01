@@ -1,79 +1,26 @@
-async def fireworks_burst_loop():
-    global stop_requested
+t = 0  # وهمي للسرعة
+for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
+    if stop_requested:
+        break
 
-    COLORS = [
-        (255, 0, 0), (0, 0, 255), (0, 255, 0),
-        (255, 255, 0), (255, 0, 255), (0, 255, 255),
-        (255, 165, 0)
-    ]
-
-    ROCKET_LENGTH = 7
-    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]
-    EXPLOSION_BRIGHTNESS = 1.0
-    FADE_STEPS = 20
-
-    max_speed = 0.01   # أسرع قيمة
-    min_speed = 0.12   # أبطأ قيمة
-    t = 0              # الزمن الوهمي
-
-    while not stop_requested:
-        color = random.choice(COLORS)
-        explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
-
-        # حركة الصاروخ نحو موقع الانفجار
-        for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
-            if stop_requested:
-                break
-
-            # حسّب السرعة المتغيرة
-            speed_factor = (math.sin(t) + 1) / 2
-            current_delay = max_speed + (1 - speed_factor) * (min_speed - max_speed)
-
-            neo.clear_strip()
-            for i in range(ROCKET_LENGTH):
-                led_pos = head_pos + i
-                if 0 <= led_pos < NUM_LEDS:
-                    brightness = ROCKET_BRIGHTNESSES[i]
-                    r = int(color[0] * brightness * BRIGHTNESS_SCALE)
-                    g = int(color[1] * brightness * BRIGHTNESS_SCALE)
-                    b = int(color[2] * brightness * BRIGHTNESS_SCALE)
-                    neo.set_led_color(led_pos, r, g, b)
-            neo.update_strip()
-            await asyncio.sleep(current_delay)
-            t += 0.15  # تحديث الزمن كل تكرار
-
-        if stop_requested:
-            break
-
-        # الانفجار الكامل
-        neo.clear_strip()
-        for i in range(NUM_LEDS):
-            r = int(color[0] * EXPLOSION_BRIGHTNESS * BRIGHTNESS_SCALE)
-            g = int(color[1] * EXPLOSION_BRIGHTNESS * BRIGHTNESS_SCALE)
-            b = int(color[2] * EXPLOSION_BRIGHTNESS * BRIGHTNESS_SCALE)
-            neo.set_led_color(i, r, g, b)
-        neo.update_strip()
-        await asyncio.sleep(0.2)
-
-        # التلاشي
-        for fade_step in range(FADE_STEPS):
-            if stop_requested:
-                break
-            factor = 1 - (fade_step / FADE_STEPS)
-            neo.clear_strip()
-            for i in range(NUM_LEDS):
-                r = int(color[0] * factor * BRIGHTNESS_SCALE)
-                g = int(color[1] * factor * BRIGHTNESS_SCALE)
-                b = int(color[2] * factor * BRIGHTNESS_SCALE)
-                neo.set_led_color(i, r, g, b)
-            neo.update_strip()
-
-        neo.clear_strip()
-        neo.update_strip()
-
-        # انتظار عشوائي قبل صاروخ جديد
-        wait_time = random.uniform(0.5, 10.0)
-        await asyncio.sleep(wait_time)
+    # سرعة متغيرة بالصاروخ (تسارع وتباطؤ)
+    speed_factor = (math.sin(t) + 1) / 2  # بين 0 و 1
+    current_delay = 0.01 + (1 - speed_factor) * (0.08 - 0.01)  # أسرع لما sin أعلى
 
     neo.clear_strip()
+    for i in range(ROCKET_LENGTH):
+        led_pos = head_pos + i
+        if 0 <= led_pos < NUM_LEDS:
+            brightness = ROCKET_BRIGHTNESSES[i]
+            r = int(color[0] * brightness)
+            g = int(color[1] * brightness)
+            b = int(color[2] * brightness)
+            neo.set_led_color(
+                led_pos,
+                int(r * BRIGHTNESS_SCALE),
+                int(g * BRIGHTNESS_SCALE),
+                int(b * BRIGHTNESS_SCALE)
+            )
     neo.update_strip()
+    await asyncio.sleep(current_delay)
+    t += 0.2  # زيد الزمن الوهمي
