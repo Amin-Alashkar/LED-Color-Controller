@@ -1,2 +1,5 @@
-ADMIN_USERNAME = "adminpanel"
+raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Too many failed attempts. Please try again in {remaining} seconds."
+            )ADMIN_USERNAME = "adminpanel"
 ADMIN_PASSWORD = "RoomB107"
