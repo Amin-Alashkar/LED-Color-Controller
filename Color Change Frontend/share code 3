@@ -1,1 +1,18 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
+app = FastAPI()
+
+origins = [
+    "http://192.168.1.247:5501",
+    # أو لو بدك ديناميكياً:
+    f"http://{HOSTNAME}:5501"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,         # ما تخلّيها ["*"]
+    allow_credentials=True,        # لتمرير الكوكيز
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
