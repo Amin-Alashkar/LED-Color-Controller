@@ -1,18 +1,2 @@
-async function fetchAndApplyState() {
-  const res = await fetch(`${API_BASE_URL}/state`, { credentials: 'include' });
-  const { animation, color } = await res.json();
-
-  // ——— هذا الكود للجميع ———
-  // حدّد اللون (أو أسود افتراضياً)
-  const displayColor = color || '#000000';
-  updateUI(displayColor);
-  cardElement.style.background = '';
-
-  // تحدّث حالة أزرار الأنيميشن بناءً على animation
-  setAnimationButtons(animation);
-
-  // ——— هذا القسم خاص بالأدمن (لو بدك تعرض لهم أشياء إضافية) ———
-  if (!is_admin) return;
-  // هنا حط أي شغلات *إضافية* لازم تصير بس للأدمن
-  updateUIForAdmin();
-}
+ADMIN_USERNAME = "adminpanel"
+ADMIN_PASSWORD = "RoomB107"
