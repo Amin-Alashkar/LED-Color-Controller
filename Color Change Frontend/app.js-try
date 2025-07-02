@@ -65,7 +65,9 @@ async function sendRequest(endpoint, data) {
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
+            credentials: 'include'
+
         });
         return await res.json();
     } catch (e) {
@@ -77,9 +79,23 @@ async function sendRequest(endpoint, data) {
 // جلب الحالة الحالية من /state وتحديث الواجهة
 async function fetchAndApplyState() {
     try {
-        const res = await fetch(`${API_BASE_URL}/state`);
+        const res = await fetch(`${API_BASE_URL}/state`, {
+        credentials: 'include'
+        });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const { animation, color } = await res.json();
+        const displayColor = color || '#000000';
+        updateUI(displayColor);
+        cardElement.style.background = '';
+
+        // تحدّث حالة أزرار الأنيميشن بناءً على animation
+        setAnimationButtons(animation);
+
+        // ——— هذا القسم خاص بالأدمن (لو بدك تعرض لهم أشياء إضافية) ———
+        if (!is_admin) return;
+        // هنا حط أي شغلات *إضافية* لازم تصير بس للأدمن
+        updateUIForAdmin();
+
 
         if (color) {
             updateUI(color);
@@ -1568,12 +1584,30 @@ colorPicker.addEventListener("input", e => {
 
 // عند تحميل الصفحة أول مرة
 document.addEventListener("DOMContentLoaded", async () => {
+    // جلب حالة اللون والأنيميشن
     await fetchAndApplyState();
+    
+    // تحديث كل ثانيتين
     setInterval(fetchAndApplyState, 2000);
+    
+    // التحقق من حالة الأدمن
+    try {
+        const res = await fetch(`${API_BASE_URL}/admin/status`, {
+            credentials: 'include'
+        });
+        const status = await res.json();
+        is_admin = status.is_admin || false;
+        updateUIForAdmin(); // تحديث الواجهة لعرض/إخفاء خيارات الأدمن
+    } catch (e) {
+        console.error("Admin status check failed:", e);
+    }
 });
 
+
 // SSE لدفع الحالة تلقائيًا
-const evtSource = new EventSource(`${API_BASE_URL}/stream`);
+const evtSource = new EventSource(`${API_BASE_URL}/stream`, {
+    withCredentials: true
+});
 evtSource.onmessage = e => {
     try {
         const { animation, color } = JSON.parse(e.data);
@@ -2004,7 +2038,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-
+let is_admin = false; 
 // Get modal elements
 const modal = document.getElementById('adminModal');
 const vipBtn = document.getElementById('vipBtn');
@@ -2054,6 +2088,7 @@ document.querySelector('.submit-btn').addEventListener('click', async function()
     const submitBtn = this;
     
     if(username && password) {
+
         submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Accessing...';
         submitBtn.disabled = true;
         
@@ -2072,7 +2107,7 @@ document.querySelector('.submit-btn').addEventListener('click', async function()
                 if (result.redirect) {
                     window.location.href = result.redirect;
                 } else {
-                    window.location.href = '/admin/dashboard';
+                    window.location.href = 'http://192.168.1.247:5501/';
                 }
             } else {
                 const error = await response.json();
@@ -2089,3 +2124,136 @@ document.querySelector('.submit-btn').addEventListener('click', async function()
         alert('Please enter both username and password');
     }
 });
+
+async function adminLogin() {
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    const submitBtn = document.querySelector('.submit-btn');
+
+    if (!username || !password) {
+        alert('Please enter both username and password');
+        return;
+    }
+
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Accessing…';
+    submitBtn.disabled = true;
+
+    try {
+        const formData = new FormData();
+        formData.append('username', username);
+        formData.append('password', password);
+
+        const response = await fetch(`${API_BASE_URL}/admin/login`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include'
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            if (result.status === "success") {
+                // — بدل alert —
+                is_admin = true;
+                closeModal();               
+                updateUIForAdmin();         
+            } else {
+                throw new Error('Login failed. Please check your credentials.');
+            }
+        } else {
+            const error = await response.json();
+            throw new Error(error.detail || 'Login failed');
+        }
+    } catch (error) {
+        alert(error.message);
+    } finally {
+        submitBtn.innerHTML = 'Access Dashboard';
+        submitBtn.disabled = false;
+    }
+}
+
+
+function updateUIForAdmin() {
+    const adminFeatures = document.getElementById('adminFeatures');
+    if (is_admin) {
+        adminFeatures.style.display = 'block';
+        adminFeatures.innerHTML = `
+            <h2 class="button-title">Admin Controls</h2>
+            <div class="button-container">
+                <button id="resetSystemBtn" onclick="systemReset()">Reset System</button>
+                <button id="rebootDeviceBtn" onclick="rebootDevice()">Reboot Device</button>
+                <button id="shutdownSystemBtn" onclick="shutdownSystem()">Shutdown</button>
+                <button id="adminLogoutBtn" onclick="adminLogout()">Logout</button>
+            </div>
+        `;
+    } else {
+        adminFeatures.style.display = 'none';
+        adminFeatures.innerHTML = '';
+    }
+}
+
+
+
+
+async function systemReset() {
+  await fetch(`${API_BASE_URL}/admin/reset`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  alert('System reset!');
+}
+
+
+
+
+async function rebootDevice() {
+  await fetch(`${API_BASE_URL}/admin/reboot`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  alert('Device rebooting...');
+}
+
+
+
+
+async function shutdownSystem() {
+  await fetch(`${API_BASE_URL}/admin/shutdown`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  alert('System shutting down...');
+}
+
+
+
+async function adminLogout() {
+  await fetch(`${API_BASE_URL}/admin/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  is_admin = false;
+  updateUIForAdmin();
+  alert('You have been logged out');
+}
+
+
+
+
+async function checkAdminStatus() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/admin/status`, {
+      credentials: 'include'
+    });
+    const data = await res.json();
+    is_admin = data.is_admin;
+    updateUIForAdmin(); // دالة تتحكم بظهور أزرار الأدمن
+  } catch (error) {
+    console.error('فشل التحقق من حالة الأدمن:', error);
+  }
+}
+
+// شغّلها عند بداية التشغيل
+checkAdminStatus();
+
+// ربط دالة تسجيل الدخول بالزر
+document.querySelector('.submit-btn').addEventListener('click', adminLogin);
