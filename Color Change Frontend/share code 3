@@ -1,7 +1,5 @@
-// لو جالك لون وفعلاً اختلف عن آخر لون عرضناه
-if (color && color !== lastColor) {
-  lastColor = color;
-  updateUI(color);
-  cardElement.style.background = "";
+async function stopAnimation() {
+  lastColor = '#000000';
+  updateUI('#000000');
+  // الباقي…
 }
-// وإلا: ما نلمس الـ UI، يبقى كما هو
