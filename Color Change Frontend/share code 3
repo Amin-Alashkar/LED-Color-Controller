@@ -1,1 +1,7 @@
-
+// لو جالك لون وفعلاً اختلف عن آخر لون عرضناه
+if (color && color !== lastColor) {
+  lastColor = color;
+  updateUI(color);
+  cardElement.style.background = "";
+}
+// وإلا: ما نلمس الـ UI، يبقى كما هو
