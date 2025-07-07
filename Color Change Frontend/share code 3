@@ -1,22 +1,11 @@
-import os
+pip uninstall scipy
+pip install scipy
 
-# تحمّل قيمة HOSTNAME من متغير بيئي أو خليها ثابتة
-HOSTNAME = os.getenv("HOSTNAME", "192.168.1.247")
-ORIGIN = f"http://{HOSTNAME}:5501"
+pip show scipy
 
-response.headers["Access-Control-Allow-Origin"] = ORIGIN
-response.headers["Access-Control-Allow-Credentials"] = "true"
+The error occurs because:
 
+"The response module (likely a local file) tries to import tukey from scipy.signal
+This import fails due to version incompatibility or missing dependencies
+Since you're not actually using response in your main application, removing it is the safest fix"
 
-from fastapi import FastAPI
-from starlette.middleware.cors import CORSMiddleware
-
-app = FastAPI()
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["http://192.168.1.247:5501"],  # مش "*"
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
