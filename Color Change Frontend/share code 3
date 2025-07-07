@@ -1,5 +1,120 @@
-async function stopAnimation() {
-  lastColor = '#000000';
-  updateUI('#000000');
-  // الباقي…
-}
+Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+    at async HTMLDocument.<anonymous> (app.js:1588:5)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+3app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+3app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+3app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
+evtSource.onmessage @ app.js:2010
+app.js:523 Error fetching state: ReferenceError: setAnimationButtons is not defined
+    at fetchAndApplyState (app.js:92:9)
+fetchAndApplyState @ app.js:523
+2app.js:2010 SSE onmessage parse error: ReferenceError: lastColor is not defined
+    at evtSource.onmessage (app.js:1615:32)
