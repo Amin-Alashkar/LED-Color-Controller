@@ -6,3 +6,17 @@ ORIGIN = f"http://{HOSTNAME}:5501"
 
 response.headers["Access-Control-Allow-Origin"] = ORIGIN
 response.headers["Access-Control-Allow-Credentials"] = "true"
+
+
+from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
+
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://192.168.1.247:5501"],  # مش "*"
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
