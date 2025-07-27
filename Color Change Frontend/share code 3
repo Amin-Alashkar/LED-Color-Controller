@@ -3383,5 +3383,3 @@ button:hover {
     transform: rotate(45deg);
     transition: all 0.3s ease;
 }
-
-بدي card تعمل fade in وfade-out بي لوها الحالي, لنه لونه يتغير, لما فقط تعمل اعاده تحميل لي الموقع او اول مره تدخل عليه.
