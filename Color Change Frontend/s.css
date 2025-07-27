@@ -274,6 +274,18 @@ button:hover {
 }
 
 /* تصميم البطاقة والمظهر العام */
+@keyframes card-fade-in-out {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
 .card {
     background: white;
     padding: 30px;
@@ -284,6 +296,7 @@ button:hover {
     max-height: 100vh;
     overflow-y: auto;
     scroll-behavior: smooth;
+    animation: card-fade-in-out 2s ease-in-out;
 }
 
 .card::-webkit-scrollbar{
