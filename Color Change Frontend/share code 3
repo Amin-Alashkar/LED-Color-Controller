@@ -1,1 +1,14 @@
 
+/* 1. نعرف الأنيميشن: نبدأ ظاهر (opacity:1)، عند 50% يختفي (opacity:0)، وبالـ100% يرجع يبين (opacity:1) */
+@keyframes fadeOutIn {
+  0%   { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* 2. نطبّق الأنيميشن على العنصر */
+.card {
+  /* باقي الخصائص عندك... */
+  animation: fadeOutIn 2s ease-in-out 1;     /* 2s: مدة الانيميشن، ease-in-out: سرعة سلسة، 1: يتكرر مرة واحدة on load */
+  animation-fill-mode: both;                 /* يخلي حالة العنصر ملتزمة بالقيم في البداية والنهاية */
+}
