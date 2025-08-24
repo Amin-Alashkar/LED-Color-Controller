@@ -1,17 +1,13 @@
 # server.py
 
+import asyncio, threading, time, json, colorsys, random, math
 from fastapi import FastAPI
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
-import asyncio
 from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
-import threading
-import time
-import json
-import colorsys
-import math
-import random  # لإنتاج الألوان والمواقع العشوائية
+from fastapi.responses import StreamingResponse
+
 
 NUM_LEDS = 150
 neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
@@ -36,8 +32,8 @@ current_anim: str | None = None
 class AnimationRequest(BaseModel):
     animation_type: str
     color_index: int = 0
-    hex_color: str | None = None   # <-- we already need this
-
+    hex_color: str | None = None   
+    
 class ColorRequest(BaseModel):
     hex_color: str
 
@@ -1536,42 +1532,34 @@ async def custom_color_echo_loop(hex_color: str, delay: float = 0.05):
 
 async def custom_time_warp_loop(hex_color: str, base_delay: float = 0.05):
     """
-    Time Warp Enhanced:
-    - موجة لونية تمر بالشريط بسرعات تتسارع وتتبطأ بشكل سلس.
+    Custom Time Warp:
+    - LEDs light up in chosen color with speeds that accelerate then decelerate.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
-
     max_speed = 0.01
-    min_speed = 0.12
-    wave_size = 10  # حجم الموجة المضيئة
-    t = 0  # زمن وهمي
+    min_speed = 0.1
 
     while not stop_requested:
-        neo.clear_strip()
-
-        # حساب السرعة باستخدام دالة ساين (يعطي تسارع وتباطؤ بشكل طبيعي)
-        # القيمة الناتجة تكون بين 0 و 1، نحولها إلى delay بين max و min
-        speed_factor = (math.sin(t) + 1) / 2  # بين 0 و 1
-        current_delay = max_speed + (1 - speed_factor) * (min_speed - max_speed)
-
-        # حساب مركز الموجة
-        center = int((math.sin(t * 0.7) + 1) / 2 * (NUM_LEDS - 1))  # يتحرك يمين ويسار
-
-        for i in range(NUM_LEDS):
-            distance = abs(i - center)
-            if distance <= wave_size:
-                fade = 1 - (distance / wave_size)
-                r = int(r_base * fade)
-                g = int(g_base * fade)
-                b = int(b_base * fade)
-                neo.set_led_color(i, r, g, b)
-
-        neo.update_strip()
-        await asyncio.sleep(current_delay)
-        t += 0.15  # كل تكرار يزيد الزمن
+        # Accelerate
+        current_delay = min_speed
+        while current_delay > max_speed and not stop_requested:
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r_base, g_base, b_base)
+            neo.update_strip()
+            await asyncio.sleep(current_delay)
+            current_delay -= 0.005
+        # Decelerate
+        while current_delay < min_speed and not stop_requested:
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r_base, g_base, b_base)
+            neo.update_strip()
+            await asyncio.sleep(current_delay)
+            current_delay += 0.005
 
     neo.clear_strip()
     neo.update_strip()
@@ -1637,102 +1625,6 @@ async def custom_running_lights_loop(hex_color: str, delay: float = 0.05):
                 s['color'] = (r_base, g_base, b_base)
     neo.clear_strip()
     neo.update_strip()
-
-
-async def custom_fireworks_burst_loop(hex_color: str, delay_per_step: float = 0.05 / 10):
-    """
-    Custom Fireworks Burst:
-    - Fireworks in chosen color with explosion effect
-    - Rocket with 7 LEDs moving to random position
-    - Explosion and fade effect
-    """
-    global stop_requested
-    
-    # استخراج قيم اللون من HEX
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
-
-    ROCKET_LENGTH = 7
-    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]
-    EXPLOSION_BRIGHTNESS = 1.0
-    FADE_STEPS = 20
-
-    while not stop_requested:
-        explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
-
-        # حركة الصاروخ
-        for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
-            if stop_requested:
-                break
-            neo.clear_strip()
-            for i in range(ROCKET_LENGTH):
-                led_pos = head_pos + i
-                if 0 <= led_pos < NUM_LEDS:
-                    brightness = ROCKET_BRIGHTNESSES[i]
-                    r = int(r_base * brightness)
-                    g = int(g_base * brightness)
-                    b = int(b_base * brightness)
-                    neo.set_led_color(
-                        led_pos,
-                        int(r * BRIGHTNESS_SCALE),
-                        int(g * BRIGHTNESS_SCALE),
-                        int(b * BRIGHTNESS_SCALE)
-                    )
-            neo.update_strip()
-            await asyncio.sleep(delay_per_step)
-
-        if stop_requested:
-            break
-
-        # الانفجار
-        neo.clear_strip()
-        for i in range(NUM_LEDS):
-            r = int(r_base * EXPLOSION_BRIGHTNESS)
-            g = int(g_base * EXPLOSION_BRIGHTNESS)
-            b = int(b_base * EXPLOSION_BRIGHTNESS)
-            neo.set_led_color(
-                i,
-                int(r * BRIGHTNESS_SCALE),
-                int(g * BRIGHTNESS_SCALE),
-                int(b * BRIGHTNESS_SCALE)
-            )
-        neo.update_strip()
-        await asyncio.sleep(0.2)
-
-        # التلاشي التدريجي
-        for fade_step in range(FADE_STEPS):
-            if stop_requested:
-                break
-            factor = 1 - (fade_step / FADE_STEPS)
-            neo.clear_strip()
-            for i in range(NUM_LEDS):
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(
-                    i,
-                    int(r * BRIGHTNESS_SCALE),
-                    int(g * BRIGHTNESS_SCALE),
-                    int(b * BRIGHTNESS_SCALE)
-                )
-            neo.update_strip()
-            await asyncio.sleep(0.03)
-
-        neo.clear_strip()
-        neo.update_strip()
-
-        # انتظار عشوائي
-        wait_time = random.uniform(0.5, 10.0)
-        await asyncio.sleep(wait_time)
-
-    neo.clear_strip()
-    neo.update_strip()
-
-
-
-
-# ----------------------------------------------------
 
 async def animation_worker():
     global stop_requested, current_anim
@@ -1847,10 +1739,6 @@ async def animation_worker():
             elif req.animation_type == "custom_running_lights":
                 if req.hex_color:
                     await custom_running_lights_loop(req.hex_color)
-            elif req.animation_type == "custom_fireworks_burst":
-                if req.hex_color:
-                    await custom_fireworks_burst_loop(req.hex_color)
-
 
         await asyncio.sleep(0.1)
 
@@ -1907,7 +1795,6 @@ async def stop_animation():
     current_hex = "#000000"
     return {"status": "stopped"}
 
-from fastapi.responses import StreamingResponse
 
 async def event_generator():
     while True:
