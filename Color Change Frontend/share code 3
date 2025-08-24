@@ -1,1 +1,17 @@
+function playCardOverlay() {
+  const card = document.querySelector('.card');
+  if (!card) return;
+  // نضبط اللون الحالي
+  setUIColor(getCurrentColor());
+  // نضيف الكلاس اللي يشغل overlay
+  card.classList.add('card-overlay');
+  // نشيل الكلاس بعد ما يخلص الانيميشن عشان يقدر يعيد التشغيل بالـreload
+  card.addEventListener('animationend', () => {
+    card.classList.remove('card-overlay');
+  }, { once: true });
+}
 
+document.addEventListener('DOMContentLoaded', () => {
+  setUIColor(getCurrentColor());
+  setTimeout(playCardOverlay, 100); // تأخير بسيط قبل overlay
+});
