@@ -1,1 +1,14 @@
+document.addEventListener('DOMContentLoaded', () => {
+  // نخلي overlay بنفس اللون الحالي
+  setUIColor(getCurrentColor());
 
+  const overlay = document.getElementById('page-overlay');
+  if (overlay) {
+    // نشغل الانيميشن فورا
+    overlay.classList.add('fade-out');
+    // بعد الانيميشن نشيل العنصر من الـDOM
+    overlay.addEventListener('animationend', () => {
+      overlay.remove();
+    });
+  }
+});
