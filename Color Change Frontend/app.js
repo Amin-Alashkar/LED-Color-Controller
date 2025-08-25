@@ -581,7 +581,9 @@ async function fetchAndApplyState() {
 async function changeColor(color) {
     if (isAnimationRunning) {
         await stopAnimation();
+        await new Promise(resolve => setTimeout(resolve, 500));
     }
+    playCardOverlay();
     updateUI(color);
     cardElement.style.background = "";
     await sendRequest("/color", { hex_color: color });
@@ -1487,77 +1489,32 @@ rainbowFlowBtn       .addEventListener("click", startRainbowAnimation);
 blinkingPatternBtn   .addEventListener("click", startBlinkingPattern);
 runningLightsBtn     .addEventListener("click", startRunningLights);
 breathingEffectBtn   .addEventListener("click", startBreathingAnimation);
-// الزر القديم أصبح بإسم startSnakesChasing
 snakesChasingBtn     .addEventListener("click", startSnakesChasing);
-// الزر الجديد “Meteor Shower”
 meteorShowerNewBtn   .addEventListener("click", startSingleSnake);
 fireworksBurstBtn    .addEventListener("click", startFireworksBurst);
 offBtn               .addEventListener("click", stopAnimation);
 off2Btn              .addEventListener("click", stopAnimation);
-
-// ──── NEW: ربط زرّ “Fade Colors (Custom)” ────
 customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
-
-// ──── NEW: ربط زرّ “Blinking Pattern (Custom)” ────
 customBlinkBtn       .addEventListener("click", startCustomBlinkAnimation);
-
-// ──── NEW: ربط زرّ “Breathing Effect (Custom)” ────
 customBreathingBtn2  .addEventListener("click", startCustomBreathingAnimation);
-
-// ──── NEW: ربط زرّ “Meteor Shower (Custom)” ────
 customMeteorShowerBtn.addEventListener("click", startCustomMeteorShower);
-
-// ──── NEW: ربط زرّ “Pulse Sync (Custom)” ────
 customPulseSyncBtn   .addEventListener("click", startCustomPulseSync);
-
-// ──── NEW: ربط زرّ “Glitch Flash (Custom)” ────
 customGlitchFlashBtn .addEventListener("click", startCustomGlitchFlash);
-
-// ──── NEW: ربط زرّ “Heart Beat (Custom)” ────
 customHeartBeatBtn   .addEventListener("click", startCustomHeartBeat);
-
-// ──── NEW: ربط زرّ “Tunnel Effect (Custom)” ────
 customTunnelEffectBtn.addEventListener("click", startCustomTunnelEffect);
-
-// ──── NEW: ربط زرّ “Laser Shot (Custom)” ────
 customLaserShotBtn   .addEventListener("click", startCustomLaserShot);
-
-// ──── NEW: ربط زرّ “Sparkling Stars (Custom)” ────
 customSparklingStarsBtn.addEventListener("click", startCustomSparklingStars);
-
-// ──── NEW: ربط زرّ “Strobe Flash (Custom)” ────
 customStrobeFlashBtn .addEventListener("click", startCustomStrobeFlash);
-
-// ──── NEW: ربط زرّ “Knight Rider (Custom)” ────
 customKnightRiderBtn .addEventListener("click", startCustomKnightRider);
-
-// ──── NEW: ربط زرّ “Bounce Back (Custom)” ────
 customBounceBackBtn  .addEventListener("click", startCustomBounceBack);
-
-// ──── NEW: ربط زرّ “Ripple Touch (Custom)” ────
 customRippleTouchBtn .addEventListener("click", startCustomRippleTouch);
-
-// ──── NEW: ربط زرّ “Fire Flicker (Custom)” ────
 customFireFlickerBtn .addEventListener("click", startCustomFireFlicker);
-
-// ──── NEW: ربط زرّ “Color Wipe (Custom)” ────
 customColorWipeBtn   .addEventListener("click", startCustomColorWipe);
-
-// ──── NEW: ربط زرّ “Static Glow with Flicker (Custom)” ────
 customStaticGlowBtn  .addEventListener("click", startCustomStaticGlow);
-
-// ──── NEW: ربط زرّ “Color Echo (Custom)” ────
 customColorEchoBtn   .addEventListener("click", startCustomColorEcho);
-
-// ──── NEW: ربط زرّ “Time Warp (Custom)” ────
 customTimeWarpBtn    .addEventListener("click", startCustomTimeWarp);
-
-// ──── NEW: ربط زرّ “Quantum Flicker (Custom)” ────
 customQuantumFlickerBtn.addEventListener("click", startCustomQuantumFlicker);
-
-// ──── NEW: ربط زرّ “Running Lights (Custom)” ────
 customRunningLightsBtn2.addEventListener("click", startCustomRunningLights);
-
 customFireworksBurstBtn.addEventListener("click", startCustomFireworksBurst);
 
 
@@ -2058,6 +2015,10 @@ function playCardOverlay() {
   setUIColor(getCurrentColor());
   // نضيف الكلاس اللي يشغل overlay
   card.classList.add('card-overlay');
+    // إزالة الكلاس بعد انتهاء الانتقال
+    setTimeout(() => {
+        card.classList.remove('card-overlay');
+    }, 500);
   // نشيل الكلاس بعد ما يخلص الانيميشن عشان يقدر يعيد التشغيل بالـreload
   card.addEventListener('animationend', () => {
     card.classList.remove('card-overlay');
