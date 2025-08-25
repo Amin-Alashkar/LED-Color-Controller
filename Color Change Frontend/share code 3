@@ -1,14 +1,28 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // نخلي overlay بنفس اللون الحالي
-  setUIColor(getCurrentColor());
+.card {
+  position: relative;
+  overflow: hidden; /* مهم عشان ما يطلع overlay برا */
+}
 
-  const overlay = document.getElementById('page-overlay');
-  if (overlay) {
-    // نشغل الانيميشن فورا
-    overlay.classList.add('fade-out');
-    // بعد الانيميشن نشيل العنصر من الـDOM
-    overlay.addEventListener('animationend', () => {
-      overlay.remove();
-    });
-  }
-});
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 20px; /* نفس زوايا الكارد */
+  background: var(--ui-color, #00ff00);
+  z-index: 10;
+  opacity: 1;
+  pointer-events: none;
+}
+
+.card-overlay.fade-out {
+  animation: overlayFade 1.8s ease forwards;
+}
+
+@keyframes overlayFade {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.card-content {
+  position: relative;
+  z-index: 5;
+}
