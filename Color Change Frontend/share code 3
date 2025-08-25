@@ -1,13 +1,12 @@
 
-document.addEventListener('DOMContentLoaded', () => {
-  setUIColor(getCurrentColor());
-
-  const overlay = document.querySelector('.card-overlay');
-  if (overlay) {
-    // نشغل انيميشن فورا
-    overlay.classList.add('fade-out');
-    overlay.addEventListener('animationend', () => {
-      overlay.remove(); // نشيله بعد ما يخلص
-    });
-  }
-});
+#page-overlay {
+    position: fixed;
+    margin-top: 10px;
+    width: 560px;
+    height: 928;
+    inset: 0;
+    background: var(--ui-color, #00ff00);
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: none;
+}
