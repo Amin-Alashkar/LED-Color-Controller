@@ -1,1 +1,4065 @@
 
+اوك.. الان بدي اي اضاءه تشتغل لازم تشتغل بي fade-in سلس وخفيف واذا بدها تطفي لازم تطفي بي fade-out خفيف وسلس + اذا شغلت مثلا لون ازرق لازم يبداء بي fade-in واذا بدي اشغل لون ثاني او انميشن ثاني لازم الون الازرق يعمل fade-out وبعدين يجي الضاءه يلي بعدها بي  fade-in  وهاكذا….. هاد الكود كامل:
+
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="image.icon">
+    <link rel="stylesheet" href="s.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <title>LED Color Controller</title>
+</head>
+<body>
+    <div class="card">
+        <h1 class="led-title">LED Color Controller</h1>
+        <div class="color-display" id="colorDisplay">Loading…</div>
+
+        <h2 class="button-title">Colors</h2>
+        <div class="button-container">
+            <button id="redBtn"    onclick="changeColor('#ff0000')">Red</button>
+            <button id="blueBtn"   onclick="changeColor('#0000ff')">Blue</button>
+            <button id="greenBtn"  onclick="changeColor('#00ff00')">Green</button>
+            <button id="orangeBtn" onclick="changeColor('#FFA500')">Orange</button>
+            <button id="yellowBtn" onclick="changeColor('#FFFF00')">Yellow</button>
+            <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple</button>
+            <!-- <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button> -->
+            <button id="whiteBtn"  onclick="changeColor('#FFFFFF')">White</button>
+            <!-- <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button> -->
+            <!-- <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button> -->
+            <br>
+            <button id="offBtn" onclick="changeColor('#000000')">Off</button>
+        </div>
+
+        <h2 class="button-title">Animation</h2>
+        <div class="button-container">
+            <button id="lightOneBtn">Fade Colors</button>
+            <button id="WaveEffectBtn">Wave Effect</button>
+            <button id="RainbowFlowBtn">Rainbow Flow</button>
+            <button id="BlinkingPatternBtn">Blinking Pattern</button>
+            <button id="RunningLightsBtn">Running Lights</button>
+            <button id="BreathingEffectBtn">Breathing Effect</button>
+            <button id="MeteorShowerBtn">Meteor Shower</button>
+            <button id="PulseSyncBtn">Pulse Sync</button>
+            <button id="FireworksBurstBtn">Fireworks Burst</button> 
+            <button id="MeteorShowerNewBtn">Meteor Shower</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+        </div>
+
+        <h2 class="button-title">Color Picker</h2>
+        <div class="color-picker-wrapper">
+            <div class="color-ring"></div>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
+
+        <h2 class="button-title">Custom animation</h2>
+        <div class="button-container">
+            <button id="customFadeBtn">Fade Colors </button>
+            <button id="customBlinkBtn">Blinking Pattern</button>
+            <button id="customBreathingBtn">Breathing Effect</button>
+            <button id="customMeteorShowerBtn">Meteor Shower</button>
+            <button id="customPulseSyncBtn">Pulse Sync</button>
+            <button id="customGlitchFlashBtn">Glitch Flash</button>
+            <button id="customHeartBeatBtn">Heart Beat</button>
+            <button id="customTunnelEffectBtn">Tunnel Effect</button>
+            <button id="customLaserShotBtn">Laser Shot</button>
+            <button id="customSparklingStarsBtn">Sparkling Stars</button>
+            <button id="customStrobeFlashBtn">Strobe Flash</button>
+            <button id="customKnightRiderBtn">Knight Rider</button>
+            <button id="customBounceBackBtn">Bounce Back</button>
+            <button id="customRippleTouchBtn">Ripple Touch</button>
+            <button id="customFireFlickerBtn">Fire Flicker</button>
+            <button id="customColorWipeBtn">Color Wipe</button>
+            <button id="customStaticGlowBtn">Static Glow with Flicker</button>
+            <button id="customColorEchoBtn">Color Echo</button>
+            <button id="customTimeWarpBtn">Time Warp</button>
+            <button id="customQuantumFlickerBtn">Quantum Flicker</button>
+            <button id="customRunningLightsBtn">Running Lights</button>
+            <button id="customFireworksBurstBtn">Fireworks Burst</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+
+        </div>
+        <!-- <div class="container">
+        <div class="header">
+            <h1>Premium Dashboard</h1>
+            <p>Access exclusive content and powerful management tools with your VIP privileges</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="content-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Advanced Analytics</h3>
+                <p>Gain insights with real-time data visualization and performance metrics for your business.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-users-cog"></i>
+                <h3>User Management</h3>
+                <p>Control access levels, permissions, and roles for all users in your organization.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security Center</h3>
+                <p>Monitor security events, configure firewalls, and protect your valuable assets.</p>
+            </div>
+        </div> -->
+
+       
+
+    </div>
+
+    <!-- Modal -->
+    <!-- <div id="adminModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Panel</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="password-input" placeholder="Enter admin username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="password-input" placeholder="Enter your password">
+                </div>
+                
+                <button class="submit-btn">Access Dashboard</button>
+                
+                <div class="footer-note">
+                    <p>Restricted access. Unauthorized use is prohibited.</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+        <div id="page-overlay"></div>
+    <div class="stars-container">
+        
+    </div>
+
+
+
+
+
+    <script src="app.js"></script>
+</body>
+</html>
+
+# server.py
+
+import asyncio, threading, time, json, colorsys, random, math
+from fastapi import FastAPI
+from pydantic import BaseModel
+from pi5neo import Pi5Neo
+from collections import deque
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
+
+
+NUM_LEDS = 150
+neo = Pi5Neo('/dev/spidev0.0', NUM_LEDS, 800)
+
+BRIGHTNESS_SCALE = 0.25
+
+app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
+)
+
+animation_queue = deque()
+animation_lock = threading.Lock()
+stop_requested = False
+current_hex: str | None = "#000000"
+current_anim: str | None = None
+
+class AnimationRequest(BaseModel):
+    animation_type: str
+    color_index: int = 0
+    hex_color: str | None = None   
+    
+class ColorRequest(BaseModel):
+    hex_color: str
+
+async def light_up_one_by_one(color_index: int, delay: float = 0.011):
+    global stop_requested
+    colors = [
+        (255, 0, 50),  (255, 0, 0),  (255, 55, 0),
+        (255, 255, 0),(0, 255, 0),(0, 255, 255),
+        (0, 0, 255),  (255, 0, 50), (255, 0, 255),
+        (255, 105, 180)
+    ]
+    color = colors[color_index % len(colors)]
+    for j in range(NUM_LEDS):
+        if stop_requested:
+            break
+        for i in range(NUM_LEDS - 1, j - 1, -1):
+            if stop_requested:
+                break
+            neo.set_led_color(i, *color)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+            if i != j:
+                neo.set_led_color(i, 0, 0, 0)
+                neo.update_strip()
+        neo.set_led_color(j, *color)
+    neo.update_strip()
+
+async def fade_colors_loop(delay: float = 0.0001, steps: int = 10):
+    global stop_requested
+    COLORS = [
+        (255, 255, 255),
+        (255,   0,   0),
+        (0,     0, 255),
+        (0,   255,   0),
+        (255, 255,   0),
+        (255,   0, 255),
+        (0,   255, 255),
+    ]
+    while not stop_requested:
+        for (r_t, g_t, b_t) in COLORS:
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_t * factor)
+                g = int(g_t * factor)
+                b = int(b_t * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_t * factor)
+                g = int(g_t * factor)
+                b = int(b_t * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+
+async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
+    """
+    Larson Scanner (Smooth + Color Shift on Final Head Pixel):
+    - يتغير اللون فقط عندما يختفي الذيل وتبقى آخر لمعة (الرأس)
+    """
+    global stop_requested
+
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (255, 192, 203),# وردي
+        (138, 43, 226), # أزرق بنفسجي
+        (50, 205, 50)   # أخضر ليموني
+    ]
+
+    position = 0
+    direction = 1
+    trail_length = 20
+    color_index = 0
+
+    r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
+    while not stop_requested:
+        neo.clear_strip()
+
+        # رسم الرأس والذيل
+        for t in range(trail_length):
+            pos = position - (t * direction)
+            if 0 <= pos < NUM_LEDS:
+                factor = (trail_length - t) / trail_length
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(
+                    pos,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+        position += direction
+
+        # إذا وصل الطرف:
+        if position >= NUM_LEDS - 1 or position <= 0:
+            # بعد هالخطوة، رح يبقى الرأس فقط مضيء والباقي يتلاشى
+            for i in range(trail_length):
+                neo.clear_strip()
+
+                # فقط الرأس يبقى، الباقي يتلاشى
+                for t in range(trail_length - i):
+                    pos = position - (t * direction)
+                    if 0 <= pos < NUM_LEDS:
+                        factor = (trail_length - i - t) / trail_length
+                        r = int(r_base * factor)
+                        g = int(g_base * factor)
+                        b = int(b_base * factor)
+                        neo.set_led_color(
+                            pos,
+                            int(r * BRIGHTNESS_SCALE),
+                            int(g * BRIGHTNESS_SCALE),
+                            int(b * BRIGHTNESS_SCALE)
+                        )
+                neo.update_strip()
+                # await asyncio.sleep(delay)
+
+            # بعد ما الرأس يضل لحاله → نغير اللون
+            color_index += 1
+            r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
+            # نعكس الاتجاه
+            direction *= -1
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
+    global stop_requested
+    brightness = 0.5
+    step = 0.0
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            hue = (i / NUM_LEDS + step) % 1.0
+            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
+            r = int(r_f * 255)
+            g = int(g_f * 255)
+            b = int(b_f * 255)
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        step = (step + wave_speed) % 1.0
+        await asyncio.sleep(delay)
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
+    global stop_requested
+    step = 0
+    while not stop_requested:
+        hue = (step % steps) / steps
+        r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+        r = int(r_f * 255)
+        g = int(g_f * 255)
+        b = int(b_f * 255)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        step += 1
+        await asyncio.sleep(delay)
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+async def blinking_pattern_loop(delay: float = 0.5):
+    global stop_requested
+    color_steps = [
+        (255, 255, 255),
+        (255, 255, 229),
+        (255, 255, 178),
+        (255, 255,   0),
+        (255, 127,   0),
+        (255,   0,   0),
+        (255,   0, 255),
+        (  0,   0, 255),
+        (  0, 255, 255),
+        (  0, 255,   0)
+    ]
+    idx = 0
+    total = len(color_steps)
+    while not stop_requested:
+        r, g, b = color_steps[idx]
+        for i in range(NUM_LEDS):
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        if stop_requested:
+            break
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        idx = (idx + 1) % total
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, 0, 0, 0)
+    neo.update_strip()
+
+async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 15):
+    """
+    تأثير الشهاب (تأثير "الأفعى") مع عشرة أفعى مختلفة الألوان:
+    - كل أفعى طولها 12 LED بتدريج من الفاتح إلى الداكن
+    - تتحرك كل أفعى من LED رقم 19 إلى LED رقم 0
+    - بين كل أفعى وأفعى مسافة 5 أضواء سوداء
+    - في كل دورة نحافظ على تشغيل ثلاث أفعى في آنٍ واحد حتى ننتهي من إطلاق العشر أفعى
+    - بعد انتهاء العشر أفعى، نعيد الدورة من جديد طالما لم يُطلَب الإيقاف
+    """
+    global stop_requested
+
+    # نعرّف عشرة ألوان ثابتة للأفعى (كل أفعى لون مختلف)
+    SNAKE_COLORS = [
+        (255,   0,   0),   # أحمر
+        (  0,   0, 255),   # أزرق
+        (  0, 255,   0),   # أخضر
+        (255, 255,   0),   # أصفر
+        (255,   0, 255),   # أرجواني
+        (  0, 255, 255),   # سماوي
+        (255, 165,   0),   # برتقالي
+        (255, 192, 203),   # وردي
+        (138,  43, 226),   # بنفسجي
+        ( 50, 205,  50)    # أخضر ليموني
+    ]
+
+    total_snakes = len(SNAKE_COLORS)
+    # مدة حركة الأفعى الواحدة بالخطوات:
+    frames_per_snake = NUM_LEDS + trail_length  # الرأس يبدأ عند 19 وينتهي عند -trail_length
+
+    # نضبط الفاصل الزمني لإطلاق الأفعى بحيث يبقى بين كل رأس وآخر 5 أضواء سوداء
+    spawn_interval = trail_length + 30  # 12 + 5 = 17
+
+    while not stop_requested:
+        # قائمة تمثل الأفعى النشطة حاليًّا
+        active_snakes = []
+        global_frame = 0
+        snake_index = 0
+
+        # نطلق الأفعى الواحدة تلو الأخرى بانتظام
+        while not stop_requested:
+            # إذا حان وقت إطلاق أفعى جديدة
+            if snake_index < total_snakes and global_frame >= snake_index * spawn_interval:
+                # نضيف الأفعى إلى القائمة (مع حالة التقدّم بدايةً 0)
+                active_snakes.append({
+                    'id': snake_index,
+                    'progress': 0  # رقم الإطار داخل الأفعى
+                })
+                snake_index += 1
+
+            # إذا لم يبقَ أفعى ضمن النطاق أو انتهت كل الأفعى من الحركة، نكسر
+            if snake_index >= total_snakes and not active_snakes:
+                break
+
+            # نمسح الشريط
+            neo.clear_strip()
+
+            # نحدّث كل أفعى
+            for snake in active_snakes[:]:
+                sid = snake['id']
+                color_base = SNAKE_COLORS[sid]
+                prog = snake['progress']
+                head_pos = NUM_LEDS - prog
+
+                # نرسم ذيل الأفعى بطول trail_length
+                for t in range(trail_length):
+                    pos = head_pos + t
+                    if 0 <= pos < NUM_LEDS:
+                        # حساب التدريج (فاتح في الرأس، داكن في الذيل)
+                        factor = (trail_length - t) / trail_length
+                        r = int(color_base[0] * factor)
+                        g = int(color_base[1] * factor)
+                        b = int(color_base[2] * factor)
+                        neo.set_led_color(
+                        pos,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+
+                # نزيح الأفعى خطوة لاحقًا
+                snake['progress'] += 1
+                # إذا تجاوزت الأفعى المسار كاملاً
+                if snake['progress'] > frames_per_snake:
+                    active_snakes.remove(snake)
+
+            # نطبّق التحديث على الشريط
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+            global_frame += 1
+            # إذا انتهى جميع الإطارات لكل الأفعى وأفرغت القائمة
+            if snake_index >= total_snakes and not active_snakes:
+                break
+
+        # بعد إنتهاء عشر أفعى، نعيد الدورة تلقائيًّا
+    neo.clear_strip()
+    neo.update_strip()
+
+async def running_lights_loop(delay: float = 0.05):
+    """
+    تأثير أضواء متحركة بألوان عشوائية:
+    - لدينا سبع نقاط انطلاق: 19,16,13,10,7,4,1
+    - لكل نقطة، نختار لونًا عشوائيًا ثم نحركه إلى الأسفل حتى الصفر
+    - عندما يصل إلى ما دون 0، نعيد تهيئته بلون جديد عند موقع الانطلاق الأصلي
+    - يستمر هذا التكرار باستمرار طالما لم يُطلَب الإيقاف
+    """
+    global stop_requested
+    spawn_positions = list(range(149, -1, -3))  # [19,16,13,10,7,4,1]
+    # نهيئ الشرارات الثلاث في المواقع الأصلية
+    sparks = []
+    for p in spawn_positions:
+        color = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+        sparks.append({'start': p, 'pos': p, 'color': color})
+
+    while not stop_requested:
+        neo.clear_strip()
+        # رسم كل شرارة في موقعها الحالي
+        for s in sparks:
+            if 0 <= s['pos'] < NUM_LEDS:
+                neo.set_led_color(s['pos'], *s['color'])
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        # تحديث كل شرارة: نقلها خطوة لأسفل أو إعادة تهيئتها
+        for s in sparks:
+            s['pos'] -= 1
+            if s['pos'] < 0:
+                s['pos'] = s['start']
+                s['color'] = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+    neo.clear_strip()
+    neo.update_strip()
+
+async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
+    """
+    تأثير تنفسي ناعم ينتقل بين ألوان مختلفة تلقائيًا:
+    - ينتقل بين مجموعة من الألوان الأساسية
+    - كل لون يمر بدورة تنفس كاملة (زيادة ثم نقصان الشدة)
+    - يعطي إحساساً بالتنفس مع تغير الألوان
+    """
+    global stop_requested
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (128, 0, 128),  # بنفسجي
+        (255, 192, 203) # وردي
+    ]
+    while not stop_requested:
+        for (r_base, g_base, b_base) in COLORS:
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+
+async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
+    """
+    تأثير ألعاب نارية مطوّر:
+    - صاروخ من 7 أضواء.
+    - ينفجر في موقع عشوائي.
+    - بعد كل انفجار، انتظار عشوائي (حتى 10 ثواني).
+    """
+    global stop_requested
+
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 0, 255),    # أزرق
+        (0, 255, 0),    # أخضر
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+    ]
+
+    ROCKET_LENGTH = 7
+    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]  # تدرج سطوع
+    EXPLOSION_BRIGHTNESS = 1.0
+    FADE_STEPS = 20
+
+    while not stop_requested:
+        color = random.choice(COLORS)
+        explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
+
+        # 1. حركة الصاروخ باتجاه موقع الانفجار
+        for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            for i in range(ROCKET_LENGTH):
+                led_pos = head_pos + i
+                if 0 <= led_pos < NUM_LEDS:
+                    brightness = ROCKET_BRIGHTNESSES[i]
+                    r = int(color[0] * brightness)
+                    g = int(color[1] * brightness)
+                    b = int(color[2] * brightness)
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            # await asyncio.sleep(delay)
+
+        if stop_requested:
+            break
+
+        # 2. الانفجار الكامل
+        neo.clear_strip()
+        for i in range(NUM_LEDS):
+            r = int(color[0] * EXPLOSION_BRIGHTNESS)
+            g = int(color[1] * EXPLOSION_BRIGHTNESS)
+            b = int(color[2] * EXPLOSION_BRIGHTNESS)
+            neo.set_led_color(
+                i,
+                int(r * BRIGHTNESS_SCALE),
+                int(g * BRIGHTNESS_SCALE),
+                int(b * BRIGHTNESS_SCALE)
+            )
+        neo.update_strip()
+        await asyncio.sleep(0.2)
+
+        # 3. التلاشي التدريجي
+        for fade_step in range(FADE_STEPS):
+            if stop_requested:
+                break
+            factor = 1 - (fade_step / FADE_STEPS)
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                r = int(color[0] * factor)
+                g = int(color[1] * factor)
+                b = int(color[2] * factor)
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            pass
+
+        neo.clear_strip()
+        neo.update_strip()
+
+        # 4. انتظار عشوائي قبل إطلاق صاروخ جديد
+        wait_time = random.uniform(0.5, 10.0)
+        await asyncio.sleep(wait_time)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def meteor_shower_modified_loop():
+    """
+    تأثير شهاب سريع جدًا: يقطع من LED 150 إلى 0 خلال 3 ثواني فقط
+    - طول الشهاب: 40 LED
+    - توهج متدرج جميل
+    """
+    global stop_requested
+    trail_length = 40
+    delay_per_step = 3 / 151  # تقريبًا 0.0198 ثانية لكل خطوة
+
+    while not stop_requested:
+        start_pos = random.randint(150, 160)
+        color = (
+            random.randint(150, 255),
+            random.randint(150, 255),
+            random.randint(200, 255)
+        )
+
+        for pos in range(start_pos, -trail_length, -1):
+            if stop_requested:
+                break
+
+            neo.clear_strip()
+
+            for i in range(trail_length):
+                led_pos = pos - i
+                if 0 <= led_pos < NUM_LEDS:
+                    intensity = 1.0 - (i / trail_length)
+                    glow_intensity = intensity * 0.7
+                    r = int(color[0] * intensity)
+                    g = int(color[1] * intensity)
+                    b = int(color[2] * intensity)
+
+                    r = min(r + int(100 * glow_intensity), 255)
+                    g = min(g + int(100 * glow_intensity), 255)
+                    b = min(b + int(255 * glow_intensity), 255)
+
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def single_snake_loop():
+    """
+    إنيميشن الأفعى السريعة جداً:
+    - تمشي من LED 150 إلى 0 خلال 3 ثواني فقط
+    - طولها 40 LED
+    - تنتظر وقت عشوائي من 0 إلى 10 ثواني قبل أن تبدأ مرة ثانية
+    """
+    global stop_requested
+    trail_length = 40
+    delay_per_step = 3 / (NUM_LEDS + trail_length)  # تقريبًا 0.0157 ثانية
+
+    while not stop_requested:
+        wait_time = random.uniform(0, 10)  # بدل 30، خليناه من 0 إلى 10
+        await asyncio.sleep(wait_time)
+        
+        color = (
+            random.randint(100, 255),
+            random.randint(100, 255),
+            random.randint(100, 255)
+        )
+        
+        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
+            if stop_requested:
+                break
+            
+            neo.clear_strip()
+            for t in range(trail_length):
+                led_pos = head_pos + t
+                if 0 <= led_pos < NUM_LEDS:
+                    factor = (trail_length - t) / trail_length
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+            
+            neo.update_strip()
+            # await asyncio.sleep(delay_per_step)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 10):
+    """
+    Fade a single hex_color in and out across all LEDs.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = step / (steps - 1)
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        if stop_requested:
+            break
+
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = 1 - (step / (steps - 1))
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_blink_loop(hex_color: str, on_duration: float = 0.5, off_duration: float = 0.5):
+    """
+    Blink a single hex_color on and off across all LEDs.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+    
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r_base, g_base, b_base)
+        neo.update_strip()
+        await asyncio.sleep(on_duration)
+        if stop_requested:
+            break
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+        await asyncio.sleep(off_duration)
+    
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_breathing_loop(hex_color: str, delay: float = 0.02, steps: int = 50):
+    """
+    Breathing effect with a custom color.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = step / (steps - 1)
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        if stop_requested:
+            break
+
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = 1 - (step / (steps - 1))
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_meteor_shower_loop(hex_color: str, delay_per_step: float = None, trail_length: int = 40):
+    """
+    Custom Meteor Shower – single-colored, same speed and length as single_snake_loop.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    if delay_per_step is None:
+        delay_per_step = 3 / (NUM_LEDS + trail_length)
+
+    while not stop_requested:
+        wait_time = random.uniform(0, 10)  # زي الأفعى، كل شوطة meteoooor تأخير عشوائي
+        await asyncio.sleep(wait_time)
+
+        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            for t in range(trail_length):
+                led_pos = head_pos + t
+                if 0 <= led_pos < NUM_LEDS:
+                    factor = (trail_length - t) / trail_length
+                    r = int(r_base * factor)
+                    g = int(g_base * factor)
+                    b = int(b_base * factor)
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            # await asyncio.sleep(delay_per_step)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_pulse_sync_loop(hex_color: str, delay: float = None, steps: int = 20):
+    """
+    Custom Pulse Sync – all LEDs pulse in the chosen color.
+    Matches the speed and steps of pulse_sync_loop.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    if delay is None:
+        delay = 0.03  # زي النسخة الأصلية
+
+    while not stop_requested:
+        # تأخير عشوائي بين كل نبضة
+        wait_time = random.uniform(0, 10)
+        await asyncio.sleep(wait_time)
+
+        # التصاعد (إضاءة تدريجية)
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = step / (steps - 1)
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+        # التناقص (الانطفاء تدريجي)
+        for step in range(steps):
+            if stop_requested:
+                break
+            factor = 1 - (step / (steps - 1))
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+    
+async def custom_glitch_flash_loop(hex_color: str, interval: float = 0.05):
+    """
+    Endless Glitch Flash (no stop/repeat feeling):
+    - Continuously flashes the given color randomly on/off across all LEDs.
+    - No noticeable loop or pause – feels like it's always running.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            if random.random() < 0.5:
+                neo.set_led_color(i, 0, 0, 0)
+            else:
+                neo.set_led_color(i, r_base, g_base, b_base)
+        neo.update_strip()
+        await asyncio.sleep(interval)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_heart_beat_loop(hex_color: str, delay: float = 0.1):
+    """
+    Custom Heart Beat:
+    - Two quick pulses of chosen color, then pause.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # Pulse one
+        for factor in (0.4, 1.0, 0.4):
+            if stop_requested:
+                neo.clear_strip()
+                neo.update_strip()
+                return
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        # Pulse two
+        for factor in (0.4, 1.0, 0.4):
+            if stop_requested:
+                neo.clear_strip()
+                neo.update_strip()
+                return
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        # Pause
+        neo.clear_strip()
+        neo.update_strip()
+        await asyncio.sleep(1.0)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+
+
+async def custom_tunnel_effect_loop(hex_color: str, delay: float = 0.05, snake_length: int = 5):
+    global stop_requested
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    mid = NUM_LEDS // 2
+
+    while not stop_requested:
+        # Phase 1: الأفعى من الطرفين تدخل نحو المركز
+        for step in range(mid + snake_length):
+            if stop_requested:
+                return
+            neo.clear_strip()
+
+            # يمين → يسار
+            for i in range(snake_length):
+                pos = step - i
+                if 0 <= pos < mid:
+                    factor = (snake_length - i) / snake_length
+                    neo.set_led_color(pos, int(r * factor), int(g * factor), int(b * factor))
+
+            # يسار → يمين
+            for i in range(snake_length):
+                pos = NUM_LEDS - 1 - (step - i)
+                if mid <= pos < NUM_LEDS:
+                    factor = (snake_length - i) / snake_length
+                    neo.set_led_color(pos, int(r * factor), int(g * factor), int(b * factor))
+
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+        # Phase 2: انفجار في المنتصف
+        if stop_requested:
+            return
+
+        for brightness in range(255, -1, -15):  # يتلاشى بالتدريج
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, int(r * brightness / 255), int(g * brightness / 255), int(b * brightness / 255))
+            neo.update_strip()
+            await asyncio.sleep(0.03)
+
+        neo.clear_strip()
+        neo.update_strip()
+
+        # Phase 3: استراحة عشوائية قبل التكرار
+        wait_time = random.uniform(1, 10)
+        for _ in range(int(wait_time / 0.1)):
+            if stop_requested:
+                return
+            # await asyncio.sleep(0.1)
+
+async def custom_laser_shot_loop(hex_color: str, delay: float = 0.02, trail_length: int = 4):
+    """
+    Enhanced Laser Shot:
+    - Bright "laser" moves forward and backward with fading trail effect.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        # Forward
+        for i in range(NUM_LEDS):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            for t in range(trail_length):
+                index = i - t
+                if 0 <= index < NUM_LEDS:
+                    fade = 1.0 - (t / trail_length)
+                    r = int(r_base * fade)
+                    g = int(g_base * fade)
+                    b = int(b_base * fade)
+                    neo.set_led_color(index, r, g, b)
+            neo.update_strip()
+            await asyncio.sleep(delay)
+
+        # Backward
+        for i in range(NUM_LEDS - 2, -1, -1):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            for t in range(trail_length):
+                index = i + t
+                if 0 <= index < NUM_LEDS:
+                    fade = 1.0 - (t / trail_length)
+                    r = int(r_base * fade)
+                    g = int(g_base * fade)
+                    b = int(b_base * fade)
+                    neo.set_led_color(index, r, g, b)
+            neo.update_strip()
+            # await asyncio.sleep(delay)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+class Star:
+    def __init__(self, color):
+        self.color = color
+        self.index = None
+        self.duration = random.uniform(2.5, 4.5)  # كل نجمة إلها مدة لمعان مختلفة
+        self.brightness = 0
+        self.fading_in = True
+        self.active = True
+
+    async def sparkle_forever(self):
+        step_time = 0.05
+        steps = int(self.duration / step_time / 2)
+
+        # تأخير عشوائي قبل بداية كل نجمة عشان يضهروا تدريجيًا
+        await asyncio.sleep(random.uniform(0.2, 4.0))
+
+        while self.active:
+            # كل دورة بمكان عشوائي
+            self.index = random.randint(0, NUM_LEDS - 1)
+
+            # Fade in
+            for i in range(steps):
+                if not self.active:
+                    break
+                self.brightness = int(255 * (i / steps))
+                neo.set_led_color(
+                    self.index,
+                    (self.color[0] * self.brightness) // 255,
+                    (self.color[1] * self.brightness) // 255,
+                    (self.color[2] * self.brightness) // 255
+                )
+                await asyncio.sleep(step_time)
+
+            await asyncio.sleep(random.uniform(0.1, 0.3))  # لمعة سريعة
+
+            # Fade out
+            for i in range(steps):
+                if not self.active:
+                    break
+                self.brightness = int(255 * ((steps - i) / steps))
+                neo.set_led_color(
+                    self.index,
+                    (self.color[0] * self.brightness) // 255,
+                    (self.color[1] * self.brightness) // 255,
+                    (self.color[2] * self.brightness) // 255
+                )
+                await asyncio.sleep(step_time)
+
+            # إطفاء
+            neo.set_led_color(self.index, 0, 0, 0)
+
+            # استراحة قبل الدورة الجديدة
+            await asyncio.sleep(random.uniform(0.2, 0.5))
+
+# حلقة الأنميشن الرئيسية
+async def custom_sparkling_stars_loop(hex_color: str):
+    global stop_requested
+    neo.clear_strip()
+    neo.update_strip()
+
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    stars = [Star((r, g, b)) for _ in range(80)]
+    tasks = [asyncio.create_task(star.sparkle_forever()) for star in stars]
+
+    while not stop_requested:
+        neo.update_strip()
+        await asyncio.sleep(0.05)
+
+    # لما يتوقف كل شي
+    for star in stars:
+        star.active = False
+    await asyncio.gather(*tasks)
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_strobe_flash_loop(hex_color: str, on_duration: float = 0.05, off_duration: float = 0.05):
+    """
+    Custom Strobe Flash:
+    - All LEDs flash on and off rapidly in chosen color.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, r_base, g_base, b_base)
+        neo.update_strip()
+        await asyncio.sleep(on_duration)
+        if stop_requested:
+            break
+        neo.clear_strip()
+        neo.update_strip()
+        await asyncio.sleep(off_duration)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_knight_rider_loop(hex_color: str, delay: float = 0.03):
+    """
+    Custom Knight Rider:
+    - Multiple pulses moving inward and outward in a dancing pattern.
+    """
+    global stop_requested
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    mid = NUM_LEDS // 2
+    offset = 0
+    expand = True  # True: outwards, False: inwards
+
+    while not stop_requested:
+        neo.clear_strip()
+
+        # نرسم أزواج من المنتصف للخارج والعكس
+        for i in range(5):  # عدد النقاط المتقابلة
+            left = mid - offset - i * 4
+            right = mid + offset + i * 4
+            for idx in [left, right]:
+                if 0 <= idx < NUM_LEDS:
+                    neo.set_led_color(idx, r, g, b)
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+        if expand:
+            offset += 1
+            if mid + offset >= NUM_LEDS - 1 or mid - offset <= 0:
+                expand = False
+        else:
+            offset -= 1
+            if offset <= 0:
+                expand = True
+
+    neo.clear_strip()
+    neo.update_strip()
+
+class Segment:
+    def __init__(self, start, size, color):
+        self.position = start
+        self.size = size
+        self.color = color
+        self.active = True
+
+    def draw(self):
+        for i in range(self.size):
+            idx = self.position + i
+            if 0 <= idx < NUM_LEDS:
+                neo.set_led_color(idx, *self.color)
+
+    def move(self, step=1):
+        self.position += step
+        if self.position >= NUM_LEDS:
+            self.active = False
+
+
+async def custom_bounce_back_loop(hex_color: str, delay: float = 0.03):
+    """
+    Endless Segments Parade with Random Spacing:
+    - Segments appear randomly with spacing up to 10 LEDs apart.
+    """
+    global stop_requested
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    segments = []
+    last_spawn_time = asyncio.get_event_loop().time()
+    next_spawn_delay = random.uniform(0.3, 1.0)  # up to 10 LEDs depending on speed
+
+    while not stop_requested:
+        neo.clear_strip()
+
+        now = asyncio.get_event_loop().time()
+        if now - last_spawn_time >= next_spawn_delay:
+            segment_size = random.randint(4, 7)
+            segments.append(Segment(start=-segment_size, size=segment_size, color=(r, g, b)))
+            last_spawn_time = now
+            next_spawn_delay = random.uniform(0.2, 1.0)  # << مسافة عشوائية
+
+        # Move and draw all segments
+        for segment in segments:
+            if segment.active:
+                segment.move(step=1)
+                segment.draw()
+
+        # Remove ones that are off the strip
+        segments = [s for s in segments if s.active]
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+class Ripple:
+    def __init__(self, center, color):
+        self.center = center
+        self.radius = 0
+        self.color = color
+        self.active = True
+
+    def draw(self):
+        left = self.center - self.radius
+        right = self.center + self.radius
+
+        brightness = max(0, 255 - self.radius * 20)
+
+        r = (self.color[0] * brightness) // 255
+        g = (self.color[1] * brightness) // 255
+        b = (self.color[2] * brightness) // 255
+
+        if 0 <= left < NUM_LEDS:
+            neo.set_led_color(left, r, g, b)
+        if 0 <= right < NUM_LEDS:
+            neo.set_led_color(right, r, g, b)
+
+        self.radius += 1
+        if left < 0 and right >= NUM_LEDS:
+            self.active = False
+
+
+async def custom_ripple_touch_loop(hex_color: str, delay: float = 0.03):
+    """
+    Custom Ripple Touch (Epic Multi-Center Edition)
+    - Multiple ripples from random centers, continuous and dramatic.
+    """
+    global stop_requested
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    ripples = []
+    last_spawn = asyncio.get_event_loop().time()
+    next_spawn_delay = random.uniform(0.1, 0.4)
+
+    while not stop_requested:
+        now = asyncio.get_event_loop().time()
+        if now - last_spawn >= next_spawn_delay:
+            center = random.randint(20, NUM_LEDS - 20)  # لا نخليها على الأطراف
+            ripples.append(Ripple(center=center, color=(r, g, b)))
+            last_spawn = now
+            next_spawn_delay = random.uniform(0.1, 0.5)
+
+        neo.clear_strip()
+        for ripple in ripples:
+            if ripple.active:
+                ripple.draw()
+        ripples = [r for r in ripples if r.active]
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_fire_flicker_loop(hex_color: str, interval: float = 0.1):
+    """
+    Custom Fire Flicker:
+    - LEDs flicker in chosen color with random intensity, simulating a flame.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            factor = random.uniform(0.3, 1.0)
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        await asyncio.sleep(interval)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+class Snake:
+    def __init__(self, start_pos=0, length=10):
+        self.position = start_pos
+        self.length = length
+        self.done = False
+
+    def get_tail(self):
+        return self.position - self.length
+
+    def get_body_indexes(self):
+        return [
+            idx for idx in range(self.position, self.position - self.length, -1)
+            if 0 <= idx < NUM_LEDS
+        ]
+
+    def move(self):
+        self.position += 1
+        if self.get_tail() >= NUM_LEDS:
+            self.done = True
+
+
+async def custom_color_wipe_loop(hex_color: str, delay: float = 0.05):
+    global stop_requested
+
+    # استخراج قيم اللون من HEX
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
+
+    # إعداد لون الخلفية (نصف السطوع)
+    DIM_LEVEL = 100  # 100/255 ≈ 39% سطوع
+    background_color = (
+        (r * DIM_LEVEL) // 255,
+        (g * DIM_LEVEL) // 255,
+        (b * DIM_LEVEL) // 255
+    )
+
+    # إضاءة الخلفية الأولية
+    for i in range(NUM_LEDS):
+        neo.set_led_color(i, *background_color)
+    neo.update_strip()
+
+    snakes = []
+    gap_counter = 0
+    next_gap = 0  # سيتم تعيينه عند إضافة أول ثعبان
+
+    while not stop_requested:
+        # إضافة ثعبان جديد عند انتهاء الفجوة
+        if gap_counter <= 0:
+            snakes.append(Snake(start_pos=0))
+            gap_in_space = random.randint(3, 10)  # الفجوة المرئية بين الثعابين
+            next_gap = 10 + gap_in_space  # الانتظار حتى يترك الثعبان السابق مسافة كافية
+            gap_counter = next_gap
+        else:
+            gap_counter -= 1
+
+        # معالجة كل ثعبان
+        for s in snakes:
+            # إعادة لون الخلفية لموضع الذيل
+            tail_idx = s.get_tail()
+            if 0 <= tail_idx < NUM_LEDS:
+                neo.set_led_color(tail_idx, *background_color)
+            
+            # حساب التدرج اللوني لجسم الثعبان
+            body_indexes = s.get_body_indexes()
+            if body_indexes:  # التأكد من وجود جسم ظاهر
+                head_pos = s.position
+                tail_pos = s.get_tail() + 1  # بداية الذيل الفعلية
+                
+                for idx in body_indexes:
+                    # حساب المسافة من الرأس (0 = الرأس, 1 = الذيل)
+                    distance_from_head = abs(head_pos - idx) / (s.length - 1)
+                    
+                    # حساب عامل التخفيف (1.0 عند الرأس, 0.6 عند الذيل)
+                    fade_factor = 1.0 - (0.1 * distance_from_head)
+                    
+                    # تطبيق التدرج على اللون
+                    led_color = (
+                        int(r * fade_factor),
+                        int(g * fade_factor),
+                        int(b * fade_factor)
+                    )
+                    neo.set_led_color(idx, *led_color)
+            
+            # تحريك الثعبان
+            s.move()
+
+        # إزالة الثعابين المنتهية
+        snakes = [s for s in snakes if not s.done]
+
+        neo.update_strip()
+        await asyncio.sleep(delay)
+
+    # تنظيف الشريط عند الطلب
+    neo.clear_strip()
+    neo.update_strip()
+
+
+async def custom_static_glow_loop(hex_color: str, flicker_interval: float = 0.2):
+    """
+    Custom Static Glow with Flicker:
+    - All LEDs stay lit in chosen color, with slight random brightness flickers.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            factor = random.uniform(0.8, 1.0)
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        await asyncio.sleep(flicker_interval)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+class Echo:
+    def __init__(self, center, color, max_radius):
+        self.center = center
+        self.color = color
+        self.radius = 0
+        self.max_radius = max_radius
+        self.alive = True
+
+    def update(self):
+        self.radius += 1
+        if self.radius > self.max_radius:
+            self.alive = False
+
+    def apply(self, strip):
+        for offset in range(-self.radius, self.radius + 1):
+            pos = self.center + offset
+            if 0 <= pos < NUM_LEDS:
+                fade = max(0, (self.max_radius - abs(offset)) / self.max_radius)
+                r = int(self.color[0] * fade)
+                g = int(self.color[1] * fade)
+                b = int(self.color[2] * fade)
+                strip[pos] = (r, g, b)
+
+
+async def custom_color_echo_loop(hex_color: str, delay: float = 0.05):
+    """
+    Echo with multiple expanding ripples from random origins.
+    Designed for long LED strips (150+ LEDs).
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    color = (r_base, g_base, b_base)
+    echoes = []
+
+    while not stop_requested:
+        # إضافة صدى جديد من مركز عشوائي
+        if random.random() < 0.2:  # نسبة ظهور موجة جديدة
+            center = random.randint(0, NUM_LEDS - 1)
+            echoes.append(Echo(center, color, max_radius=10))
+
+        # مسح الشريط (كتم اللمبات)
+        strip = [(0, 0, 0)] * NUM_LEDS
+
+        # تحديث الموجات الحالية
+        for echo in echoes:
+            echo.apply(strip)
+            echo.update()
+
+        # إزالة الموجات الميتة
+        echoes = [e for e in echoes if e.alive]
+
+        # تحديث الشريط الفعلي
+        for i, (r, g, b) in enumerate(strip):
+            neo.set_led_color(i, r, g, b)
+        neo.update_strip()
+
+        await asyncio.sleep(delay)
+
+    # عند الإيقاف
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_time_warp_loop(hex_color: str, base_delay: float = 0.05):
+    """
+    Custom Time Warp:
+    - LEDs light up in chosen color with speeds that accelerate then decelerate.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+    max_speed = 0.01
+    min_speed = 0.1
+
+    while not stop_requested:
+        # Accelerate
+        current_delay = min_speed
+        while current_delay > max_speed and not stop_requested:
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r_base, g_base, b_base)
+            neo.update_strip()
+            await asyncio.sleep(current_delay)
+            current_delay -= 0.005
+        # Decelerate
+        while current_delay < min_speed and not stop_requested:
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                neo.set_led_color(i, r_base, g_base, b_base)
+            neo.update_strip()
+            await asyncio.sleep(current_delay)
+            current_delay += 0.005
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_quantum_flicker_loop(hex_color: str, interval: float = 0.02):
+    """
+    Custom Quantum Flicker:
+    - LEDs flicker randomly in the chosen color, as if quantum particles.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    while not stop_requested:
+        for i in range(NUM_LEDS):
+            if random.random() < 0.5:
+                neo.set_led_color(i, 0, 0, 0)
+            else:
+                # Random small brightness variation
+                factor = random.uniform(0.5, 1.0)
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+        await asyncio.sleep(interval)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+async def custom_running_lights_loop(hex_color: str, delay: float = 0.05):
+    """
+    Custom Running Lights:
+    - Similar to running_lights_loop but all sparks in chosen color.
+    """
+    global stop_requested
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    spawn_positions = list(range(150, -1, -3))
+    sparks = []
+    for p in spawn_positions:
+        sparks.append({'start': p, 'pos': p, 'color': (r_base, g_base, b_base)})
+
+    while not stop_requested:
+        neo.clear_strip()
+        for s in sparks:
+            if 0 <= s['pos'] < NUM_LEDS:
+                neo.set_led_color(s['pos'], *s['color'])
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        for s in sparks:
+            s['pos'] -= 1
+            if s['pos'] < 0:
+                s['pos'] = s['start']
+                s['color'] = (r_base, g_base, b_base)
+    neo.clear_strip()
+    neo.update_strip()
+
+async def animation_worker():
+    global stop_requested, current_anim
+    while True:
+        if animation_queue:
+            with animation_lock:
+                req = animation_queue.popleft()
+            stop_requested = False
+            current_anim = req.animation_type
+
+            if req.animation_type == "custom_fade":
+                if req.hex_color:
+                    await custom_fade_loop(req.hex_color)
+            elif req.animation_type == "light_one_by_one":
+                while not stop_requested:
+                    await light_up_one_by_one(req.color_index)
+            elif req.animation_type == "fade_colors":
+                await fade_colors_loop()
+            elif req.animation_type == "pulse_sync":
+                await pulse_sync_loop()
+            elif req.animation_type == "wave_effect":
+                await wave_effect_loop()
+            elif req.animation_type == "rainbow_flow":
+                await rainbow_flow_loop()
+            elif req.animation_type == "blinking_pattern":
+                await blinking_pattern_loop()
+            elif req.animation_type == "meteor_shower":
+                await meteor_shower_loop()
+            elif req.animation_type == "running_lights":
+                await running_lights_loop()
+            elif req.animation_type == "breathing_effect":
+                await breathing_effect_loop()
+            elif req.animation_type == "fireworks_burst":
+                await fireworks_burst_loop()
+            elif req.animation_type == "meteor_shower_modified":
+                await meteor_shower_modified_loop()
+            elif req.animation_type == "single_snake":
+                await single_snake_loop()
+            elif req.animation_type == "solid_color":
+                if req.hex_color:
+                    r = int(req.hex_color[1:3], 16)
+                    g = int(req.hex_color[3:5], 16)
+                    b = int(req.hex_color[5:7], 16)
+                    for i in range(NUM_LEDS):
+                        neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                    neo.update_strip()
+                stop_requested = True
+
+            # Custom animation handlers
+            if req.animation_type == "custom_blink":
+                if req.hex_color:
+                    await custom_blink_loop(req.hex_color)
+            elif req.animation_type == "custom_breathing":
+                if req.hex_color:
+                    await custom_breathing_loop(req.hex_color)
+            elif req.animation_type == "custom_meteor_shower":
+                if req.hex_color:
+                    await custom_meteor_shower_loop(req.hex_color)
+            elif req.animation_type == "custom_pulse_sync":
+                if req.hex_color:
+                    await custom_pulse_sync_loop(req.hex_color)
+            elif req.animation_type == "custom_glitch_flash":
+                if req.hex_color:
+                    await custom_glitch_flash_loop(req.hex_color)
+            elif req.animation_type == "custom_heart_beat":
+                if req.hex_color:
+                    await custom_heart_beat_loop(req.hex_color)
+            elif req.animation_type == "custom_tunnel_effect":
+                if req.hex_color:
+                    await custom_tunnel_effect_loop(req.hex_color)
+            elif req.animation_type == "custom_laser_shot":
+                if req.hex_color:
+                    await custom_laser_shot_loop(req.hex_color)
+            elif req.animation_type == "custom_sparkling_stars":
+                if req.hex_color:
+                    await custom_sparkling_stars_loop(req.hex_color)
+            elif req.animation_type == "custom_strobe_flash":
+                if req.hex_color:
+                    await custom_strobe_flash_loop(req.hex_color)
+            elif req.animation_type == "custom_knight_rider":
+                if req.hex_color:
+                    await custom_knight_rider_loop(req.hex_color)
+            elif req.animation_type == "custom_bounce_back":
+                if req.hex_color:
+                    await custom_bounce_back_loop(req.hex_color)
+            elif req.animation_type == "custom_ripple_touch":
+                if req.hex_color:
+                    await custom_ripple_touch_loop(req.hex_color)
+            elif req.animation_type == "custom_fire_flicker":
+                if req.hex_color:
+                    await custom_fire_flicker_loop(req.hex_color)
+            elif req.animation_type == "custom_color_wipe":
+                if req.hex_color:
+                    await custom_color_wipe_loop(req.hex_color)
+            elif req.animation_type == "custom_static_glow":
+                if req.hex_color:
+                    await custom_static_glow_loop(req.hex_color)
+            elif req.animation_type == "custom_color_echo":
+                if req.hex_color:
+                    await custom_color_echo_loop(req.hex_color)
+            elif req.animation_type == "custom_time_warp":
+                if req.hex_color:
+                    await custom_time_warp_loop(req.hex_color)
+            elif req.animation_type == "custom_quantum_flicker":
+                if req.hex_color:
+                    await custom_quantum_flicker_loop(req.hex_color)
+            elif req.animation_type == "custom_running_lights":
+                if req.hex_color:
+                    await custom_running_lights_loop(req.hex_color)
+
+        await asyncio.sleep(0.1)
+
+@app.on_event("startup")
+async def on_startup():
+    asyncio.create_task(animation_worker())
+
+@app.get("/state")
+async def get_state():
+    return {"animation": current_anim, "color": current_hex}
+
+@app.post("/animate")
+async def start_animation(req: AnimationRequest):
+    global current_hex, current_anim
+    with animation_lock:
+        animation_queue.clear()
+        stop_requested = False
+        animation_queue.append(req)
+    current_hex = None
+    current_anim = req.animation_type
+    return {"status": "queued", "animation": req.animation_type}
+
+@app.post("/color")
+async def set_color(req: ColorRequest):
+    global current_hex, current_anim, stop_requested
+    with animation_lock:
+        animation_queue.clear()
+        stop_requested = True
+        r = int(req.hex_color[1:3], 16)
+        g = int(req.hex_color[3:5], 16)
+        b = int(req.hex_color[5:7], 16)
+        for i in range(NUM_LEDS):
+            neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+        neo.update_strip()
+    current_anim = None
+    current_hex = req.hex_color
+    return {"status": "color_changed", "color": req.hex_color}
+
+@app.post("/stop")
+async def stop_animation():
+    global current_hex, current_anim, stop_requested
+    with animation_lock:
+        animation_queue.clear()
+        stop_requested = True
+        for i in range(NUM_LEDS):
+            neo.set_led_color(i, 0, 0, 0)
+        neo.update_strip()
+    current_anim = None
+    current_hex = "#000000"
+    return {"status": "stopped"}
+
+
+async def event_generator():
+    while True:
+        data = json.dumps({"animation": current_anim, "color": current_hex})
+        yield f"data: {data}\n\n"
+        await asyncio.sleep(1.0)
+
+@app.get("/stream")
+async def stream_state():
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+// app.js
+
+const API_BASE_URL = `http://${window.location.hostname}:8000`;
+
+// DOM Elements
+const colorDisplay         = document.getElementById('colorDisplay');
+const lightOneBtn          = document.getElementById('lightOneBtn');
+const offBtn               = document.getElementById('offBtn');
+const off2Btn              = document.getElementById('off2Btn');
+const colorPicker          = document.getElementById('colorPicker');
+
+// أزرار الانيميشن القديمة
+const waveEffectBtn        = document.getElementById('WaveEffectBtn');
+const rainbowFlowBtn       = document.getElementById('RainbowFlowBtn');
+const blinkingPatternBtn   = document.getElementById('BlinkingPatternBtn');
+const runningLightsBtn     = document.getElementById('RunningLightsBtn');
+const breathingEffectBtn   = document.getElementById('BreathingEffectBtn');
+
+// هنا: الزرّ المسمّى "Snakes Chasing" (كان اسمه سابقاً MeteorShowerBtn)
+const snakesChasingBtn     = document.getElementById('MeteorShowerBtn');
+
+// زرّ الانيميشن الجديد "Meteor Shower"
+const meteorShowerNewBtn   = document.getElementById('MeteorShowerNewBtn');
+
+const pulseSyncBtn         = document.getElementById('PulseSyncBtn');
+const fireworksBurstBtn    = document.getElementById('FireworksBurstBtn');
+const customBreathingBtn   = document.getElementById('customBreathingBtn');
+
+const cardElement          = document.querySelector('.card');
+
+let isAnimationRunning = false;
+let currentAnim = null;
+
+// ─── NEW: زرّ “Fade Colors (Custom)” ───
+const customFadeBtn             = document.getElementById('customFadeBtn');
+// ─── NEW: زرّ “Blinking Pattern (Custom)” ───
+const customBlinkBtn            = document.getElementById('customBlinkBtn');
+// ─── NEW: زرّ “Breathing Effect (Custom)” ───
+const customBreathingBtn2       = document.getElementById('customBreathingBtn');
+
+// ─── NEW: باقي أزرار Create Your Own ───
+const customMeteorShowerBtn     = document.getElementById('customMeteorShowerBtn');
+const customPulseSyncBtn        = document.getElementById('customPulseSyncBtn');
+const customGlitchFlashBtn      = document.getElementById('customGlitchFlashBtn');
+const customHeartBeatBtn        = document.getElementById('customHeartBeatBtn');
+const customTunnelEffectBtn     = document.getElementById('customTunnelEffectBtn');
+const customLaserShotBtn        = document.getElementById('customLaserShotBtn');
+const customSparklingStarsBtn   = document.getElementById('customSparklingStarsBtn');
+const customStrobeFlashBtn      = document.getElementById('customStrobeFlashBtn');
+const customKnightRiderBtn      = document.getElementById('customKnightRiderBtn');
+const customBounceBackBtn       = document.getElementById('customBounceBackBtn');
+const customRippleTouchBtn      = document.getElementById('customRippleTouchBtn');
+const customFireFlickerBtn      = document.getElementById('customFireFlickerBtn');
+const customColorWipeBtn        = document.getElementById('customColorWipeBtn');
+const customStaticGlowBtn       = document.getElementById('customStaticGlowBtn');
+const customColorEchoBtn        = document.getElementById('customColorEchoBtn');
+const customTimeWarpBtn         = document.getElementById('customTimeWarpBtn');
+const customQuantumFlickerBtn   = document.getElementById('customQuantumFlickerBtn');
+const customRunningLightsBtn2   = document.getElementById('customRunningLightsBtn');
+const customFireworksBurstBtn = document.getElementById('customFireworksBurstBtn');
+
+// نداء عام لإرسال طلبات POST
+async function sendRequest(endpoint, data) {
+    try {
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        return { status: "error", message: e.message };
+    }
+}
+
+// جلب الحالة الحالية من /state وتحديث الواجهة
+async function fetchAndApplyState() {
+    try {
+        const res = await fetch(`${API_BASE_URL}/state`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const { animation, color } = await res.json();
+
+        if (color) {
+            updateUI(color);
+            cardElement.style.background = "";
+        } else {
+            updateUI('#000000');
+            cardElement.style.background = "";
+        }
+
+        // ——— Fade Colors ———
+        if (animation === "fade_colors") {
+            isAnimationRunning = true;
+            currentAnim = "fade_colors";
+            lightOneBtn.classList.add('active');
+            lightOneBtn.textContent = 'Fade Colors (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors";
+        } else {
+            lightOneBtn.classList.remove('active');
+            lightOneBtn.textContent = 'Fade Colors';
+        }
+
+        // ——— Pulse Sync ———
+        if (animation === "pulse_sync") {
+            isAnimationRunning = true;
+            currentAnim = "pulse_sync";
+            pulseSyncBtn.classList.add('active');
+            pulseSyncBtn.textContent = 'Pulse Sync (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Pulse Sync";
+        } else {
+            pulseSyncBtn.classList.remove('active');
+            pulseSyncBtn.textContent = 'Pulse Sync';
+        }
+
+        // ——— Wave Effect ———
+        if (animation === "wave_effect") {
+            isAnimationRunning = true;
+            currentAnim = "wave_effect";
+            waveEffectBtn.classList.add('active');
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Wave Effect";
+        } else {
+            waveEffectBtn.classList.remove('active');
+            waveEffectBtn.textContent = 'Wave Effect';
+        }
+
+        // ——— Rainbow Flow ———
+        if (animation === "rainbow_flow") {
+            isAnimationRunning = true;
+            currentAnim = "rainbow_flow";
+            rainbowFlowBtn.classList.add('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Rainbow Flow";
+        } else {
+            rainbowFlowBtn.classList.remove('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow';
+        }
+
+        // ——— Blinking Pattern ———
+        if (animation === "blinking_pattern") {
+            isAnimationRunning = true;
+            currentAnim = "blinking_pattern";
+            blinkingPatternBtn.classList.add('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking Pattern";
+        } else {
+            blinkingPatternBtn.classList.remove('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern';
+        }
+
+        // ——— Running Lights ———
+        if (animation === "running_lights") {
+            isAnimationRunning = true;
+            currentAnim = "running_lights";
+            runningLightsBtn.classList.add('active');
+            runningLightsBtn.textContent = 'Running Lights (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights";
+        } else {
+            runningLightsBtn.classList.remove('active');
+            runningLightsBtn.textContent = 'Running Lights';
+        }
+
+        // ——— Breathing Effect ———
+        if (animation === "breathing_effect") {
+            isAnimationRunning = true;
+            currentAnim = "breathing_effect";
+            breathingEffectBtn.classList.add('active');
+            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect";
+        } else {
+            breathingEffectBtn.classList.remove('active');
+            breathingEffectBtn.textContent = 'Breathing Effect';
+        }
+
+        // ——— Snakes Chasing (كان Meteor Shower) ———
+        if (animation === "meteor_shower") {
+            isAnimationRunning = true;
+            currentAnim = "meteor_shower";
+            snakesChasingBtn.classList.add('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Snakes Chasing";
+        } else {
+            snakesChasingBtn.classList.remove('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing';
+        }
+
+        // ——— New Meteor Shower (الأفعى الوحيدة) ———
+        if (animation === "single_snake") {
+            isAnimationRunning = true;
+            currentAnim = "single_snake";
+            meteorShowerNewBtn.classList.add('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower";
+        } else {
+            meteorShowerNewBtn.classList.remove('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower';
+        }
+
+        // ——— Fireworks Burst ———
+        if (animation === "fireworks_burst") {
+            isAnimationRunning = true;
+            currentAnim = "fireworks_burst";
+            fireworksBurstBtn.classList.add('active');
+            fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fireworks Burst";
+        } else {
+            fireworksBurstBtn.classList.remove('active');
+            fireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+        // ──── NEW: Custom Fade Colors ────
+        if (animation === "custom_fade") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fade";
+            customFadeBtn.classList.add('active');
+            customFadeBtn.textContent = 'Fade Colors - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors - Custom";
+        } else {
+            customFadeBtn.classList.remove('active');
+            customFadeBtn.textContent = 'Fade Colors - Custom';
+        }
+
+        // ──── NEW: Custom Blinking ────
+        if (animation === "custom_blink") {
+            isAnimationRunning = true;
+            currentAnim = "custom_blink";
+            customBlinkBtn.classList.add('active');
+            customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking - Custom";
+        } else {
+            customBlinkBtn.classList.remove('active');
+            customBlinkBtn.textContent = 'Blinking - Custom';
+        }
+
+        // ──── NEW: Custom Breathing ────
+        if (animation === "custom_breathing") {
+            isAnimationRunning = true;
+            currentAnim = "custom_breathing";
+            customBreathingBtn2.classList.add('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect - Custom";
+        } else {
+            customBreathingBtn2.classList.remove('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom';
+        }
+
+        // ──── NEW: Custom Meteor Shower ────
+        if (animation === "custom_meteor_shower") {
+            isAnimationRunning = true;
+            currentAnim = "custom_meteor_shower";
+            customMeteorShowerBtn.classList.add('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower - Custom";
+        } else {
+            customMeteorShowerBtn.classList.remove('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower';
+        }
+
+        // ──── NEW: Custom Pulse Sync ────
+        if (animation === "custom_pulse_sync") {
+            isAnimationRunning = true;
+            currentAnim = "custom_pulse_sync";
+            customPulseSyncBtn.classList.add('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Pulse Sync - Custom";
+        } else {
+            customPulseSyncBtn.classList.remove('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync';
+        }
+
+        // ──── NEW: Custom Glitch Flash ────
+        if (animation === "custom_glitch_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_glitch_flash";
+            customGlitchFlashBtn.classList.add('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Glitch Flash - Custom";
+        } else {
+            customGlitchFlashBtn.classList.remove('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash';
+        }
+
+        // ──── NEW: Custom Heart Beat ────
+        if (animation === "custom_heart_beat") {
+            isAnimationRunning = true;
+            currentAnim = "custom_heart_beat";
+            customHeartBeatBtn.classList.add('active');
+            customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Heart Beat - Custom";
+        } else {
+            customHeartBeatBtn.classList.remove('active');
+            customHeartBeatBtn.textContent = 'Heart Beat';
+        }
+
+        // ──── NEW: Custom Tunnel Effect ────
+        if (animation === "custom_tunnel_effect") {
+            isAnimationRunning = true;
+            currentAnim = "custom_tunnel_effect";
+            customTunnelEffectBtn.classList.add('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Tunnel Effect - Custom";
+        } else {
+            customTunnelEffectBtn.classList.remove('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect';
+        }
+
+        // ──── NEW: Custom Laser Shot ────
+        if (animation === "custom_laser_shot") {
+            isAnimationRunning = true;
+            currentAnim = "custom_laser_shot";
+            customLaserShotBtn.classList.add('active');
+            customLaserShotBtn.textContent = 'Laser Shot (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Laser Shot - Custom";
+        } else {
+            customLaserShotBtn.classList.remove('active');
+            customLaserShotBtn.textContent = 'Laser Shot';
+        }
+
+        // ──── NEW: Custom Sparkling Stars ────
+        if (animation === "custom_sparkling_stars") {
+            isAnimationRunning = true;
+            currentAnim = "custom_sparkling_stars";
+            customSparklingStarsBtn.classList.add('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Sparkling Stars - Custom";
+        } else {
+            customSparklingStarsBtn.classList.remove('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars';
+        }
+
+        // ──── NEW: Custom Strobe Flash ────
+        if (animation === "custom_strobe_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_strobe_flash";
+            customStrobeFlashBtn.classList.add('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Strobe Flash - Custom";
+        } else {
+            customStrobeFlashBtn.classList.remove('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash';
+        }
+
+        // ──── NEW: Custom Knight Rider ────
+        if (animation === "custom_knight_rider") {
+            isAnimationRunning = true;
+            currentAnim = "custom_knight_rider";
+            customKnightRiderBtn.classList.add('active');
+            customKnightRiderBtn.textContent = 'Knight Rider (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Knight Rider - Custom";
+        } else {
+            customKnightRiderBtn.classList.remove('active');
+            customKnightRiderBtn.textContent = 'Knight Rider';
+        }
+
+        // ──── NEW: Custom Bounce Back ────
+        if (animation === "custom_bounce_back") {
+            isAnimationRunning = true;
+            currentAnim = "custom_bounce_back";
+            customBounceBackBtn.classList.add('active');
+            customBounceBackBtn.textContent = 'Bounce Back (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Bounce Back - Custom";
+        } else {
+            customBounceBackBtn.classList.remove('active');
+            customBounceBackBtn.textContent = 'Bounce Back';
+        }
+
+        // ──── NEW: Custom Ripple Touch ────
+        if (animation === "custom_ripple_touch") {
+            isAnimationRunning = true;
+            currentAnim = "custom_ripple_touch";
+            customRippleTouchBtn.classList.add('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Ripple Touch - Custom";
+        } else {
+            customRippleTouchBtn.classList.remove('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch';
+        }
+
+        // ──── NEW: Custom Fire Flicker ────
+        if (animation === "custom_fire_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fire_flicker";
+            customFireFlickerBtn.classList.add('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fire Flicker - Custom";
+        } else {
+            customFireFlickerBtn.classList.remove('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker';
+        }
+
+        // ──── NEW: Custom Color Wipe ────
+        if (animation === "custom_color_wipe") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_wipe";
+            customColorWipeBtn.classList.add('active');
+            customColorWipeBtn.textContent = 'Color Wipe (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Wipe - Custom";
+        } else {
+            customColorWipeBtn.classList.remove('active');
+            customColorWipeBtn.textContent = 'Color Wipe';
+        }
+
+        // ──── NEW: Custom Static Glow with Flicker ────
+        if (animation === "custom_static_glow") {
+            isAnimationRunning = true;
+            currentAnim = "custom_static_glow";
+            customStaticGlowBtn.classList.add('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Static Glow with Flicker - Custom";
+        } else {
+            customStaticGlowBtn.classList.remove('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+        }
+
+        // ──── NEW: Custom Color Echo ────
+        if (animation === "custom_color_echo") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_echo";
+            customColorEchoBtn.classList.add('active');
+            customColorEchoBtn.textContent = 'Color Echo (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Echo - Custom";
+        } else {
+            customColorEchoBtn.classList.remove('active');
+            customColorEchoBtn.textContent = 'Color Echo';
+        }
+
+        // ──── NEW: Custom Time Warp ────
+        if (animation === "custom_time_warp") {
+            isAnimationRunning = true;
+            currentAnim = "custom_time_warp";
+            customTimeWarpBtn.classList.add('active');
+            customTimeWarpBtn.textContent = 'Time Warp (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Time Warp - Custom";
+        } else {
+            customTimeWarpBtn.classList.remove('active');
+            customTimeWarpBtn.textContent = 'Time Warp';
+        }
+
+        // ──── NEW: Custom Quantum Flicker ────
+        if (animation === "custom_quantum_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_quantum_flicker";
+            customQuantumFlickerBtn.classList.add('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Quantum Flicker - Custom";
+        } else {
+            customQuantumFlickerBtn.classList.remove('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+        }
+
+        // ──── NEW: Custom Running Lights ────
+        if (animation === "custom_running_lights") {
+            isAnimationRunning = true;
+            currentAnim = "custom_running_lights";
+            customRunningLightsBtn2.classList.add('active');
+            customRunningLightsBtn2.textContent = 'Running Lights (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights - Custom";
+        } else {
+            customRunningLightsBtn2.classList.remove('active');
+            customRunningLightsBtn2.textContent = 'Running Lights';
+        }
+
+        if (animation === "custom_fireworks_burst") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fireworks_burst";
+            customFireworksBurstBtn.classList.add('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fireworks Burst - Custom";
+        } else {
+            customFireworksBurstBtn.classList.remove('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+
+    } catch (err) {
+        console.error("Error fetching state:", err);
+        updateUI('#000000');
+        isAnimationRunning = false;
+        currentAnim = null;
+        // إزالة أي حالة نشطة على الأزرار
+        lightOneBtn.classList.remove('active');
+        lightOneBtn.textContent = 'Fade Colors';
+        pulseSyncBtn.classList.remove('active');
+        pulseSyncBtn.textContent = 'Pulse Sync';
+        waveEffectBtn.classList.remove('active');
+        waveEffectBtn.textContent = 'Wave Effect';
+        rainbowFlowBtn.classList.remove('active');
+        rainbowFlowBtn.textContent = 'Rainbow Flow';
+        blinkingPatternBtn.classList.remove('active');
+        blinkingPatternBtn.textContent = 'Blinking Pattern';
+        runningLightsBtn.classList.remove('active');
+        runningLightsBtn.textContent = 'Running Lights';
+        breathingEffectBtn.classList.remove('active');
+        breathingEffectBtn.textContent = 'Breathing Effect';
+        snakesChasingBtn.classList.remove('active');
+        snakesChasingBtn.textContent = 'Snakes Chasing';
+        meteorShowerNewBtn.classList.remove('active');
+        meteorShowerNewBtn.textContent = 'Meteor Shower';
+        fireworksBurstBtn.classList.remove('active');
+        fireworksBurstBtn.textContent = 'Fireworks Burst';
+        customFadeBtn.classList.remove('active');
+        customFadeBtn.textContent = 'Fade Colors - Custom';
+        customBlinkBtn.classList.remove('active');
+        customBlinkBtn.textContent = 'Blinking - Custom';
+        customBreathingBtn2.classList.remove('active');
+        customBreathingBtn2.textContent = 'Breathing Effect - Custom';
+        customMeteorShowerBtn.classList.remove('active');
+        customMeteorShowerBtn.textContent = 'Meteor Shower';
+        customPulseSyncBtn.classList.remove('active');
+        customPulseSyncBtn.textContent = 'Pulse Sync';
+        customGlitchFlashBtn.classList.remove('active');
+        customGlitchFlashBtn.textContent = 'Glitch Flash';
+        customHeartBeatBtn.classList.remove('active');
+        customHeartBeatBtn.textContent = 'Heart Beat';
+        customTunnelEffectBtn.classList.remove('active');
+        customTunnelEffectBtn.textContent = 'Tunnel Effect';
+        customLaserShotBtn.classList.remove('active');
+        customLaserShotBtn.textContent = 'Laser Shot';
+        customSparklingStarsBtn.classList.remove('active');
+        customSparklingStarsBtn.textContent = 'Sparkling Stars';
+        customStrobeFlashBtn.classList.remove('active');
+        customStrobeFlashBtn.textContent = 'Strobe Flash';
+        customKnightRiderBtn.classList.remove('active');
+        customKnightRiderBtn.textContent = 'Knight Rider';
+        customBounceBackBtn.classList.remove('active');
+        customBounceBackBtn.textContent = 'Bounce Back';
+        customRippleTouchBtn.classList.remove('active');
+        customRippleTouchBtn.textContent = 'Ripple Touch';
+        customFireFlickerBtn.classList.remove('active');
+        customFireFlickerBtn.textContent = 'Fire Flicker';
+        customColorWipeBtn.classList.remove('active');
+        customColorWipeBtn.textContent = 'Color Wipe';
+        customStaticGlowBtn.classList.remove('active');
+        customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+        customColorEchoBtn.classList.remove('active');
+        customColorEchoBtn.textContent = 'Color Echo';
+        customTimeWarpBtn.classList.remove('active');
+        customTimeWarpBtn.textContent = 'Time Warp';
+        customQuantumFlickerBtn.classList.remove('active');
+        customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+        customRunningLightsBtn2.classList.remove('active');
+        customRunningLightsBtn2.textContent = 'Running Lights';
+        cardElement.style.background = "";
+    }
+}
+
+// دالة تغيير اللون الثابت
+async function changeColor(color) {
+    if (isAnimationRunning) {
+        await stopAnimation();
+    }
+    updateUI(color);
+    cardElement.style.background = "";
+    await sendRequest("/color", { hex_color: color });
+}
+
+// دالة إيقاف الأنيميشن (POST /stop)
+async function stopAnimation() {
+    isAnimationRunning = false;
+    currentAnim = null;
+    // نزيل الحالة النشطة من كل الأزرار
+    lightOneBtn.classList.remove('active');
+    lightOneBtn.textContent = 'Fade Colors';
+    pulseSyncBtn.classList.remove('active');
+    pulseSyncBtn.textContent = 'Pulse Sync';
+    waveEffectBtn.classList.remove('active');
+    waveEffectBtn.textContent = 'Wave Effect';
+    rainbowFlowBtn.classList.remove('active');
+    rainbowFlowBtn.textContent = 'Rainbow Flow';
+    blinkingPatternBtn.classList.remove('active');
+    blinkingPatternBtn.textContent = 'Blinking Pattern';
+    runningLightsBtn.classList.remove('active');
+    runningLightsBtn.textContent = 'Running Lights';
+    breathingEffectBtn.classList.remove('active');
+    breathingEffectBtn.textContent = 'Breathing Effect';
+    snakesChasingBtn.classList.remove('active');
+    snakesChasingBtn.textContent = 'Snakes Chasing';
+    meteorShowerNewBtn.classList.remove('active');
+    meteorShowerNewBtn.textContent = 'Meteor Shower';
+    fireworksBurstBtn.classList.remove('active');
+    fireworksBurstBtn.textContent = 'Fireworks Burst';
+    customFadeBtn.classList.remove('active');
+    customFadeBtn.textContent = 'Fade Colors - Custom';
+    customBlinkBtn.classList.remove('active');
+    customBlinkBtn.textContent = 'Blinking - Custom';
+    customBreathingBtn2.classList.remove('active');
+    customBreathingBtn2.textContent = 'Breathing Effect - Custom';
+    customMeteorShowerBtn.classList.remove('active');
+    customMeteorShowerBtn.textContent = 'Meteor Shower';
+    customPulseSyncBtn.classList.remove('active');
+    customPulseSyncBtn.textContent = 'Pulse Sync';
+    customGlitchFlashBtn.classList.remove('active');
+    customGlitchFlashBtn.textContent = 'Glitch Flash';
+    customHeartBeatBtn.classList.remove('active');
+    customHeartBeatBtn.textContent = 'Heart Beat';
+    customTunnelEffectBtn.classList.remove('active');
+    customTunnelEffectBtn.textContent = 'Tunnel Effect';
+    customLaserShotBtn.classList.remove('active');
+    customLaserShotBtn.textContent = 'Laser Shot';
+    customSparklingStarsBtn.classList.remove('active');
+    customSparklingStarsBtn.textContent = 'Sparkling Stars';
+    customStrobeFlashBtn.classList.remove('active');
+    customStrobeFlashBtn.textContent = 'Strobe Flash';
+    customKnightRiderBtn.classList.remove('active');
+    customKnightRiderBtn.textContent = 'Knight Rider';
+    customBounceBackBtn.classList.remove('active');
+    customBounceBackBtn.textContent = 'Bounce Back';
+    customRippleTouchBtn.classList.remove('active');
+    customRippleTouchBtn.textContent = 'Ripple Touch';
+    customFireFlickerBtn.classList.remove('active');
+    customFireFlickerBtn.textContent = 'Fire Flicker';
+    customColorWipeBtn.classList.remove('active');
+    customColorWipeBtn.textContent = 'Color Wipe';
+    customStaticGlowBtn.classList.remove('active');
+    customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+    customColorEchoBtn.classList.remove('active');
+    customColorEchoBtn.textContent = 'Color Echo';
+    customTimeWarpBtn.classList.remove('active');
+    customTimeWarpBtn.textContent = 'Time Warp';
+    customQuantumFlickerBtn.classList.remove('active');
+    customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+    customRunningLightsBtn2.classList.remove('active');
+    customRunningLightsBtn2.textContent = 'Running Lights';
+    customFireworksBurstBtn.classList.remove('active');
+    customFireworksBurstBtn.textContent = 'Fireworks Burst';
+    colorDisplay.textContent = 'Off';
+    cardElement.style.background = "";
+    await sendRequest("/stop", {});
+}
+
+// ——— الدوال التي تشغل الانيميشنات ———
+
+// Fade Colors
+async function startFadeAnimation() {
+    if (isAnimationRunning && currentAnim !== "fade_colors") {
+        await stopAnimation();
+    }
+    // إذا كانت نفس الانيميشن تعمل حاليًا، نوقفها
+    if (isAnimationRunning && currentAnim === "fade_colors") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "fade_colors";
+    lightOneBtn.classList.add('active');
+    lightOneBtn.textContent = 'Fade Colors (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Fade Colors";
+    await sendRequest("/animate", { animation_type: "fade_colors" });
+}
+
+// Pulse Sync
+async function startPulseSyncAnimation() {
+    if (isAnimationRunning && currentAnim !== "pulse_sync") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "pulse_sync") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "pulse_sync";
+    pulseSyncBtn.classList.add('active');
+    pulseSyncBtn.textContent = 'Pulse Sync (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Pulse Sync";
+    await sendRequest("/animate", { animation_type: "pulse_sync" });
+}
+
+// Wave Effect
+async function startWaveAnimation() {
+    if (isAnimationRunning && currentAnim !== "wave_effect") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "wave_effect") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "wave_effect";
+    waveEffectBtn.classList.add('active');
+    waveEffectBtn.textContent = 'Wave Effect (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Wave Effect";
+    await sendRequest("/animate", { animation_type: "wave_effect" });
+}
+
+// Rainbow Flow
+async function startRainbowAnimation() {
+    if (isAnimationRunning && currentAnim !== "rainbow_flow") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "rainbow_flow") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "rainbow_flow";
+    rainbowFlowBtn.classList.add('active');
+    rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Rainbow Flow";
+    await sendRequest("/animate", { animation_type: "rainbow_flow" });
+}
+
+// Blinking Pattern
+async function startBlinkingPattern() {
+    if (isAnimationRunning && currentAnim !== "blinking_pattern") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "blinking_pattern") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "blinking_pattern";
+    blinkingPatternBtn.classList.add('active');
+    blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Blinking Pattern";
+    await sendRequest("/animate", { animation_type: "blinking_pattern" });
+}
+
+// Running Lights
+async function startRunningLights() {
+    if (isAnimationRunning && currentAnim !== "running_lights") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "running_lights") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "running_lights";
+    runningLightsBtn.classList.add('active');
+    runningLightsBtn.textContent = 'Running Lights (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Running Lights";
+    await sendRequest("/animate", { animation_type: "running_lights" });
+}
+
+// Breathing Effect
+async function startBreathingAnimation() {
+    if (isAnimationRunning && currentAnim !== "breathing_effect") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "breathing_effect") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "breathing_effect";
+    breathingEffectBtn.classList.add('active');
+    breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Breathing Effect";
+    await sendRequest("/animate", { animation_type: "breathing_effect" });
+}
+
+// Snakes Chasing (كان Meteor Shower)
+async function startSnakesChasing() {
+    if (isAnimationRunning && currentAnim !== "meteor_shower") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "meteor_shower") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "meteor_shower";
+    snakesChasingBtn.classList.add('active');
+    snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Snakes Chasing";
+    await sendRequest("/animate", { animation_type: "meteor_shower" });
+}
+
+// ——— الانيميشن الجديد “Meteor Shower” (الأفعى الوحيدة) ———
+async function startSingleSnake() {
+    if (isAnimationRunning && currentAnim !== "single_snake") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "single_snake") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "single_snake";
+    meteorShowerNewBtn.classList.add('active');
+    meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Meteor Shower";
+    await sendRequest("/animate", { animation_type: "single_snake" });
+}
+
+// Fireworks Burst
+async function startFireworksBurst() {
+    if (isAnimationRunning && currentAnim !== "fireworks_burst") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "fireworks_burst") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "fireworks_burst";
+    fireworksBurstBtn.classList.add('active');
+    fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Fireworks Burst";
+    await sendRequest("/animate", { animation_type: "fireworks_burst" });
+}
+
+// ──── NEW: دالة “Fade Colors (Custom)” ────
+async function startCustomFadeAnimation() {
+    // إذا كان custom_fade يعمل الآن، نوقفه
+    if (isAnimationRunning && currentAnim === "custom_fade") {
+        await stopAnimation();
+        return;
+    }
+    // إذا كان أي أنيميشن آخر قيد التشغيل، نوقفه أولاً
+    if (isAnimationRunning && currentAnim !== "custom_fade") {
+        await stopAnimation();
+    }
+    // الآن نطلب من المستخدم اختيار اللون:
+    customFadeBtn.textContent = "Choose color…";
+    // نفتح نافذة color picker برمجياً:
+    colorPicker.click();
+    // نُعدّ مستمعاً وحيداً لحدث "input" على colorPicker
+    const onColorChosen = async (e) => {
+        // أولاً ننظف (نزيل) هذا المستمع
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value; // اللون الذي اخترته
+        // نضع UI على وضع التشغيل
+        isAnimationRunning = true;
+        currentAnim = "custom_fade";
+        customFadeBtn.classList.add('active');
+        customFadeBtn.textContent = 'Fade Colors - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Fade Colors - Custom";
+        // نرسل طلب بدء أنيميشن custom_fade مع الـ hex_color الذي اخترته
+        await sendRequest("/animate", {
+            animation_type: "custom_fade",
+            hex_color: chosenColor
+        });
+    };
+    // نضيف مستمع input على colorPicker
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Blinking Pattern (Custom)” ────
+async function startCustomBlinkAnimation() {
+    if (isAnimationRunning && currentAnim === "custom_blink") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_blink") {
+        await stopAnimation();
+    }
+    customBlinkBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_blink";
+        customBlinkBtn.classList.add('active');
+        customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Blinking - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_blink",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ─── NEW: دالة “Breathing Effect (Custom)” ───
+async function startCustomBreathingAnimation() {
+    if (isAnimationRunning && currentAnim === "custom_breathing") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_breathing") {
+        await stopAnimation();
+    }
+    customBreathingBtn2.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_breathing";
+        customBreathingBtn2.classList.add('active');
+        customBreathingBtn2.textContent = 'Breathing Effect - Custom (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Breathing Effect - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_breathing",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Meteor Shower (Custom)” ───
+async function startCustomMeteorShower() {
+    if (isAnimationRunning && currentAnim === "custom_meteor_shower") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_meteor_shower") {
+        await stopAnimation();
+    }
+    customMeteorShowerBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_meteor_shower";
+        customMeteorShowerBtn.classList.add('active');
+        customMeteorShowerBtn.textContent = 'Meteor Shower (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Meteor Shower - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_meteor_shower",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Pulse Sync (Custom)” ───
+async function startCustomPulseSync() {
+    if (isAnimationRunning && currentAnim === "custom_pulse_sync") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_pulse_sync") {
+        await stopAnimation();
+    }
+    customPulseSyncBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_pulse_sync";
+        customPulseSyncBtn.classList.add('active');
+        customPulseSyncBtn.textContent = 'Pulse Sync (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Pulse Sync - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_pulse_sync",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Glitch Flash (Custom)” ───
+async function startCustomGlitchFlash() {
+    if (isAnimationRunning && currentAnim === "custom_glitch_flash") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_glitch_flash") {
+        await stopAnimation();
+    }
+    customGlitchFlashBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_glitch_flash";
+        customGlitchFlashBtn.classList.add('active');
+        customGlitchFlashBtn.textContent = 'Glitch Flash (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Glitch Flash - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_glitch_flash",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Heart Beat (Custom)” ───
+async function startCustomHeartBeat() {
+    if (isAnimationRunning && currentAnim === "custom_heart_beat") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_heart_beat") {
+        await stopAnimation();
+    }
+    customHeartBeatBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_heart_beat";
+        customHeartBeatBtn.classList.add('active');
+        customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Heart Beat - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_heart_beat",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Tunnel Effect (Custom)” ───
+async function startCustomTunnelEffect() {
+    if (isAnimationRunning && currentAnim === "custom_tunnel_effect") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_tunnel_effect") {
+        await stopAnimation();
+    }
+    customTunnelEffectBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_tunnel_effect";
+        customTunnelEffectBtn.classList.add('active');
+        customTunnelEffectBtn.textContent = 'Tunnel Effect (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Tunnel Effect - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_tunnel_effect",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Laser Shot (Custom)” ───
+async function startCustomLaserShot() {
+    if (isAnimationRunning && currentAnim === "custom_laser_shot") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_laser_shot") {
+        await stopAnimation();
+    }
+    customLaserShotBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_laser_shot";
+        customLaserShotBtn.classList.add('active');
+        customLaserShotBtn.textContent = 'Laser Shot (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Laser Shot - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_laser_shot",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Sparkling Stars (Custom)” ───
+async function startCustomSparklingStars() {
+    if (isAnimationRunning && currentAnim === "custom_sparkling_stars") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_sparkling_stars") {
+        await stopAnimation();
+    }
+    customSparklingStarsBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_sparkling_stars";
+        customSparklingStarsBtn.classList.add('active');
+        customSparklingStarsBtn.textContent = 'Sparkling Stars (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Sparkling Stars - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_sparkling_stars",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Strobe Flash (Custom)” ───
+async function startCustomStrobeFlash() {
+    if (isAnimationRunning && currentAnim === "custom_strobe_flash") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_strobe_flash") {
+        await stopAnimation();
+    }
+    customStrobeFlashBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_strobe_flash";
+        customStrobeFlashBtn.classList.add('active');
+        customStrobeFlashBtn.textContent = 'Strobe Flash (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Strobe Flash - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_strobe_flash",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Knight Rider (Custom)” ───
+async function startCustomKnightRider() {
+    if (isAnimationRunning && currentAnim === "custom_knight_rider") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_knight_rider") {
+        await stopAnimation();
+    }
+    customKnightRiderBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_knight_rider";
+        customKnightRiderBtn.classList.add('active');
+        customKnightRiderBtn.textContent = 'Knight Rider (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Knight Rider - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_knight_rider",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Bounce Back (Custom)” ───
+async function startCustomBounceBack() {
+    if (isAnimationRunning && currentAnim === "custom_bounce_back") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_bounce_back") {
+        await stopAnimation();
+    }
+    customBounceBackBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_bounce_back";
+        customBounceBackBtn.classList.add('active');
+        customBounceBackBtn.textContent = 'Bounce Back (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Bounce Back - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_bounce_back",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Ripple Touch (Custom)” ───
+async function startCustomRippleTouch() {
+    if (isAnimationRunning && currentAnim === "custom_ripple_touch") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_ripple_touch") {
+        await stopAnimation();
+    }
+    customRippleTouchBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_ripple_touch";
+        customRippleTouchBtn.classList.add('active');
+        customRippleTouchBtn.textContent = 'Ripple Touch (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Ripple Touch - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_ripple_touch",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Fire Flicker (Custom)” ───
+async function startCustomFireFlicker() {
+    if (isAnimationRunning && currentAnim === "custom_fire_flicker") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_fire_flicker") {
+        await stopAnimation();
+    }
+    customFireFlickerBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_fire_flicker";
+        customFireFlickerBtn.classList.add('active');
+        customFireFlickerBtn.textContent = 'Fire Flicker (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Fire Flicker - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_fire_flicker",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Color Wipe (Custom)” ───
+async function startCustomColorWipe() {
+    if (isAnimationRunning && currentAnim === "custom_color_wipe") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_color_wipe") {
+        await stopAnimation();
+    }
+    customColorWipeBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_color_wipe";
+        customColorWipeBtn.classList.add('active');
+        customColorWipeBtn.textContent = 'Color Wipe (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Color Wipe - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_color_wipe",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Static Glow with Flicker (Custom)” ───
+async function startCustomStaticGlow() {
+    if (isAnimationRunning && currentAnim === "custom_static_glow") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_static_glow") {
+        await stopAnimation();
+    }
+    customStaticGlowBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_static_glow";
+        customStaticGlowBtn.classList.add('active');
+        customStaticGlowBtn.textContent = 'Static Glow with Flicker (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Static Glow with Flicker - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_static_glow",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Color Echo (Custom)” ───
+async function startCustomColorEcho() {
+    if (isAnimationRunning && currentAnim === "custom_color_echo") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_color_echo") {
+        await stopAnimation();
+    }
+    customColorEchoBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_color_echo";
+        customColorEchoBtn.classList.add('active');
+        customColorEchoBtn.textContent = 'Color Echo (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Color Echo - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_color_echo",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Time Warp (Custom)” ───
+async function startCustomTimeWarp() {
+    if (isAnimationRunning && currentAnim === "custom_time_warp") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_time_warp") {
+        await stopAnimation();
+    }
+    customTimeWarpBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_time_warp";
+        customTimeWarpBtn.classList.add('active');
+        customTimeWarpBtn.textContent = 'Time Warp (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Time Warp - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_time_warp",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Quantum Flicker (Custom)” ───
+async function startCustomQuantumFlicker() {
+    if (isAnimationRunning && currentAnim === "custom_quantum_flicker") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_quantum_flicker") {
+        await stopAnimation();
+    }
+    customQuantumFlickerBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_quantum_flicker";
+        customQuantumFlickerBtn.classList.add('active');
+        customQuantumFlickerBtn.textContent = 'Quantum Flicker (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Quantum Flicker - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_quantum_flicker",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+// ──── NEW: دالة “Running Lights (Custom)” ───
+async function startCustomRunningLights() {
+    if (isAnimationRunning && currentAnim === "custom_running_lights") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_running_lights") {
+        await stopAnimation();
+    }
+    customRunningLightsBtn2.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_running_lights";
+        customRunningLightsBtn2.classList.add('active');
+        customRunningLightsBtn2.textContent = 'Running Lights (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Running Lights - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_running_lights",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+
+async function startCustomFireworksBurst() {
+    if (isAnimationRunning && currentAnim === "custom_fireworks_burst") {
+        await stopAnimation();
+        return;
+    }
+    if (isAnimationRunning && currentAnim !== "custom_fireworks_burst") {
+        await stopAnimation();
+    }
+    customFireworksBurstBtn.textContent = "Choose color…";
+    colorPicker.click();
+    const onColorChosen = async (e) => {
+        colorPicker.removeEventListener("input", onColorChosen);
+        const chosenColor = e.target.value;
+        isAnimationRunning = true;
+        currentAnim = "custom_fireworks_burst";
+        customFireworksBurstBtn.classList.add('active');
+        customFireworksBurstBtn.textContent = 'Fireworks Burst (Custom) (Running)';
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = "Fireworks Burst - Custom";
+        await sendRequest("/animate", {
+            animation_type: "custom_fireworks_burst",
+            hex_color: chosenColor
+        });
+    };
+    colorPicker.addEventListener("input", onColorChosen);
+}
+
+
+// تحديث الواجهة إلى اللون المعطى
+function updateUI(color) {
+    document.body.style.background     = color;
+    document.body.style.boxShadow      = `0 0 80px ${color}80 inset`;
+    colorDisplay.style.background      = color;
+    colorDisplay.textContent           = color.toUpperCase();
+    colorPicker.value                  = color;
+}
+
+// ربط الأحداث
+lightOneBtn          .addEventListener("click", startFadeAnimation);
+pulseSyncBtn         .addEventListener("click", startPulseSyncAnimation);
+waveEffectBtn        .addEventListener("click", startWaveAnimation);
+rainbowFlowBtn       .addEventListener("click", startRainbowAnimation);
+blinkingPatternBtn   .addEventListener("click", startBlinkingPattern);
+runningLightsBtn     .addEventListener("click", startRunningLights);
+breathingEffectBtn   .addEventListener("click", startBreathingAnimation);
+// الزر القديم أصبح بإسم startSnakesChasing
+snakesChasingBtn     .addEventListener("click", startSnakesChasing);
+// الزر الجديد “Meteor Shower”
+meteorShowerNewBtn   .addEventListener("click", startSingleSnake);
+fireworksBurstBtn    .addEventListener("click", startFireworksBurst);
+offBtn               .addEventListener("click", stopAnimation);
+off2Btn              .addEventListener("click", stopAnimation);
+
+// ──── NEW: ربط زرّ “Fade Colors (Custom)” ────
+customFadeBtn        .addEventListener("click", startCustomFadeAnimation);
+
+// ──── NEW: ربط زرّ “Blinking Pattern (Custom)” ────
+customBlinkBtn       .addEventListener("click", startCustomBlinkAnimation);
+
+// ──── NEW: ربط زرّ “Breathing Effect (Custom)” ────
+customBreathingBtn2  .addEventListener("click", startCustomBreathingAnimation);
+
+// ──── NEW: ربط زرّ “Meteor Shower (Custom)” ────
+customMeteorShowerBtn.addEventListener("click", startCustomMeteorShower);
+
+// ──── NEW: ربط زرّ “Pulse Sync (Custom)” ────
+customPulseSyncBtn   .addEventListener("click", startCustomPulseSync);
+
+// ──── NEW: ربط زرّ “Glitch Flash (Custom)” ────
+customGlitchFlashBtn .addEventListener("click", startCustomGlitchFlash);
+
+// ──── NEW: ربط زرّ “Heart Beat (Custom)” ────
+customHeartBeatBtn   .addEventListener("click", startCustomHeartBeat);
+
+// ──── NEW: ربط زرّ “Tunnel Effect (Custom)” ────
+customTunnelEffectBtn.addEventListener("click", startCustomTunnelEffect);
+
+// ──── NEW: ربط زرّ “Laser Shot (Custom)” ────
+customLaserShotBtn   .addEventListener("click", startCustomLaserShot);
+
+// ──── NEW: ربط زرّ “Sparkling Stars (Custom)” ────
+customSparklingStarsBtn.addEventListener("click", startCustomSparklingStars);
+
+// ──── NEW: ربط زرّ “Strobe Flash (Custom)” ────
+customStrobeFlashBtn .addEventListener("click", startCustomStrobeFlash);
+
+// ──── NEW: ربط زرّ “Knight Rider (Custom)” ────
+customKnightRiderBtn .addEventListener("click", startCustomKnightRider);
+
+// ──── NEW: ربط زرّ “Bounce Back (Custom)” ────
+customBounceBackBtn  .addEventListener("click", startCustomBounceBack);
+
+// ──── NEW: ربط زرّ “Ripple Touch (Custom)” ────
+customRippleTouchBtn .addEventListener("click", startCustomRippleTouch);
+
+// ──── NEW: ربط زرّ “Fire Flicker (Custom)” ────
+customFireFlickerBtn .addEventListener("click", startCustomFireFlicker);
+
+// ──── NEW: ربط زرّ “Color Wipe (Custom)” ────
+customColorWipeBtn   .addEventListener("click", startCustomColorWipe);
+
+// ──── NEW: ربط زرّ “Static Glow with Flicker (Custom)” ────
+customStaticGlowBtn  .addEventListener("click", startCustomStaticGlow);
+
+// ──── NEW: ربط زرّ “Color Echo (Custom)” ────
+customColorEchoBtn   .addEventListener("click", startCustomColorEcho);
+
+// ──── NEW: ربط زرّ “Time Warp (Custom)” ────
+customTimeWarpBtn    .addEventListener("click", startCustomTimeWarp);
+
+// ──── NEW: ربط زرّ “Quantum Flicker (Custom)” ────
+customQuantumFlickerBtn.addEventListener("click", startCustomQuantumFlicker);
+
+// ──── NEW: ربط زرّ “Running Lights (Custom)” ────
+customRunningLightsBtn2.addEventListener("click", startCustomRunningLights);
+
+customFireworksBurstBtn.addEventListener("click", startCustomFireworksBurst);
+
+
+// عند تغيير اللون عبر Color Picker
+colorPicker.addEventListener("input", e => {
+    changeColor(e.target.value);
+});
+
+// عند تحميل الصفحة أول مرة
+document.addEventListener("DOMContentLoaded", async () => {
+    await fetchAndApplyState();
+    setInterval(fetchAndApplyState, 2000);
+});
+
+// SSE لدفع الحالة تلقائيًا
+const evtSource = new EventSource(`${API_BASE_URL}/stream`);
+evtSource.onmessage = e => {
+    try {
+        const { animation, color } = JSON.parse(e.data);
+
+        if (color) {
+            updateUI(color);
+            cardElement.style.background = "";
+        } else {
+            updateUI('#000000');
+            cardElement.style.background = "";
+        }
+
+        // ثم نفس المنطق السابق في fetchAndApplyState()
+        if (animation === "fade_colors") {
+            isAnimationRunning = true;
+            currentAnim = "fade_colors";
+            lightOneBtn.classList.add('active');
+            lightOneBtn.textContent = 'Fade Colors (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors";
+        } else {
+            lightOneBtn.classList.remove('active');
+            lightOneBtn.textContent = 'Fade Colors';
+        }
+
+        if (animation === "pulse_sync") {
+            isAnimationRunning = true;
+            currentAnim = "pulse_sync";
+            pulseSyncBtn.classList.add('active');
+            pulseSyncBtn.textContent = 'Pulse Sync (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Pulse Sync";
+        } else {
+            pulseSyncBtn.classList.remove('active');
+            pulseSyncBtn.textContent = 'Pulse Sync';
+        }
+
+        if (animation === "wave_effect") {
+            isAnimationRunning = true;
+            currentAnim = "wave_effect";
+            waveEffectBtn.classList.add('active');
+            waveEffectBtn.textContent = 'Wave Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Wave Effect";
+        } else {
+            waveEffectBtn.classList.remove('active');
+            waveEffectBtn.textContent = 'Wave Effect';
+        }
+
+        if (animation === "rainbow_flow") {
+            isAnimationRunning = true;
+            currentAnim = "rainbow_flow";
+            rainbowFlowBtn.classList.add('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Rainbow Flow";
+        } else {
+            rainbowFlowBtn.classList.remove('active');
+            rainbowFlowBtn.textContent = 'Rainbow Flow';
+        }
+
+        if (animation === "blinking_pattern") {
+            isAnimationRunning = true;
+            currentAnim = "blinking_pattern";
+            blinkingPatternBtn.classList.add('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking Pattern";
+        } else {
+            blinkingPatternBtn.classList.remove('active');
+            blinkingPatternBtn.textContent = 'Blinking Pattern';
+        }
+
+        if (animation === "running_lights") {
+            isAnimationRunning = true;
+            currentAnim = "running_lights";
+            runningLightsBtn.classList.add('active');
+            runningLightsBtn.textContent = 'Running Lights (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights";
+        } else {
+            runningLightsBtn.classList.remove('active');
+            runningLightsBtn.textContent = 'Running Lights';
+        }
+
+        if (animation === "breathing_effect") {
+            isAnimationRunning = true;
+            currentAnim = "breathing_effect";
+            breathingEffectBtn.classList.add('active');
+            breathingEffectBtn.textContent = 'Breathing Effect (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect";
+        } else {
+            breathingEffectBtn.classList.remove('active');
+            breathingEffectBtn.textContent = 'Breathing Effect';
+        }
+
+        if (animation === "meteor_shower") {
+            isAnimationRunning = true;
+            currentAnim = "meteor_shower";
+            snakesChasingBtn.classList.add('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Snakes Chasing";
+        } else {
+            snakesChasingBtn.classList.remove('active');
+            snakesChasingBtn.textContent = 'Snakes Chasing';
+        }
+
+        if (animation === "single_snake") {
+            isAnimationRunning = true;
+            currentAnim = "single_snake";
+            meteorShowerNewBtn.classList.add('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower";
+        } else {
+            meteorShowerNewBtn.classList.remove('active');
+            meteorShowerNewBtn.textContent = 'Meteor Shower';
+        }
+
+        if (animation === "fireworks_burst") {
+            isAnimationRunning = true;
+            currentAnim = "fireworks_burst";
+            fireworksBurstBtn.classList.add('active');
+            fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fireworks Burst";
+        } else {
+            fireworksBurstBtn.classList.remove('active');
+            fireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+        // ──── NEW: حالات Create Your Own عبر SSE ────
+
+        if (animation === "custom_fade") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fade";
+            customFadeBtn.classList.add('active');
+            customFadeBtn.textContent = 'Fade Colors - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fade Colors - Custom";
+        } else {
+            customFadeBtn.classList.remove('active');
+            customFadeBtn.textContent = 'Fade Colors - Custom';
+        }
+
+        if (animation === "custom_blink") {
+            isAnimationRunning = true;
+            currentAnim = "custom_blink";
+            customBlinkBtn.classList.add('active');
+            customBlinkBtn.textContent = 'Blinking - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Blinking - Custom";
+        } else {
+            customBlinkBtn.classList.remove('active');
+            customBlinkBtn.textContent = 'Blinking - Custom';
+        }
+
+        if (animation === "custom_breathing") {
+            isAnimationRunning = true;
+            currentAnim = "custom_breathing";
+            customBreathingBtn2.classList.add('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Breathing Effect - Custom";
+        } else {
+            customBreathingBtn2.classList.remove('active');
+            customBreathingBtn2.textContent = 'Breathing Effect - Custom';
+        }
+
+        if (animation === "custom_meteor_shower") {
+            isAnimationRunning = true;
+            currentAnim = "custom_meteor_shower";
+            customMeteorShowerBtn.classList.add('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Meteor Shower - Custom";
+        } else {
+            customMeteorShowerBtn.classList.remove('active');
+            customMeteorShowerBtn.textContent = 'Meteor Shower';
+        }
+
+        if (animation === "custom_pulse_sync") {
+            isAnimationRunning = true;
+            currentAnim = "custom_pulse_sync";
+            customPulseSyncBtn.classList.add('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Pulse Sync - Custom";
+        } else {
+            customPulseSyncBtn.classList.remove('active');
+            customPulseSyncBtn.textContent = 'Pulse Sync';
+        }
+
+        if (animation === "custom_glitch_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_glitch_flash";
+            customGlitchFlashBtn.classList.add('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Glitch Flash - Custom";
+        } else {
+            customGlitchFlashBtn.classList.remove('active');
+            customGlitchFlashBtn.textContent = 'Glitch Flash';
+        }
+
+        if (animation === "custom_heart_beat") {
+            isAnimationRunning = true;
+            currentAnim = "custom_heart_beat";
+            customHeartBeatBtn.classList.add('active');
+            customHeartBeatBtn.textContent = 'Heart Beat (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Heart Beat - Custom";
+        } else {
+            customHeartBeatBtn.classList.remove('active');
+            customHeartBeatBtn.textContent = 'Heart Beat';
+        }
+
+        if (animation === "custom_tunnel_effect") {
+            isAnimationRunning = true;
+            currentAnim = "custom_tunnel_effect";
+            customTunnelEffectBtn.classList.add('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Tunnel Effect - Custom";
+        } else {
+            customTunnelEffectBtn.classList.remove('active');
+            customTunnelEffectBtn.textContent = 'Tunnel Effect';
+        }
+
+        if (animation === "custom_laser_shot") {
+            isAnimationRunning = true;
+            currentAnim = "custom_laser_shot";
+            customLaserShotBtn.classList.add('active');
+            customLaserShotBtn.textContent = 'Laser Shot (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Laser Shot - Custom";
+        } else {
+            customLaserShotBtn.classList.remove('active');
+            customLaserShotBtn.textContent = 'Laser Shot';
+        }
+
+        if (animation === "custom_sparkling_stars") {
+            isAnimationRunning = true;
+            currentAnim = "custom_sparkling_stars";
+            customSparklingStarsBtn.classList.add('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Sparkling Stars - Custom";
+        } else {
+            customSparklingStarsBtn.classList.remove('active');
+            customSparklingStarsBtn.textContent = 'Sparkling Stars';
+        }
+
+        if (animation === "custom_strobe_flash") {
+            isAnimationRunning = true;
+            currentAnim = "custom_strobe_flash";
+            customStrobeFlashBtn.classList.add('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Strobe Flash - Custom";
+        } else {
+            customStrobeFlashBtn.classList.remove('active');
+            customStrobeFlashBtn.textContent = 'Strobe Flash';
+        }
+
+        if (animation === "custom_knight_rider") {
+            isAnimationRunning = true;
+            currentAnim = "custom_knight_rider";
+            customKnightRiderBtn.classList.add('active');
+            customKnightRiderBtn.textContent = 'Knight Rider (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Knight Rider - Custom";
+        } else {
+            customKnightRiderBtn.classList.remove('active');
+            customKnightRiderBtn.textContent = 'Knight Rider';
+        }
+
+        if (animation === "custom_bounce_back") {
+            isAnimationRunning = true;
+            currentAnim = "custom_bounce_back";
+            customBounceBackBtn.classList.add('active');
+            customBounceBackBtn.textContent = 'Bounce Back (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Bounce Back - Custom";
+        } else {
+            customBounceBackBtn.classList.remove('active');
+            customBounceBackBtn.textContent = 'Bounce Back';
+        }
+
+        if (animation === "custom_ripple_touch") {
+            isAnimationRunning = true;
+            currentAnim = "custom_ripple_touch";
+            customRippleTouchBtn.classList.add('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Ripple Touch - Custom";
+        } else {
+            customRippleTouchBtn.classList.remove('active');
+            customRippleTouchBtn.textContent = 'Ripple Touch';
+        }
+
+        if (animation === "custom_fire_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fire_flicker";
+            customFireFlickerBtn.classList.add('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fire Flicker - Custom";
+        } else {
+            customFireFlickerBtn.classList.remove('active');
+            customFireFlickerBtn.textContent = 'Fire Flicker';
+        }
+
+        if (animation === "custom_color_wipe") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_wipe";
+            customColorWipeBtn.classList.add('active');
+            customColorWipeBtn.textContent = 'Color Wipe (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Wipe - Custom";
+        } else {
+            customColorWipeBtn.classList.remove('active');
+            customColorWipeBtn.textContent = 'Color Wipe';
+        }
+
+        if (animation === "custom_static_glow") {
+            isAnimationRunning = true;
+            currentAnim = "custom_static_glow";
+            customStaticGlowBtn.classList.add('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Static Glow with Flicker - Custom";
+        } else {
+            customStaticGlowBtn.classList.remove('active');
+            customStaticGlowBtn.textContent = 'Static Glow with Flicker';
+        }
+
+        if (animation === "custom_color_echo") {
+            isAnimationRunning = true;
+            currentAnim = "custom_color_echo";
+            customColorEchoBtn.classList.add('active');
+            customColorEchoBtn.textContent = 'Color Echo (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Color Echo - Custom";
+        } else {
+            customColorEchoBtn.classList.remove('active');
+            customColorEchoBtn.textContent = 'Color Echo';
+        }
+
+        if (animation === "custom_time_warp") {
+            isAnimationRunning = true;
+            currentAnim = "custom_time_warp";
+            customTimeWarpBtn.classList.add('active');
+            customTimeWarpBtn.textContent = 'Time Warp (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Time Warp - Custom";
+        } else {
+            customTimeWarpBtn.classList.remove('active');
+            customTimeWarpBtn.textContent = 'Time Warp';
+        }
+
+        if (animation === "custom_quantum_flicker") {
+            isAnimationRunning = true;
+            currentAnim = "custom_quantum_flicker";
+            customQuantumFlickerBtn.classList.add('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Quantum Flicker - Custom";
+        } else {
+            customQuantumFlickerBtn.classList.remove('active');
+            customQuantumFlickerBtn.textContent = 'Quantum Flicker';
+        }
+
+        if (animation === "custom_running_lights") {
+            isAnimationRunning = true;
+            currentAnim = "custom_running_lights";
+            customRunningLightsBtn2.classList.add('active');
+            customRunningLightsBtn2.textContent = 'Running Lights (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Running Lights - Custom";
+        } else {
+            customRunningLightsBtn2.classList.remove('active');
+            customRunningLightsBtn2.textContent = 'Running Lights';
+        }
+
+        if (animation === "custom_fireworks_burst") {
+            isAnimationRunning = true;
+            currentAnim = "custom_fireworks_burst";
+            customFireworksBurstBtn.classList.add('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst (Custom) (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Fireworks Burst - Custom";
+        } else {
+            customFireworksBurstBtn.classList.remove('active');
+            customFireworksBurstBtn.textContent = 'Fireworks Burst';
+        }
+
+
+    } catch (err) {
+        console.error("SSE onmessage parse error:", err);
+    }
+};
+
+
+
+
+
+
+
+
+// تكويد النجوم المتوهجة
+document.addEventListener("DOMContentLoaded", function () {
+    const starsContainer = document.querySelector(".stars-container");
+    for (let i = 0; i < 20; i++) {
+        let star = document.createElement("div");
+        star.classList.add("star");
+        star.innerHTML = "⋆";
+        star.style.left = Math.random() * window.innerWidth + "px";
+        star.style.top = Math.random() * window.innerHeight + "px";
+        star.style.animationDelay = Math.random() * 3 + "s";
+        star.addEventListener("animationiteration", () => {
+            star.style.left = Math.random() * window.innerWidth + "px";
+            star.style.top = Math.random() * window.innerHeight + "px";
+        });
+        starsContainer.appendChild(star);
+    }
+});
+
+
+/* === Helper: hex -> "r,g,b" === */
+function hexToRgbString(hex) {
+  if (!hex) return '0,0,0';
+  hex = hex.replace('#','').trim();
+  if (hex.length === 3) {
+    hex = hex.split('').map(ch => ch + ch).join('');
+  }
+  const int = parseInt(hex, 16);
+  const r = (int >> 16) & 255;
+  const g = (int >> 8) & 255;
+  const b = int & 255;
+  return `${r},${g},${b}`;
+}
+
+/* set CSS vars used by the entry animation */
+function setUIColor(hexOrRgb) {
+  let rgb;
+  if (!hexOrRgb) {
+    rgb = '0,0,0';
+    document.documentElement.style.setProperty('--ui-color', '#000000');
+  } else if (hexOrRgb.startsWith('rgb')) {
+    const nums = hexOrRgb.replace(/rgba?$begin:math:text$|$end:math:text$|\s/g,'').split(',').slice(0,3);
+    rgb = nums.join(',');
+    document.documentElement.style.setProperty('--ui-color', `rgb(${rgb})`);
+  } else if (hexOrRgb.indexOf(',') !== -1) {
+    rgb = hexOrRgb;
+    document.documentElement.style.setProperty('--ui-color', `rgb(${rgb})`);
+  } else {
+    rgb = hexToRgbString(hexOrRgb);
+    document.documentElement.style.setProperty('--ui-color', hexOrRgb);
+  }
+  document.documentElement.style.setProperty('--ui-rgb', rgb);
+}
+
+/* get current color (prefers color picker, then display bg, then default) */
+function getCurrentColor() {
+  const cp = document.getElementById('colorPicker');
+  if (cp && cp.value) return cp.value;
+  const display = document.getElementById('colorDisplay');
+  if (display) {
+    const style = window.getComputedStyle(display).backgroundColor;
+    if (style) return style;
+  }
+  return '#00ff00';
+}
+
+function playCardOverlay() {
+  const card = document.querySelector('.card');
+  if (!card) return;
+  // نضبط اللون الحالي
+  setUIColor(getCurrentColor());
+  // نضيف الكلاس اللي يشغل overlay
+  card.classList.add('card-overlay');
+  // نشيل الكلاس بعد ما يخلص الانيميشن عشان يقدر يعيد التشغيل بالـreload
+  card.addEventListener('animationend', () => {
+    card.classList.remove('card-overlay');
+  }, { once: true });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  // نخلي overlay بنفس اللون الحالي
+  setUIColor(getCurrentColor());
+
+  const overlay = document.getElementById('page-overlay');
+  if (overlay) {
+    // نشغل الانيميشن فورا
+    overlay.classList.add('fade-out');
+    // بعد الانيميشن نشيل العنصر من الـDOM
+    overlay.addEventListener('animationend', () => {
+      overlay.remove();
+    });
+  }
+});
+
+
+function updateUI(color) {
+    if (color) {
+        document.body.style.background = color;
+        document.body.style.boxShadow  = `0 0 80px ${ (color.startsWith('rgb') ? color.replace('rgb','rgba').replace(')', ',0.5)') : color + '80' ) } inset`;
+        colorDisplay.style.background  = color;
+        colorDisplay.textContent       = color.toUpperCase();
+        colorPicker.value              = (color.startsWith('#') ? color : colorPicker.value);
+    } else {
+        document.body.style.background = '#000000';
+        document.body.style.boxShadow  = `0 0 80px rgba(0,0,0,0.5) inset`;
+        colorDisplay.style.background  = '#000000';
+        colorDisplay.textContent       = 'OFF';
+        colorPicker.value              = '#000000';
+    }
+
+    // هنا السطر اللي يربط overlay بالكارد
+    const overlay = document.getElementById('page-overlay');
+    if (overlay) {
+        overlay.style.background = color || '#000000';
+    }
+}
