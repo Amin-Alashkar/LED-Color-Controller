@@ -1,13 +1,16 @@
 #page-overlay {
     position: fixed;
     left: 34.4%;
-    /* top: 9.5px; */
-    /* margin-right: 100px; */
     width: 600px;
     height: 928px;
-    background: var(--ui-color, #00ff00);
     z-index: 9999;
     opacity: 1;
     pointer-events: none;
-    /* border-radius: 25px; */
+
+    background: linear-gradient(
+        to right,
+        rgba(var(--ui-rgb, 0,255,0), 0.4) 0%,   /* أخف باليسار */
+        rgba(var(--ui-rgb, 0,255,0), 1) 50%,    /* اللون الأصلي بالنص */
+        rgba(var(--ui-rgb, 0,255,0), 0.4) 100%  /* أخف باليمين */
+    );
 }
