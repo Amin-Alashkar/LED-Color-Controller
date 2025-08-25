@@ -1,4 +1,3 @@
-
 /* === 1) دالة مساعدة محسّنة لتحويل اللون وتعيين CSS vars === */
 function hexToRgbString(hex) {
   if (!hex) return '0,0,0';
@@ -69,3 +68,21 @@ function updateUI(color) {
         colorPicker.value                  = '#000000';
     }
 }
+
+/* === 3) في DOMContentLoaded: لا تزيل overlay (ما منعهش)، بس خليه يتزامن === */
+document.addEventListener('DOMContentLoaded', () => {
+  // نضبط اللون الحالي ونتأكد أن الـoverlay يتبع اللون
+  setUIColor(getCurrentColor());
+
+  // لو تحب تخليه يختفي بعد البداية (fade-out) فعّل الكود تحت بدل التعليق
+  const overlay = document.getElementById('page-overlay');
+  if (overlay) {
+    // لو بدك تأثير بداية سريع، بدل السطرين التاليين استعمل:
+    // overlay.classList.add('fade-out');
+    // overlay.addEventListener('animationend', () => overlay.remove());
+
+    // حالياً نخلي الـoverlay موجودًا ومزامنًا للون البطاقة:
+    overlay.style.pointerEvents = 'none';
+    // overlay يضبط لونه عبر setUIColor() أعلاه
+  }
+});
