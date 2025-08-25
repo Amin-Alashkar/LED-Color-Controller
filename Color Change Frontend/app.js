@@ -2051,45 +2051,53 @@ function getCurrentColor() {
   return '#00ff00';
 }
 
-/* play the card animation (add class, remove after animation so it can retrigger on reload) */
-function playCardEntry() {
+function playCardOverlay() {
   const card = document.querySelector('.card');
   if (!card) return;
-  // ensure vars are in sync before animation
+  // نضبط اللون الحالي
   setUIColor(getCurrentColor());
-
-  // remove then force reflow to allow re-triggering
-  card.classList.remove('card-entry');
-  // small tick to ensure class reflow
-  void card.offsetWidth;
-  card.classList.add('card-entry');
-
-  // cleanup after animation ended (optional but keeps DOM tidy)
-  const onAnimEnd = (e) => {
-    // only react to our keyframe name roughly (or just remove after a timeout)
-    card.classList.remove('card-entry');
-    card.removeEventListener('animationend', onAnimEnd);
-  };
-  card.addEventListener('animationend', onAnimEnd);
+  // نضيف الكلاس اللي يشغل overlay
+  card.classList.add('card-overlay');
+  // نشيل الكلاس بعد ما يخلص الانيميشن عشان يقدر يعيد التشغيل بالـreload
+  card.addEventListener('animationend', () => {
+    card.classList.remove('card-overlay');
+  }, { once: true });
 }
 
-/* Run on load */
 document.addEventListener('DOMContentLoaded', () => {
-  // sync UI color and trigger entry
+  // نخلي overlay بنفس اللون الحالي
   setUIColor(getCurrentColor());
-  // short delay gives browser time to paint before heavy glow
-  setTimeout(playCardEntry, 90);
+
+  const overlay = document.getElementById('page-overlay');
+  if (overlay) {
+    // نشغل الانيميشن فورا
+    overlay.classList.add('fade-out');
+    // بعد الانيميشن نشيل العنصر من الـDOM
+    overlay.addEventListener('animationend', () => {
+      overlay.remove();
+    });
+  }
 });
 
-/* === IMPORTANT: integrate with your changeColor(hex) ===
-   inside your existing function that handles button clicks, add:
-   setUIColor(hex);
-   so the card glow updates immediately when user presses buttons.
-Example:
-function changeColor(hex) {
-  // ... your existing LED logic, update colorDisplay, send to device ...
-  document.getElementById('colorDisplay').style.background = hex;
-  // then sync UI vars:
-  setUIColor(hex);
+
+function updateUI(color) {
+    if (color) {
+        document.body.style.background = color;
+        document.body.style.boxShadow  = `0 0 80px ${ (color.startsWith('rgb') ? color.replace('rgb','rgba').replace(')', ',0.5)') : color + '80' ) } inset`;
+        colorDisplay.style.background  = color;
+        colorDisplay.textContent       = color.toUpperCase();
+        colorPicker.value              = (color.startsWith('#') ? color : colorPicker.value);
+    } else {
+        document.body.style.background = '#000000';
+        document.body.style.boxShadow  = `0 0 80px rgba(0,0,0,0.5) inset`;
+        colorDisplay.style.background  = '#000000';
+        colorDisplay.textContent       = 'OFF';
+        colorPicker.value              = '#000000';
+    }
+
+    // هنا السطر اللي يربط overlay بالكارد
+    const overlay = document.getElementById('page-overlay');
+    if (overlay) {
+        overlay.style.background = color || '#000000';
+    }
 }
-*/
