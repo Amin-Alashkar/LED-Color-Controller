@@ -1,21 +1,13 @@
-function updateUI(color) {
-    if (color) {
-        document.body.style.background = color;
-        document.body.style.boxShadow  = `0 0 80px ${ (color.startsWith('rgb') ? color.replace('rgb','rgba').replace(')', ',0.5)') : color + '80' ) } inset`;
-        colorDisplay.style.background  = color;
-        colorDisplay.textContent       = color.toUpperCase();
-        colorPicker.value              = (color.startsWith('#') ? color : colorPicker.value);
-    } else {
-        document.body.style.background = '#000000';
-        document.body.style.boxShadow  = `0 0 80px rgba(0,0,0,0.5) inset`;
-        colorDisplay.style.background  = '#000000';
-        colorDisplay.textContent       = 'OFF';
-        colorPicker.value              = '#000000';
-    }
-
-    // هنا السطر اللي يربط overlay بالكارد
-    const overlay = document.getElementById('page-overlay');
-    if (overlay) {
-        overlay.style.background = color || '#000000';
-    }
+#page-overlay {
+    position: fixed;
+    left: 34.4%;
+    /* top: 9.5px; */
+    /* margin-right: 100px; */
+    width: 600px;
+    height: 928px;
+    background: var(--ui-color, #00ff00);
+    z-index: 9999;
+    opacity: 1;
+    pointer-events: none;
+    /* border-radius: 25px; */
 }
