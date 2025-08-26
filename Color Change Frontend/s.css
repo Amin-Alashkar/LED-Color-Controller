@@ -2104,7 +2104,38 @@ button:hover::before {
 
 
 
+/* إضافة تأثيرات الانتقال */
+.card {
+    transition: all 0.5s ease;
+}
 
+.card-overlay {
+    animation: colorPulse 0.5s ease;
+}
+
+@keyframes colorPulse {
+    0% {
+        box-shadow: 0 0 5px var(--ui-color, #00ff00);
+    }
+    50% {
+        box-shadow: 0 0 30px var(--ui-color, #00ff00);
+    }
+    100% {
+        box-shadow: 0 0 5px var(--ui-color, #00ff00);
+    }
+}
+
+/* تأثير fade-in للعرض اللوني */
+.color-display {
+    transition: background-color 0.5s ease;
+}
+
+/* تأثيرات للأزرار عند النشاط */
+button.active {
+    box-shadow: 0 0 15px var(--ui-color);
+    transform: scale(1.05);
+    transition: all 0.3s ease;
+}
 #page-overlay {
     position: fixed;
     left: 34.4%;
