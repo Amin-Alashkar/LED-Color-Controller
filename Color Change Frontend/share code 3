@@ -1,2 +1,98 @@
 
-الفكرة أنك تبني نظام يخلي تشغيل وإطفاء أو تبديل أي إضاءة أو أنيميشن يصير تدريجي بدل المفاجأة، يعني لما تشغّل إضاءة تبدأ من 0% وتزيد خطوة بخطوة لحد ما توصل 100%، ولما تطفيها تنزل من 100% تدريجيًا لحد الصفر، وإذا كنت مشغل أنيميشن معينة وحابب تبدّلها بواحدة ثانية، ما يوقف الأولى فجأة، بالعكس يخف سطوعها تدريجي بينما الثانية تبدأ تزيد تدريجي، وهيك يصير الانتقال ناعم وسلس كأنك عامل fade-in وfade-out بدل صدمات كهربائية للعين.
+async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 15):
+    """
+    تأثير الشهاب (تأثير "الأفعى") مع عشرة أفعى مختلفة الألوان:
+    - كل أفعى طولها 12 LED بتدريج من الفاتح إلى الداكن
+    - تتحرك كل أفعى من LED رقم 19 إلى LED رقم 0
+    - بين كل أفعى وأفعى مسافة 5 أضواء سوداء
+    - في كل دورة نحافظ على تشغيل ثلاث أفعى في آنٍ واحد حتى ننتهي من إطلاق العشر أفعى
+    - بعد انتهاء العشر أفعى، نعيد الدورة من جديد طالما لم يُطلَب الإيقاف
+    """
+    global stop_requested
+
+    # نعرّف عشرة ألوان ثابتة للأفعى (كل أفعى لون مختلف)
+    SNAKE_COLORS = [
+        (255,   0,   0),   # أحمر
+        (  0,   0, 255),   # أزرق
+        (  0, 255,   0),   # أخضر
+        (255, 255,   0),   # أصفر
+        (255,   0, 255),   # أرجواني
+        (  0, 255, 255),   # سماوي
+        (255, 165,   0),   # برتقالي
+        (255, 192, 203),   # وردي
+        (138,  43, 226),   # بنفسجي
+        ( 50, 205,  50)    # أخضر ليموني
+    ]
+
+    total_snakes = len(SNAKE_COLORS)
+    # مدة حركة الأفعى الواحدة بالخطوات:
+    frames_per_snake = NUM_LEDS + trail_length  # الرأس يبدأ عند 19 وينتهي عند -trail_length
+
+    # نضبط الفاصل الزمني لإطلاق الأفعى بحيث يبقى بين كل رأس وآخر 5 أضواء سوداء
+    spawn_interval = trail_length + 30  # 12 + 5 = 17
+
+    while not stop_requested:
+        # قائمة تمثل الأفعى النشطة حاليًّا
+        active_snakes = []
+        global_frame = 0
+        snake_index = 0
+
+        # نطلق الأفعى الواحدة تلو الأخرى بانتظام
+        while not stop_requested:
+            # إذا حان وقت إطلاق أفعى جديدة
+            if snake_index < total_snakes and global_frame >= snake_index * spawn_interval:
+                # نضيف الأفعى إلى القائمة (مع حالة التقدّم بدايةً 0)
+                active_snakes.append({
+                    'id': snake_index,
+                    'progress': 0  # رقم الإطار داخل الأفعى
+                })
+                snake_index += 1
+
+            # إذا لم يبقَ أفعى ضمن النطاق أو انتهت كل الأفعى من الحركة، نكسر
+            if snake_index >= total_snakes and not active_snakes:
+                break
+
+            # نمسح الشريط
+            neo.clear_strip()
+
+            # نحدّث كل أفعى
+            for snake in active_snakes[:]:
+                sid = snake['id']
+                color_base = SNAKE_COLORS[sid]
+                prog = snake['progress']
+                head_pos = NUM_LEDS - prog
+
+                # نرسم ذيل الأفعى بطول trail_length
+                for t in range(trail_length):
+                    pos = head_pos + t
+                    if 0 <= pos < NUM_LEDS:
+                        # حساب التدريج (فاتح في الرأس، داكن في الذيل)
+                        factor = (trail_length - t) / trail_length
+                        r = int(color_base[0] * factor)
+                        g = int(color_base[1] * factor)
+                        b = int(color_base[2] * factor)
+                        neo.set_led_color(
+                        pos,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+
+                # نزيح الأفعى خطوة لاحقًا
+                snake['progress'] += 1
+                # إذا تجاوزت الأفعى المسار كاملاً
+                if snake['progress'] > frames_per_snake:
+                    active_snakes.remove(snake)
+
+            # نطبّق التحديث على الشريط
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+            global_frame += 1
+            # إذا انتهى جميع الإطارات لكل الأفعى وأفرغت القائمة
+            if snake_index >= total_snakes and not active_snakes:
+                break
+
+        # بعد إنتهاء عشر أفعى، نعيد الدورة تلقائيًّا
+    neo.clear_strip()
+    neo.update_strip()
