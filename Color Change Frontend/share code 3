@@ -1,1 +1,14 @@
 
+# بدل السطر:
+# if snake['progress'] > frames_per_snake:
+#     active_snakes.remove(snake)
+
+# استخدم هذا:
+if head_pos + trail_length < 0:
+    # الأفعى انتهت بالكامل من الشريط، نشيلها
+    active_snakes.remove(snake)
+else:
+    # حتى آخر LED، خليه يظل وراه لون ثاني
+    if head_pos + trail_length >= NUM_LEDS:
+        tail_extra_pos = NUM_LEDS - 1  # آخر LED
+        neo.set_led_color(tail_extra_pos, 50, 255, 50)  # مثال لون عشوائي أو ثابت
