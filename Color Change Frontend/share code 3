@@ -1,1 +1,22 @@
 
+// --- استبدل دالتك الحالية sendRequest بـ النسخة التالية ---
+async function sendRequest(endpoint, data = {}) {
+    try {
+        // إذا كان هذا طلب animate أو color و المستخدم لم يحدد fade_in، نضيف إعدادات افتراضية
+        if ((endpoint === "/animate" || endpoint === "/color") && data.fade_in === undefined) {
+            data.fade_in = true;                     // افتراضي نفعل الfade-in
+            data.fade_duration_ms = 600;             // مدة الفيد إن بالـ ms (تعديل سهل)
+            data.fade_steps = 12;                    // عدد خطوات الفيد (أكثر = أنعم)
+        }
+
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        return { status: "error", message: e.message };
+    }
+}
