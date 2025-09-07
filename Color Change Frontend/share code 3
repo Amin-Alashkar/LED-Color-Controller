@@ -1,1 +1,76 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="image.icon">
+    <link rel="stylesheet" href="s.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>LED Color Controller</title>
+</head>
+<body>
+    <div class="card">
+        <h1 class="led-title">LED Color Controller</h1>
+        <div class="color-display" id="colorDisplay">Loading…</div>
+
+        <!-- ... كل محتويات الصفحة اللي انت أرسلتها تبقى كما هي ... -->
+
+        <!-- نهاية محتوى الأزرار / الكارد -->
+        <!-- ====== ADMIN UNLOCK BUTTON (added) ====== -->
+        <div class="admin-footer">
+            <button id="adminToggleBtn" class="admin-toggle">
+                <i class="fa-solid fa-key"></i> Admin Access
+            </button>
+        </div>
+    </div>
+
+    <!-- Admin Modal (login + control panel) -->
+    <div id="adminModal" class="modal-backdrop" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="adminModalTitle">
+            <button class="modal-close" id="adminCloseBtn" title="Close">&times;</button>
+
+            <!-- Login area -->
+            <div id="adminLoginArea" class="admin-section">
+                <h2 id="adminModalTitle">Admin Login</h2>
+                <div class="input-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="admin username" autocomplete="username">
+                </div>
+                <div class="input-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="password" autocomplete="current-password">
+                </div>
+                <div class="admin-row">
+                    <button id="adminSubmitBtn" class="submit-btn">Sign In</button>
+                </div>
+                <p id="adminMessage" class="admin-message"></p>
+            </div>
+
+            <!-- Admin control panel (hidden until login success) -->
+            <div id="adminPanelArea" class="admin-section" hidden>
+                <h1 id="adminWelcome" class="admin-welcome">Welcome Admin</h1>
+
+                <h3 class="button-title">Control Buttons</h3>
+                <div class="admin-controls">
+                    <button class="ctrl-btn placeholder" id="ctrlBtn1">Control 1</button>
+                    <button class="ctrl-btn placeholder" id="ctrlBtn2">Control 2</button>
+                    <button class="ctrl-btn placeholder" id="ctrlBtn3">Control 3</button>
+                    <button class="ctrl-btn logout" id="adminLogoutBtn">Log Out</button>
+                </div>
+
+                <div class="admin-footer-note">
+                    <small>Admin panel — placeholders for now.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="page-overlay"></div>
+    <div class="stars-container"></div>
+
+    <script src="app.js"></script>
+    <!-- admin_system.js must load after app.js so it can reuse API_BASE_URL if you set it there -->
+    <script src="admin_system.js"></script>
+</body>
+</html>
