@@ -1,1 +1,247 @@
 
+/* admin_system.js
+   Responsibilities:
+   - show/hide login modal
+   - local attempt counting + exponential lockout
+   - POST to backend login endpoint (expects { isAdmin: true } on success)
+   - on success: animate modal out, apply golden theme, show admin control panel
+   - on logout: revert UI
+*/
+(function () {
+  // use API_BASE_URL from app.js if present; otherwise fall back to host:8001
+  const API_ROOT = (typeof API_BASE_URL !== 'undefined') ? API_BASE_URL : `http://${window.location.hostname}:8001`;
+  // we expect admin endpoints to be mounted at /admin when integrated into main server,
+  // otherwise you can run admin_service on port 8001 and endpoint /login/
+  const LOGIN_URLS = [
+    `${API_ROOT}/admin/login/`,  // mounted option
+    `${API_ROOT}/login/`         // standalone admin app option
+  ];
+
+  // DOM elements
+  const adminToggleBtn = document.getElementById('adminToggleBtn');
+  const adminModal = document.getElementById('adminModal');
+  const adminCloseBtn = document.getElementById('adminCloseBtn');
+  const adminSubmitBtn = document.getElementById('adminSubmitBtn');
+  const adminUsername = document.getElementById('adminUsername');
+  const adminPassword = document.getElementById('adminPassword');
+  const adminMessage = document.getElementById('adminMessage');
+  const adminPanelArea = document.getElementById('adminPanelArea');
+  const adminLoginArea = document.getElementById('adminLoginArea');
+  const adminWelcome = document.getElementById('adminWelcome');
+  const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+
+  if (!adminToggleBtn || !adminModal) return; // nothing to do if DOM differs
+
+  const MAX_ATTEMPTS = 3;
+  const BASE_LOCK_SECONDS = 60;
+
+  // helpers for lock state in localStorage (persists across reload)
+  function readState() {
+    const raw = localStorage.getItem('admin_lock_state');
+    if (!raw) return { failedCount: 0, multiplier: 1, lockUntil: 0 };
+    try {
+      const obj = JSON.parse(raw);
+      return {
+        failedCount: obj.failedCount || 0,
+        multiplier: obj.multiplier || 1,
+        lockUntil: obj.lockUntil || 0
+      };
+    } catch (e) {
+      return { failedCount: 0, multiplier: 1, lockUntil: 0 };
+    }
+  }
+  function writeState(s) { localStorage.setItem('admin_lock_state', JSON.stringify(s)); }
+
+  function secondsRemaining(untilTs) {
+    return Math.max(0, Math.ceil((untilTs - Date.now()) / 1000));
+  }
+
+  function showModal() {
+    adminMessage.textContent = '';
+    adminUsername.value = '';
+    adminPassword.value = '';
+    adminLoginArea.hidden = false;
+    adminPanelArea.hidden = true;
+    adminModal.classList.add('show');
+    adminModal.setAttribute('aria-hidden', 'false');
+  }
+  function hideModalInstant() {
+    adminModal.classList.remove('show');
+    adminModal.setAttribute('aria-hidden', 'true');
+  }
+  function closeModalWithFade() {
+    const content = adminModal.querySelector('.modal-content');
+    if (!content) { hideModalInstant(); return; }
+    content.classList.add('fade-out');
+    setTimeout(() => hideModalInstant(), 280);
+  }
+
+  function markAllButtonsGolden(enable = true) {
+    // only change <button> appearance visually; keep semantics/handlers intact
+    document.querySelectorAll('button').forEach(btn => {
+      if (enable) btn.classList.add('golden');
+      else btn.classList.remove('golden');
+    });
+  }
+
+  // attempt to log in against possible endpoints (try mounted path first)
+  async function postLoginPayload(payload) {
+    let lastErr = null;
+    for (const url of LOGIN_URLS) {
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        // if server returns 404 for path, try next
+        if (res.status === 404) continue;
+        // return response object (caller will check status)
+        return res;
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    // none worked
+    throw lastErr || new Error('No login endpoint reachable');
+  }
+
+  async function handleSubmit() {
+    adminMessage.style.color = '#ffcccb';
+    const username = adminUsername.value.trim();
+    const password = adminPassword.value;
+    if (!username || !password) {
+      adminMessage.textContent = 'Type username and password.';
+      return;
+    }
+
+    let state = readState();
+    if (state.lockUntil && Date.now() < state.lockUntil) {
+      adminMessage.textContent = `Too many attempts. Try again in ${secondsRemaining(state.lockUntil)}s.`;
+      return;
+    }
+
+    adminSubmitBtn.disabled = true;
+    adminSubmitBtn.textContent = 'Checking…';
+
+    try {
+      // try login
+      const res = await postLoginPayload({ username, password });
+      if (!res) throw new Error('No response from server');
+      if (res.status === 200) {
+        const data = await res.json();
+        if (data.isAdmin) {
+          // success
+          state.failedCount = 0;
+          state.multiplier = 1;
+          state.lockUntil = 0;
+          writeState(state);
+          onLoginSuccess();
+          return;
+        }
+      }
+      // treat any non-200 as failed attempt
+      state.failedCount = (state.failedCount || 0) + 1;
+      if (state.failedCount >= MAX_ATTEMPTS) {
+        // apply lock
+        state.multiplier = (state.multiplier || 1) * 2;
+        const lockSec = BASE_LOCK_SECONDS * (state.multiplier || 1);
+        state.lockUntil = Date.now() + lockSec * 1000;
+        state.failedCount = 0;
+        adminMessage.textContent = `Too many failed attempts. Next try after ${lockSec} seconds.`;
+      } else {
+        adminMessage.textContent = `Invalid credentials. Attempts left: ${MAX_ATTEMPTS - state.failedCount}`;
+      }
+      writeState(state);
+    } catch (err) {
+      console.error('Login error', err);
+      adminMessage.textContent = 'Login service unreachable.';
+    } finally {
+      adminSubmitBtn.disabled = false;
+      adminSubmitBtn.textContent = 'Sign In';
+    }
+  }
+
+  function onLoginSuccess() {
+    adminMessage.style.color = '#c7ffb3';
+    adminMessage.textContent = 'Welcome — unlocking admin UI…';
+    // animate modal fade away, then set golden theme & show panel
+    const content = adminModal.querySelector('.modal-content');
+    if (content) content.classList.add('fade-out');
+
+    setTimeout(() => {
+      // hide modal
+      hideModalInstant();
+      // make page buttons golden
+      markAllButtonsGolden(true);
+      // show admin panel inside modal on next open
+      adminLoginArea.hidden = true;
+      adminPanelArea.hidden = false;
+      adminModal.classList.add('show'); // display panel quickly so user sees it if they reopen
+      adminModal.setAttribute('aria-hidden', 'false');
+      // ensure welcome visible
+      adminWelcome.textContent = 'Welcome Admin';
+      adminWelcome.style.color = '#ffd966';
+      adminWelcome.style.textShadow = '0 8px 30px rgba(255,200,20,0.18)';
+      // ensure modal visible
+      adminPanelArea.hidden = false;
+      // set logout handler (already exists)
+    }, 320);
+  }
+
+  function onLogout() {
+    // visually revert everything
+    markAllButtonsGolden(false);
+    adminPanelArea.hidden = true;
+    adminLoginArea.hidden = false;
+    adminMessage.textContent = 'Logged out.';
+    // clear local auth state (we did not issue tokens in this step)
+    // keep lock-state as-is (do not clear failed lock records)
+    // close modal after small delay
+    setTimeout(() => closeModalWithFade(), 400);
+  }
+
+  // wire events
+  adminToggleBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    const state = readState();
+    if (state.lockUntil && Date.now() < state.lockUntil) {
+      const s = secondsRemaining(state.lockUntil);
+      // quick toast-style message inside page (fallback)
+      alert(`Admin locked. Try again in ${s}s.`);
+      return;
+    }
+    showModal();
+    adminUsername.focus();
+  });
+
+  adminCloseBtn.addEventListener('click', () => closeModalWithFade());
+
+  adminSubmitBtn.addEventListener('click', handleSubmit);
+
+  adminLogoutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    onLogout();
+  });
+
+  // press Enter to submit while inside modal fields
+  [adminUsername, adminPassword].forEach(el => {
+    if (!el) return;
+    el.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Enter') {
+        handleSubmit();
+      }
+    });
+  });
+
+  // on load — if user already logged in (we mark by presence of golden on body buttons), show panel
+  document.addEventListener('DOMContentLoaded', () => {
+    // if golden already applied (unlikely on first run) then open panel UI
+    const anyGolden = !!document.querySelector('button.golden');
+    if (anyGolden) {
+      adminPanelArea.hidden = false;
+      adminLoginArea.hidden = true;
+    }
+  });
+
+})();
