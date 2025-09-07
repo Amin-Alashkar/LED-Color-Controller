@@ -1,1 +1,3 @@
 
+from admin_system import app as admin_app
+app.mount("/admin", admin_app)
