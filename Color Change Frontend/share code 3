@@ -1,1 +1,147 @@
 
+/* ========== Admin styles ========== */
+
+/* golden button in card footer */
+.admin-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 12px 0 18px;
+}
+.admin-toggle {
+  background: linear-gradient(180deg,#ffd966,#ffb700);
+  border: 0;
+  color: #111;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(255,183,0,0.35), 0 2px 6px rgba(0,0,0,0.25);
+  cursor: pointer;
+  font-size: 16px;
+  letter-spacing: .2px;
+  transition: transform .18s ease, box-shadow .18s ease, filter .18s ease;
+}
+.admin-toggle:active { transform: translateY(1px) scale(.995); }
+.admin-toggle:hover { filter: brightness(1.03); }
+
+/* Modal backdrop + content */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none; /* toggled by JS */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  z-index: 2000;
+  padding: 20px;
+}
+.modal-backdrop.show {
+  display: flex;
+  animation: modalFadeIn .28s ease;
+}
+.modal-content {
+  width: 100%;
+  max-width: 520px;
+  background: linear-gradient(180deg,#0f0f0f,#121212);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 6px 20px rgba(0,0,0,0.4);
+  transform-origin: center;
+  opacity: 0;
+  transform: translateY(8px) scale(.995);
+  animation: modalPop .38s cubic-bezier(.2,.9,.3,1) forwards;
+}
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  background: transparent;
+  border: none;
+  color: #ddd;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+/* admin sections */
+.admin-section { margin-top: 6px; color: #eee; }
+.input-group { margin: 10px 0; display:flex; flex-direction:column; gap:6px; }
+.input-group input {
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.02);
+  color: #fff;
+  outline: none;
+}
+.input-group label { font-size: 13px; color: #ccc; }
+
+/* submit + admin messages */
+.submit-btn {
+  background: linear-gradient(180deg,#ffd966,#ffb700);
+  color: #111;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+}
+.admin-message { color: #ffcccb; margin-top: 10px; min-height: 18px; }
+
+/* admin control panel */
+.admin-welcome {
+  color: #ffda6b;
+  text-align: center;
+  margin: 6px 0 12px;
+  text-shadow: 0 6px 28px rgba(255, 200, 20, 0.18), 0 2px 6px rgba(0,0,0,0.5);
+  font-weight: 800;
+}
+.admin-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 8px;
+}
+.ctrl-btn {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: linear-gradient(180deg,#2b2b2b,#1b1b1b);
+  color: #eee;
+  border: 1px solid rgba(255,255,255,0.03);
+  cursor: pointer;
+  min-width: 110px;
+  font-weight: 700;
+}
+
+/* golden theme applied on success */
+button.golden, .ctrl-btn.golden {
+  background: linear-gradient(180deg,#ffd966,#ffb700) !important;
+  color: #111 !important;
+  box-shadow: 0 8px 28px rgba(255,183,0,0.28) !important;
+}
+
+/* Logout button style */
+.ctrl-btn.logout { background: linear-gradient(180deg,#b30000,#7a0000); color: #fff; }
+
+/* animations */
+@keyframes modalFadeIn {
+  from { opacity: 0; } to { opacity: 1; }
+}
+@keyframes modalPop {
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* nice fade-out when closing modal */
+.modal-content.fade-out {
+  animation: modalFadeOut .28s ease forwards;
+}
+@keyframes modalFadeOut {
+  to { opacity: 0; transform: translateY(10px) scale(.985); }
+}
+
+/* small responsive tweaks */
+@media (max-width:520px) {
+  .modal-content { padding: 14px; max-width: 92%; }
+  .admin-toggle { width: 100%; }
+}
