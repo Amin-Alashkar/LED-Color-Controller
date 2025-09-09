@@ -7,7 +7,7 @@ data = {"hex_color": "#000000"}
 
 try:
     res = requests.post(url, json=data, timeout=5)
-    print(f"Request sent at 5:00 AM, status: {res.status_code}, response: {res.text}")
+    print(f"Request sent at 5:00 PM, status: {res.status_code}, response: {res.text}")
 except Exception as e:
     print(f"Error sending request: {e}")
 
