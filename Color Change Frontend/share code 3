@@ -1,14 +1,11 @@
-from fastapi import FastAPI, Request, Form, Depends
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.sessions import SessionMiddleware
+@app.get("/admin_login", response_class=HTMLResponse)
+async def get_login(request: Request):
+    return templates.TemplateResponse("admin_login.html", {"request": request})
 
-app = FastAPI()
-
-# Templates
-templates = Jinja2Templates(directory="templates")
-app.add_middleware(SessionMiddleware, secret_key="TG_secret_key")
-
-# Static files (css, js)
-app.mount("/static", StaticFiles(directory="static"), name="static")
+@app.post("/admin_login")
+async def post_login(request: Request, username: str = Form(...), password: str = Form(...)):
+    if username == "adminsystem" and password == "RoomB107":
+        request.session["is_admin"] = True
+        return RedirectResponse(url="/admin_page", status_code=302)
+    else:
+        return HTMLResponse("⚠️ Wrong credentials!")
