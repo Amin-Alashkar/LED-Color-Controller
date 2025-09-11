@@ -1,4 +1,29 @@
-@app.get("/admin_logout")
+from fastapi import APIRouter, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.templating import Jinja2Templates
+
+router = APIRouter()
+templates = Jinja2Templates(directory="templates")
+
+# صفحة تسجيل دخول الادمن
+@router.get("/admin_login", response_class=HTMLResponse)
+async def get_login(request: Request):
+    return templates.TemplateResponse("admin_login.html", {"request": request})
+
+@router.post("/admin_login")
+async def post_login(request: Request, username: str = Form(...), password: str = Form(...)):
+    if username == "adminsystem" and password == "RoomB107":
+        request.session["is_admin"] = True
+        return RedirectResponse(url="/admin_page", status_code=302)
+    return HTMLResponse("⚠️ Wrong credentials!")
+
+@router.get("/admin_page", response_class=HTMLResponse)
+async def admin_page(request: Request):
+    if not request.session.get("is_admin"):
+        return RedirectResponse(url="/admin_login")
+    return templates.TemplateResponse("admin.html", {"request": request, "is_admin": True})
+
+@router.get("/admin_logout")
 async def admin_logout(request: Request):
     request.session.pop("is_admin", None)
     return RedirectResponse(url="/admin_login")
