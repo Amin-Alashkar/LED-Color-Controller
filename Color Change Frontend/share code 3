@@ -1,5 +1,4 @@
-@app.get("/admin_page", response_class=HTMLResponse)
-async def admin_page(request: Request):
-    if not request.session.get("is_admin"):
-        return RedirectResponse(url="/admin_login")
-    return templates.TemplateResponse("admin.html", {"request": request, "is_admin": True})
+@app.get("/admin_logout")
+async def admin_logout(request: Request):
+    request.session.pop("is_admin", None)
+    return RedirectResponse(url="/admin_login")
