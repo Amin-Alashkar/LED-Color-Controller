@@ -1,1 +1,15 @@
 
+<!-- داخل .card أسفل العناصر -->
+<button id="openAdminBtn" class="admin-key-btn">🔑 Admin</button>
+
+<!-- إضافة modal بسيطة -->
+<div id="adminModal" class="admin-modal" style="display:none;">
+  <div class="admin-modal-inner">
+    <h3>Admin login</h3>
+    <input id="adminUser" placeholder="username">
+    <input id="adminPass" placeholder="password" type="password">
+    <button id="adminLoginBtn">Login</button>
+    <button id="adminLogoutBtn" style="display:none;">Logout</button>
+    <div id="adminMsg"></div>
+  </div>
+</div>
