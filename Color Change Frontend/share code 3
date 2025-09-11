@@ -1,15 +1,175 @@
+// admin_system.js (or append to app.js)
+const API = `http://${window.location.hostname}:8000`;
+const openAdminBtn = document.getElementById('openAdminBtn');
+const adminModal = document.getElementById('adminModal');
+const adminLoginBtn = document.getElementById('adminLoginBtn');
+const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+const adminMsg = document.getElementById('adminMsg');
 
-<!-- داخل .card أسفل العناصر -->
-<button id="openAdminBtn" class="admin-key-btn">🔑 Admin</button>
+function showAdminModal() {
+  adminModal.style.display = 'block';
+}
+function hideAdminModal() {
+  adminModal.style.display = 'none';
+}
 
-<!-- إضافة modal بسيطة -->
-<div id="adminModal" class="admin-modal" style="display:none;">
-  <div class="admin-modal-inner">
-    <h3>Admin login</h3>
-    <input id="adminUser" placeholder="username">
-    <input id="adminPass" placeholder="password" type="password">
-    <button id="adminLoginBtn">Login</button>
-    <button id="adminLogoutBtn" style="display:none;">Logout</button>
-    <div id="adminMsg"></div>
-  </div>
-</div>
+openAdminBtn?.addEventListener('click', showAdminModal);
+
+adminLoginBtn?.addEventListener('click', async () => {
+  const username = document.getElementById('adminUser').value;
+  const password = document.getElementById('adminPass').value;
+  try {
+    const res = await fetch(`${API}/admin/login`, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+    if (data.is_admin && data.token) {
+      localStorage.setItem('admin_token', data.token);
+      adminMsg.textContent = 'Welcome Admin ✨';
+      adminLoginBtn.style.display = 'none';
+      adminLogoutBtn.style.display = 'inline-block';
+      // طلب لعرض لوحة الادمن
+      await loadAdminControls();
+    } else {
+      adminMsg.textContent = data.message || 'Login failed';
+    }
+  } catch (err) {
+    adminMsg.textContent = 'Network error';
+    console.error(err);
+  }
+});
+
+adminLogoutBtn?.addEventListener('click', async () => {
+  const token = localStorage.getItem('admin_token');
+  if (!token) return;
+  await fetch(`${API}/admin/logout`, {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ token })
+  });
+  localStorage.removeItem('admin_token');
+  adminMsg.textContent = 'Logged out';
+  adminLoginBtn.style.display = 'inline-block';
+  adminLogoutBtn.style.display = 'none';
+  // hide admin controls in UI
+  removeAdminUI();
+});
+
+async function loadAdminControls() {
+  const token = localStorage.getItem('admin_token');
+  if (!token) return;
+  // احصل على حالة الادمن (ويجلب أزرار التحكم)
+  const res = await fetch(`${API}/admin/buttons`, {
+    method: 'GET',
+    headers: {'Authorization': `Bearer ${token}`}
+  });
+  if (!res.ok) {
+    adminMsg.textContent = 'Unauthorized';
+    return;
+  }
+  const data = await res.json();
+  // هنا تخلق UI للأزرار في الصفحة (مثال بسيط)
+  const ctrlContainer = document.createElement('div');
+  ctrlContainer.id = 'adminControls';
+  ctrlContainer.style.borderTop = '1px solid #ccc';
+  ctrlContainer.style.paddingTop = '10px';
+
+  (data.control_buttons || []).forEach(btn => {
+    const b = document.createElement('button');
+    b.id = btn.id;
+    b.textContent = btn.label;
+    b.classList.add('admin-control-btn');
+    // مثال: زر تجميد الأزرار
+    if (btn.id === 'admin_freeze') {
+      b.addEventListener('click', async () => {
+        // freeze redBtn كمثال
+        await toggleFreeze('redBtn', true);
+      });
+    }
+    if (btn.id === 'logout') {
+      b.addEventListener('click', async () => {
+        adminLogoutBtn.click();
+      });
+    }
+    ctrlContainer.appendChild(b);
+  });
+
+  // إضافة للـ card
+  document.querySelector('.card').appendChild(ctrlContainer);
+
+  // وضع حالات التجمد إن وُجدت
+  applyButtonStates(data.button_states || {});
+}
+
+async function toggleFreeze(buttonId, freeze) {
+  const token = localStorage.getItem('admin_token');
+  if (!token) return;
+  const res = await fetch(`${API}/admin/freeze`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ button_id: buttonId, freeze })
+  });
+  const data = await res.json();
+  // حدث الـ UI تبع الزر
+  if (data.ok) {
+    const btn = document.getElementById(buttonId);
+    if (btn) {
+      btn.disabled = data.state.frozen === true;
+      if (data.state.frozen) {
+        btn.style.background = 'gold';
+        btn.title = `Locked by admin ${data.state.frozen_by || ''}`;
+      } else {
+        btn.style.background = '';
+        btn.title = '';
+      }
+    }
+  }
+}
+
+function applyButtonStates(states) {
+  Object.keys(states).forEach(id => {
+    const s = states[id];
+    const btn = document.getElementById(id);
+    if (!btn) return;
+    if (s.frozen) {
+      btn.disabled = true;
+      btn.style.background = 'gold';
+      btn.title = `Locked by admin ${s.frozen_by || ''}`;
+    } else {
+      btn.disabled = false;
+      btn.style.background = '';
+      btn.title = '';
+    }
+  });
+}
+
+function removeAdminUI() {
+  const el = document.getElementById('adminControls');
+  if (el) el.remove();
+  // reset button styles
+  document.querySelectorAll('.button-container button').forEach(b => {
+    b.disabled = false;
+    b.style.background = '';
+    b.title = '';
+  });
+}
+
+// on load: if token exists try to load controls
+document.addEventListener('DOMContentLoaded', async () => {
+  const token = localStorage.getItem('admin_token');
+  if (token) {
+    try {
+      await loadAdminControls();
+      adminLoginBtn.style.display = 'none';
+      adminLogoutBtn.style.display = 'inline-block';
+    } catch (e) {
+      console.warn('Admin token invalid', e);
+      localStorage.removeItem('admin_token');
+    }
+  }
+});
