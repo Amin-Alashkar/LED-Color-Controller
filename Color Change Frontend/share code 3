@@ -1,1 +1,99 @@
 
+// --- auth helpers ---
+function getToken() {
+    return localStorage.getItem('access_token');
+}
+function setToken(token) {
+    if (token) localStorage.setItem('access_token', token);
+    else localStorage.removeItem('access_token');
+}
+function isAdmin() {
+    // we can store role on login if backend returns it
+    return localStorage.getItem('role') === 'admin';
+}
+
+// تحديث sendRequest ليضيف Authorization header اذا موجود
+async function sendRequest(endpoint, data) {
+    try {
+        const headers = { "Content-Type": "application/json" };
+        const token = getToken();
+        if (token) headers["Authorization"] = `Bearer ${token}`;
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(data)
+        });
+        return await res.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        return { status: "error", message: e.message };
+    }
+}
+
+// --- login / logout UI ---
+const loginBtn = document.getElementById('loginBtn');
+const logoutBtn = document.getElementById('logoutBtn');
+const loginModal = document.getElementById('loginModal');
+const loginSubmit = document.getElementById('loginSubmit');
+const loginCancel = document.getElementById('loginCancel');
+const loginError = document.getElementById('loginError');
+
+loginBtn.addEventListener('click', () => {
+    loginModal.style.display = 'flex';
+});
+loginCancel.addEventListener('click', () => {
+    loginModal.style.display = 'none';
+    loginError.style.display = 'none';
+});
+loginSubmit.addEventListener('click', async () => {
+    const username = document.getElementById('loginUsername').value;
+    const password = document.getElementById('loginPassword').value;
+    try {
+        const res = await fetch(`${API_BASE_URL}/login`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ username, password })
+        });
+        if (!res.ok) {
+            loginError.textContent = 'Invalid credentials';
+            loginError.style.display = 'block';
+            return;
+        }
+        const data = await res.json();
+        setToken(data.access_token);
+        if (data.role) localStorage.setItem('role', data.role);
+        loginModal.style.display = 'none';
+        loginError.style.display = 'none';
+        updateAdminUI();
+    } catch (err) {
+        loginError.textContent = 'Login failed';
+        loginError.style.display = 'block';
+    }
+});
+
+logoutBtn.addEventListener('click', () => {
+    setToken(null);
+    localStorage.removeItem('role');
+    updateAdminUI();
+});
+
+// show/hide admin-only items
+function updateAdminUI() {
+    const token = getToken();
+    const adminEls = document.querySelectorAll('.admin-only');
+    if (token && isAdmin()) {
+        adminEls.forEach(el => el.style.display = '');
+        loginBtn.style.display = 'none';
+        logoutBtn.style.display = '';
+    } else {
+        adminEls.forEach(el => el.style.display = 'none');
+        loginBtn.style.display = '';
+        logoutBtn.style.display = 'none';
+    }
+}
+
+// call on load
+document.addEventListener('DOMContentLoaded', () => {
+    updateAdminUI();
+    // existing: fetch state, SSE init, etc.
+});
