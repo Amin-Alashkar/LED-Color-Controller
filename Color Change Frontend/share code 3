@@ -1,1 +1,100 @@
 
+# --- auth additions for server.py ---
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
+from passlib.context import CryptContext
+from jose import JWTError, jwt
+import sqlite3
+from typing import Optional
+from datetime import datetime, timedelta
+
+# config (غير SECRET_KEY قبل الإنتاج)
+SECRET_KEY = "change_this_to_a_long_random_secret"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24  # 1 day
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+# init simple sqlite users (file: users.db)
+def init_db():
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("""CREATE TABLE IF NOT EXISTS users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT UNIQUE,
+                    hashed_password TEXT,
+                    role TEXT
+                )""")
+    # create default admin if not exists (username: admin / password: admin123) — غيّرها فوراً
+    try:
+        c.execute("INSERT INTO users (username, hashed_password, role) VALUES (?, ?, ?)",
+                  ("admin", pwd_context.hash("admin123"), "admin"))
+    except sqlite3.IntegrityError:
+        pass
+    conn.commit()
+    conn.close()
+
+init_db()
+
+# helper DB functions
+def get_user_by_username(username: str) -> Optional[dict]:
+    conn = sqlite3.connect("users.db")
+    c = conn.cursor()
+    c.execute("SELECT id, username, hashed_password, role FROM users WHERE username = ?", (username,))
+    row = c.fetchone()
+    conn.close()
+    if not row:
+        return None
+    return {"id": row[0], "username": row[1], "hashed_password": row[2], "role": row[3]}
+
+def verify_password(plain, hashed):
+    return pwd_context.verify(plain, hashed)
+
+def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
+    to_encode = data.copy()
+    if expires_delta:
+        expire = datetime.utcnow() + expires_delta
+    else:
+        expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire})
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+# dependency: get current user from token
+async def get_current_user(token: str = Depends(oauth2_scheme)):
+    credentials_exception = HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    user = get_user_by_username(username)
+    if user is None:
+        raise credentials_exception
+    return user
+
+# dependency: require admin
+async def get_current_admin(user: dict = Depends(get_current_user)):
+    if user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return user
+
+# login endpoint (returns token)
+from pydantic import BaseModel
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+
+@app.post("/login")
+async def login(req: LoginRequest):
+    user = get_user_by_username(req.username)
+    if not user or not verify_password(req.password, user["hashed_password"]):
+        raise HTTPException(status_code=401, detail="Invalid username or password")
+    access_token = create_access_token(data={"sub": user["username"]})
+    return {"access_token": access_token, "token_type": "bearer", "role": user["role"]}
