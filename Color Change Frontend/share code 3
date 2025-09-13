@@ -1,1 +1,3 @@
 
+<!-- داخل قسم Buttons -->
+<button class="admin-only" id="someAdminBtn">Admin Only Action</button>
