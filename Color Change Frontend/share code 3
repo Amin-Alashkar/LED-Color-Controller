@@ -18,16 +18,16 @@ async def single_snake_loop():
 
     while not stop_requested:
         # طول الشهاب
-        trail_length = random.randint(10, 35)
+        trail_length = random.randint(15, 40 )
 
         # اختيار لون
         color = random.choice(colors)
 
         # وقت الحركة من البداية للنهاية
-        travel_time = random.uniform(2, 5)
+        travel_time = random.uniform(3, 5)
 
         # انتظار عشوائي قبل البداية
-        wait_time = random.uniform(0, 5)
+        wait_time = random.uniform(5, 20)
         await asyncio.sleep(wait_time)
 
         start_time = asyncio.get_event_loop().time()
