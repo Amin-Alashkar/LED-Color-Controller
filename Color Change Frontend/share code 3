@@ -2,9 +2,9 @@ async def single_snake_loop():
     """
     إنيميشن شهاب محسّن:
     - يتحرك بسرعات متغيرة باستخدام sine (تسارع + تباطؤ)
-    - طول الشهاب عشوائي (10 إلى 35)
+    - طول الشهاب عشوائي (15 إلى 40)
     - يختار من 10 ألوان (نصها فاتح، نصها غامق)
-    - يستغرق وقت عشوائي (2 إلى 5 ثواني) من البداية للنهاية
+    - يستغرق وقت عشوائي (3 إلى 5 ثواني) من البداية للنهاية
     """
 
     global stop_requested
@@ -18,7 +18,7 @@ async def single_snake_loop():
 
     while not stop_requested:
         # طول الشهاب
-        trail_length = random.randint(15, 40 )
+        trail_length = random.randint(15, 40)
 
         # اختيار لون
         color = random.choice(colors)
@@ -49,7 +49,7 @@ async def single_snake_loop():
             for t in range(trail_length):
                 led_pos = head_pos - t
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = (trail_length - t) / trail_length
+                    factor = 1 - (t / trail_length)  # الرأس ساطع، الذيل أضعف
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
