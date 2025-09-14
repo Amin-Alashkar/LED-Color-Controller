@@ -1,14 +1,10 @@
 for t in range(trail_length):
     led_pos = head_pos - t
     if 0 <= led_pos < NUM_LEDS:
-        # الذيل يتدرج 1 → 0
-        tail_factor = 1 - (t / trail_length)
-
-        # الرأس دايمًا boost أعلى (حتى مع fade-in)
-        if t == 0:
-            factor = tail_factor * brightness_boost * 1.5
-        else:
-            factor = tail_factor * brightness_boost * 0.9
+        # الرأس = factor 1 دائمًا
+        factor = 1 - (t / trail_length)
+        # fade-in للبداية
+        factor *= min(1.0, elapsed / 0.5)  
 
         r = int(color[0] * factor)
         g = int(color[1] * factor)
