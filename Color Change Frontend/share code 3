@@ -1,33 +1,40 @@
-async def single_snake_loop():
+async def single_snake_time_warp_loop():
     """
-    إنيميشن الأفعى السريعة جداً:
-    - تمشي من LED 150 إلى 0 خلال 3 ثواني فقط
-    - طولها 40 LED
-    - تنتظر وقت عشوائي من 0 إلى 10 ثواني قبل أن تبدأ مرة ثانية
+    إنيميشن الشهاب بستايل Time Warp:
+    - يتحرك من نهاية الشريط للبداية
+    - يبدأ ببطء ثم يسرع ويتباطأ
+    - السرعة عشوائية لكل تشغيل
+    - طول الشهاب 40 LED
     """
     global stop_requested
     trail_length = 40
-    delay_per_step = 3 / (NUM_LEDS + trail_length)  # تقريبًا 0.0157 ثانية
 
     while not stop_requested:
-        wait_time = random.uniform(0, 10)  # بدل 30، خليناه من 0 إلى 10
-        await asyncio.sleep(wait_time)
-        
+        # اختيار اللون العشوائي
         color = (
             random.randint(100, 255),
             random.randint(100, 255),
             random.randint(100, 255)
         )
-        
+
+        # اختيار سرعة عشوائية لكل run (يعطي variation)
+        max_speed = random.uniform(0.005, 0.02)
+        min_speed = random.uniform(0.05, 0.15)
+
+        # وقت انتظار قبل البداية
+        wait_time = random.uniform(0, 10)
+        await asyncio.sleep(wait_time)
+
+        t = 0
         for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
             if stop_requested:
                 break
-            
+
             neo.clear_strip()
-            for t in range(trail_length):
-                led_pos = head_pos + t
+            for t_pos in range(trail_length):
+                led_pos = head_pos + t_pos
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = (trail_length - t) / trail_length
+                    factor = (trail_length - t_pos) / trail_length
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
@@ -37,9 +44,12 @@ async def single_snake_loop():
                         int(g * BRIGHTNESS_SCALE),
                         int(b * BRIGHTNESS_SCALE)
                     )
-            
-            neo.update_strip()
-            # await asyncio.sleep(delay_per_step)
 
-    neo.clear_strip()
-    neo.update_strip()
+            neo.update_strip()
+
+            # حساب السرعة مثل الـ Time Warp
+            speed_factor = (math.sin(t) + 1) / 2  # بين 0 و 1
+            current_delay = max_speed + (1 - speed_factor) * (min_speed - max_speed)
+            
+            await asyncio.sleep(current_delay)
+            t += 0.15
