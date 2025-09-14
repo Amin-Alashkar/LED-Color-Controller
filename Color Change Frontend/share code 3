@@ -1,42 +1,55 @@
 async def single_snake_loop():
     """
-    إنيميشن الشهاب بستايل Time Warp مع طول عشوائي:
-    - يتحرك من نهاية الشريط للبداية
-    - طول الشهاب عشوائي بين 10 و 35 LED
-    - يبدأ ببطء ثم يسرع ويتباطأ بشكل سلس
-    - سرعة الحركة عشوائية لكل شهاب
+    إنيميشن شهاب محسّن:
+    - يتحرك بسرعات متغيرة باستخدام sine (تسارع + تباطؤ)
+    - طول الشهاب عشوائي (10 إلى 35)
+    - يختار من 10 ألوان (نصها فاتح، نصها غامق)
+    - يستغرق وقت عشوائي (2 إلى 5 ثواني) من البداية للنهاية
     """
+
     global stop_requested
 
+    colors = [
+        (200, 50, 50), (50, 200, 50), (50, 50, 200),  # فاتحة
+        (200, 200, 50), (50, 200, 200),
+        (100, 20, 20), (20, 100, 20), (20, 20, 100),  # غامقة
+        (100, 100, 30), (30, 100, 100)
+    ]
+
     while not stop_requested:
-        # طول الشهاب عشوائي
+        # طول الشهاب
         trail_length = random.randint(10, 35)
 
-        # لون الشهاب عشوائي
-        color = (
-            random.randint(100, 255),
-            random.randint(100, 255),
-            random.randint(100, 255)
-        )
+        # اختيار لون
+        color = random.choice(colors)
 
-        # اختيار سرعة عشوائية لكل شهاب
-        max_speed = random.uniform(0.005, 0.02)
-        min_speed = random.uniform(0.05, 0.15)
+        # وقت الحركة من البداية للنهاية
+        travel_time = random.uniform(2, 5)
 
-        # وقت انتظار عشوائي قبل البداية
-        wait_time = random.uniform(0, 10)
+        # انتظار عشوائي قبل البداية
+        wait_time = random.uniform(0, 5)
         await asyncio.sleep(wait_time)
 
-        t = 0
-        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
-            if stop_requested:
+        start_time = asyncio.get_event_loop().time()
+
+        while not stop_requested:
+            elapsed = asyncio.get_event_loop().time() - start_time
+            progress = elapsed / travel_time  # من 0 إلى 1
+
+            if progress >= 1:
                 break
 
+            # curve: يبدأ ببطء → يتسارع → يتباطأ
+            eased_progress = (1 - math.cos(progress * math.pi)) / 2
+
+            # موقع الرأس
+            head_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length))
+
             neo.clear_strip()
-            for t_pos in range(trail_length):
-                led_pos = head_pos + t_pos
+            for t in range(trail_length):
+                led_pos = head_pos - t
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = (trail_length - t_pos) / trail_length
+                    factor = (trail_length - t) / trail_length
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
@@ -48,10 +61,8 @@ async def single_snake_loop():
                     )
 
             neo.update_strip()
+            await asyncio.sleep(0.01)
 
-            # السرعة المتغيرة مثل Time Warp
-            speed_factor = (math.sin(t) + 1) / 2  # بين 0 و 1
-            current_delay = max_speed + (1 - speed_factor) * (min_speed - max_speed)
-
-            await asyncio.sleep(current_delay)
-            t += 0.15
+        # نهاية الشهاب: تنظيف
+        neo.clear_strip()
+        neo.update_strip()
