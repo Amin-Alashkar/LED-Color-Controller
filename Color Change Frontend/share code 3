@@ -1,27 +1,29 @@
-async def single_snake_time_warp_loop():
+async def single_snake_loop():
     """
-    إنيميشن الشهاب بستايل Time Warp:
+    إنيميشن الشهاب بستايل Time Warp مع طول عشوائي:
     - يتحرك من نهاية الشريط للبداية
-    - يبدأ ببطء ثم يسرع ويتباطأ
-    - السرعة عشوائية لكل تشغيل
-    - طول الشهاب 40 LED
+    - طول الشهاب عشوائي بين 10 و 35 LED
+    - يبدأ ببطء ثم يسرع ويتباطأ بشكل سلس
+    - سرعة الحركة عشوائية لكل شهاب
     """
     global stop_requested
-    trail_length = 40
 
     while not stop_requested:
-        # اختيار اللون العشوائي
+        # طول الشهاب عشوائي
+        trail_length = random.randint(10, 35)
+
+        # لون الشهاب عشوائي
         color = (
             random.randint(100, 255),
             random.randint(100, 255),
             random.randint(100, 255)
         )
 
-        # اختيار سرعة عشوائية لكل run (يعطي variation)
+        # اختيار سرعة عشوائية لكل شهاب
         max_speed = random.uniform(0.005, 0.02)
         min_speed = random.uniform(0.05, 0.15)
 
-        # وقت انتظار قبل البداية
+        # وقت انتظار عشوائي قبل البداية
         wait_time = random.uniform(0, 10)
         await asyncio.sleep(wait_time)
 
@@ -47,9 +49,9 @@ async def single_snake_time_warp_loop():
 
             neo.update_strip()
 
-            # حساب السرعة مثل الـ Time Warp
+            # السرعة المتغيرة مثل Time Warp
             speed_factor = (math.sin(t) + 1) / 2  # بين 0 و 1
             current_delay = max_speed + (1 - speed_factor) * (min_speed - max_speed)
-            
+
             await asyncio.sleep(current_delay)
             t += 0.15
