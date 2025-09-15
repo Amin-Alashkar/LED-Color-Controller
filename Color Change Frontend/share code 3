@@ -3,8 +3,7 @@ async def single_snake_loop():
     إنيميشن شهاب محسّن:
     - الرأس هو الأشد سطوعًا
     - الذيل يبهت تدريجيًا
-    - يظهر تدريجيًا من الرأس
-    - يختفي تدريجيًا من الذيل
+    - يظهر تدريجيًا من الرأس ويختفي تدريجيًا من الذيل
     - تسارع/تباطؤ باستخدام sine
     - طول عشوائي (15-40)
     - ألوان متنوعة (فاتح وغامق)
@@ -32,20 +31,27 @@ async def single_snake_loop():
         while not stop_requested:
             elapsed = asyncio.get_event_loop().time() - start_time
             progress = elapsed / travel_time
-            if progress >= 1:
+
+            if progress > 1.2:  # نترك وقت للذيل يختفي بعد الرأس
                 break
 
             # curve: بطيء → سريع → بطيء
-            eased_progress = (1 - math.cos(progress * math.pi)) / 2
+            eased_progress = (1 - math.cos(min(progress, 1) * math.pi)) / 2
 
-            # الرأس يبدأ من خارج الشريط (-trail_length) ويمشي للنهاية (NUM_LEDS)
-            head_pos = int(-trail_length + eased_progress * (NUM_LEDS + trail_length))
+            # موقع الرأس
+            head_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length))
 
             neo.clear_strip()
             for t in range(trail_length):
-                led_pos = head_pos - t  # الرأس أولاً ثم الذيل وراءه
+                led_pos = head_pos + t
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = 1 - (t / trail_length)  # الرأس = أوضح، الذيل يتلاشى
+                    # الرأس ساطع، الذيل يخفت تدريجيًا
+                    factor = 1 - (t / trail_length)
+
+                    # fade-in بالبداية
+                    if progress < 0.05:  # أول 5% من الحركة
+                        factor *= progress / 0.05
+
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
@@ -60,5 +66,6 @@ async def single_snake_loop():
             neo.update_strip()
             await asyncio.sleep(0.01)
 
+        # تنظيف بالنهاية
         neo.clear_strip()
         neo.update_strip()
