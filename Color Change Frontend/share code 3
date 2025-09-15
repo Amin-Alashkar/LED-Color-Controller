@@ -1,8 +1,67 @@
-while not stop_requested:
-    elapsed = asyncio.get_event_loop().time() - start_time
-    progress = elapsed / travel_time
-    # نهاية الذيل = الرأس + طول الشهاب
-    tail_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length) + trail_length)
-    
-    if tail_pos < 0:  # كله خرج من الشريط
-        break
+async def single_snake_loop():
+    """
+    إنيميشن شهاب محسّن:
+    - الرأس هو الأشد سطوعًا
+    - الذيل يبهت تدريجيًا
+    - تسارع/تباطؤ باستخدام sine
+    - طول عشوائي (15-40)
+    - ألوان متنوعة (فاتح وغامق)
+    """
+
+    global stop_requested
+
+    colors = [
+        (200, 50, 50), (50, 200, 50), (50, 50, 200),   # فاتحة
+        (200, 200, 50), (50, 200, 200),
+        (100, 20, 20), (20, 100, 20), (20, 20, 100),   # غامقة
+        (100, 100, 30), (30, 100, 100)
+    ]
+
+    while not stop_requested:
+        trail_length = random.randint(15, 40)
+        color = random.choice(colors)
+
+        travel_time = random.uniform(3, 5)
+        wait_time = random.uniform(5, 20)
+        await asyncio.sleep(wait_time)
+
+        start_time = asyncio.get_event_loop().time()
+
+        while not stop_requested:
+            elapsed = asyncio.get_event_loop().time() - start_time
+            progress = elapsed / travel_time
+            if progress >= 1:
+                break
+
+            # curve: بطيء → سريع → بطيء
+            eased_progress = (1 - math.cos(progress * math.pi)) / 2
+
+            # موقع الرأس
+            head_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length))
+
+            # fade-in تدريجي بالبداية
+            brightness_boost = min(1.0, elapsed / 0.5)  # أول نص ثانية يتدرج
+
+            neo.clear_strip()
+            for t in range(trail_length):
+                led_pos = head_pos + t  # بدل head_pos - t
+                if 0 <= led_pos < NUM_LEDS:
+                    factor = 1 - (t / trail_length)  # الرأس = أعلى سطوع
+                    factor *= min(1.0, elapsed / 0.5)  # fade-in بالبداية
+
+                    r = int(color[0] * factor)
+                    g = int(color[1] * factor)
+                    b = int(color[2] * factor)
+
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+
+            neo.update_strip()
+            await asyncio.sleep(0.01)
+
+        neo.clear_strip()
+        neo.update_strip()
