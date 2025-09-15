@@ -607,51 +607,87 @@ async def meteor_shower_modified_loop():
     neo.clear_strip()
     neo.update_strip()
 
+
 async def single_snake_loop():
     """
-    إنيميشن الأفعى السريعة جداً:
-    - تمشي من LED 150 إلى 0 خلال 3 ثواني فقط
-    - طولها 40 LED
-    - تنتظر وقت عشوائي من 0 إلى 10 ثواني قبل أن تبدأ مرة ثانية
+    إنيميشن شهاب محسّن:
+    - الرأس هو الأشد سطوعًا
+    - الذيل يبهت تدريجيًا
+    - يظهر تدريجيًا من الرأس
+    - يختفي تدريجيًا من الذيل
+    - تسارع/تباطؤ باستخدام sine
+    - طول عشوائي (15-40)
+    - ألوان متنوعة (فاتح وغامق)
+    - يستمر في الظهور حتى يتم الإيقاف
     """
+
     global stop_requested
-    trail_length = 40
-    delay_per_step = 3 / (NUM_LEDS + trail_length)  # تقريبًا 0.0157 ثانية
+
+    colors = [
+        (200, 50, 50), (50, 200, 50), (50, 50, 200),   # فاتحة
+        (200, 200, 50), (50, 200, 200),
+        (100, 20, 20), (20, 100, 20), (20, 20, 100),   # غامقة
+        (100, 100, 30), (30, 100, 100)
+    ]
 
     while not stop_requested:
-        wait_time = random.uniform(0, 10)  # بدل 30، خليناه من 0 إلى 10
+        trail_length = random.randint(15, 40)
+        color = random.choice(colors)
+
+        travel_time = random.uniform(3, 5)
+        wait_time = random.uniform(5, 20)
+        
+        # انتظار عشوائي قبل بدء الشهاب التالي
         await asyncio.sleep(wait_time)
-        
-        color = (
-            random.randint(100, 255),
-            random.randint(100, 255),
-            random.randint(100, 255)
-        )
-        
-        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
-            if stop_requested:
+
+        start_time = asyncio.get_event_loop().time()
+
+        # تحريك الشهاب الحالي
+        while not stop_requested:
+            elapsed = asyncio.get_event_loop().time() - start_time
+            progress = elapsed / travel_time
+
+            if progress >= 1.0:
+                break  # انتهاء حركة الشهاب الحالي
+
+            # curve: بطيء → سريع → بطيء
+            eased_progress = (1 - math.cos(progress * math.pi)) / 2
+
+            # الرأس يبدأ من خارج الشريط (-trail_length) ويمشي لآخر LED
+            head_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length)) - trail_length
+
+            # إذا الذيل تخطى آخر LED → خلص
+            if head_pos > NUM_LEDS:
                 break
-            
+
             neo.clear_strip()
             for t in range(trail_length):
                 led_pos = head_pos + t
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = (trail_length - t) / trail_length
+                    factor = 1 - (t / trail_length)  # الرأس = أعلى سطوع
+                    
+                    # fade-in في البداية للشهاب الجديد فقط
+                    if elapsed < 0.5:
+                        factor *= min(1.0, elapsed / 0.5)
+
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
+
                     neo.set_led_color(
                         led_pos,
                         int(r * BRIGHTNESS_SCALE),
                         int(g * BRIGHTNESS_SCALE),
                         int(b * BRIGHTNESS_SCALE)
                     )
-            
-            neo.update_strip()
-            # await asyncio.sleep(delay_per_step)
 
-    neo.clear_strip()
-    neo.update_strip()
+            neo.update_strip()
+            await asyncio.sleep(0.01)
+
+        # تنظيف بعد انتهاء الشهاب
+        if not stop_requested:
+            neo.clear_strip()
+            neo.update_strip()
 
 async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 10):
     """
@@ -707,13 +743,16 @@ async def custom_blink_loop(hex_color: str, on_duration: float = 0.5, off_durati
     Blink a single hex_color on and off across all LEDs.
     """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
     
     while not stop_requested:
         for i in range(NUM_LEDS):
-            neo.set_led_color(i, r_base, g_base, b_base)
+            neo.set_led_color(i,
+                            int(r * BRIGHTNESS_SCALE),
+                            int(g * BRIGHTNESS_SCALE),
+                            int(b * BRIGHTNESS_SCALE) )
         neo.update_strip()
         await asyncio.sleep(on_duration)
         if stop_requested:
@@ -879,16 +918,19 @@ async def custom_glitch_flash_loop(hex_color: str, interval: float = 0.05):
     - No noticeable loop or pause – feels like it's always running.
     """
     global stop_requested
-    r_base = int(hex_color[1:3], 16)
-    g_base = int(hex_color[3:5], 16)
-    b_base = int(hex_color[5:7], 16)
+    r = int(hex_color[1:3], 16)
+    g = int(hex_color[3:5], 16)
+    b = int(hex_color[5:7], 16)
 
     while not stop_requested:
         for i in range(NUM_LEDS):
             if random.random() < 0.5:
                 neo.set_led_color(i, 0, 0, 0)
             else:
-                neo.set_led_color(i, r_base, g_base, b_base)
+                neo.set_led_color(i, 
+                                int(r * BRIGHTNESS_SCALE),
+                                int(g * BRIGHTNESS_SCALE),
+                                int(b * BRIGHTNESS_SCALE))
         neo.update_strip()
         await asyncio.sleep(interval)
 
@@ -1532,37 +1574,46 @@ async def custom_color_echo_loop(hex_color: str, delay: float = 0.05):
 
 async def custom_time_warp_loop(hex_color: str, base_delay: float = 0.05):
     """
-    Custom Time Warp:
-    - LEDs light up in chosen color with speeds that accelerate then decelerate.
+    Time Warp Enhanced:
+    - موجة لونية تمر بالشريط بسرعات تتسارع وتتبطأ بشكل سلس.
     """
     global stop_requested
     r_base = int(hex_color[1:3], 16)
     g_base = int(hex_color[3:5], 16)
     b_base = int(hex_color[5:7], 16)
+
     max_speed = 0.01
-    min_speed = 0.1
+    min_speed = 0.12
+    wave_size = 10  # حجم الموجة المضيئة
+    t = 0  # زمن وهمي
 
     while not stop_requested:
-        # Accelerate
-        current_delay = min_speed
-        while current_delay > max_speed and not stop_requested:
-            neo.clear_strip()
-            for i in range(NUM_LEDS):
-                neo.set_led_color(i, r_base, g_base, b_base)
-            neo.update_strip()
-            await asyncio.sleep(current_delay)
-            current_delay -= 0.005
-        # Decelerate
-        while current_delay < min_speed and not stop_requested:
-            neo.clear_strip()
-            for i in range(NUM_LEDS):
-                neo.set_led_color(i, r_base, g_base, b_base)
-            neo.update_strip()
-            await asyncio.sleep(current_delay)
-            current_delay += 0.005
+        neo.clear_strip()
+
+        # حساب السرعة باستخدام دالة ساين (يعطي تسارع وتباطؤ بشكل طبيعي)
+        # القيمة الناتجة تكون بين 0 و 1، نحولها إلى delay بين max و min
+        speed_factor = (math.sin(t) + 1) / 2  # بين 0 و 1
+        current_delay = max_speed + (1 - speed_factor) * (min_speed - max_speed)
+
+        # حساب مركز الموجة
+        center = int((math.sin(t * 0.7) + 1) / 2 * (NUM_LEDS - 1))  # يتحرك يمين ويسار
+
+        for i in range(NUM_LEDS):
+            distance = abs(i - center)
+            if distance <= wave_size:
+                fade = 1 - (distance / wave_size)
+                r = int(r_base * fade)
+                g = int(g_base * fade)
+                b = int(b_base * fade)
+                neo.set_led_color(i, r, g, b)
+
+        neo.update_strip()
+        await asyncio.sleep(current_delay)
+        t += 0.15  # كل تكرار يزيد الزمن
 
     neo.clear_strip()
     neo.update_strip()
+
 
 async def custom_quantum_flicker_loop(hex_color: str, interval: float = 0.02):
     """
