@@ -1,6 +1,6 @@
 async def single_snake_loop():
     """
-    إنيميشن شهاب محسّن:
+    إنيميشن شهاب محسّن (مستمر بلا نهاية):
     - الرأس هو الأشد سطوعًا
     - الذيل يبهت تدريجيًا
     - يظهر تدريجيًا من الرأس
@@ -25,6 +25,8 @@ async def single_snake_loop():
 
         travel_time = random.uniform(3, 5)
         wait_time = random.uniform(5, 20)
+
+        # انتظار عشوائي قبل شهاب جديد
         await asyncio.sleep(wait_time)
 
         start_time = asyncio.get_event_loop().time()
@@ -39,7 +41,7 @@ async def single_snake_loop():
             # الرأس يبدأ من خارج الشريط (-trail_length) ويمشي لآخر LED
             head_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length)) - trail_length
 
-            # إذا الذيل تخطى آخر LED → خلص
+            # إذا الذيل تخطى آخر LED → خلص هذا الشهاب
             if head_pos > NUM_LEDS:
                 break
 
@@ -64,6 +66,5 @@ async def single_snake_loop():
             neo.update_strip()
             await asyncio.sleep(0.01)
 
-        # نهاية الشهاب: تنظيف
-        neo.clear_strip()
-        neo.update_strip()
+        # مافي clear_strip هون ✅
+        # نخلي الذيل يختفي طبيعي، بعدين يبدأ شهاب جديد
