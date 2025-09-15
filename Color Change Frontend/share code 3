@@ -3,6 +3,8 @@ async def single_snake_loop():
     إنيميشن شهاب محسّن:
     - الرأس هو الأشد سطوعًا
     - الذيل يبهت تدريجيًا
+    - يظهر تدريجيًا من الرأس
+    - يختفي تدريجيًا من الذيل
     - تسارع/تباطؤ باستخدام sine
     - طول عشوائي (15-40)
     - ألوان متنوعة (فاتح وغامق)
@@ -36,19 +38,14 @@ async def single_snake_loop():
             # curve: بطيء → سريع → بطيء
             eased_progress = (1 - math.cos(progress * math.pi)) / 2
 
-            # موقع الرأس
-            head_pos = int((1 - eased_progress) * (NUM_LEDS - trail_length))
-
-            # fade-in تدريجي بالبداية
-            brightness_boost = min(1.0, elapsed / 0.5)  # أول نص ثانية يتدرج
+            # الرأس يبدأ من خارج الشريط (-trail_length) ويمشي للنهاية (NUM_LEDS)
+            head_pos = int(-trail_length + eased_progress * (NUM_LEDS + trail_length))
 
             neo.clear_strip()
             for t in range(trail_length):
-                led_pos = head_pos + t
+                led_pos = head_pos - t  # الرأس أولاً ثم الذيل وراءه
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = 1 - (t / trail_length)
-                    factor *= min(1.0, elapsed / 0.5)  # fade-in بالبداية
-
+                    factor = 1 - (t / trail_length)  # الرأس = أوضح، الذيل يتلاشى
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
