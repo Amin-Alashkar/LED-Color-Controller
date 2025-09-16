@@ -1,12 +1,15 @@
 # server.py
 
-import asyncio, threading, time, json, colorsys, random, math
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Form, HTTPException, status
 from pydantic import BaseModel
 from pi5neo import Pi5Neo
+import asyncio, random, threading, time, json, colorsys, math
 from collections import deque
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
+from fastapi.responses import RedirectResponse, HTMLResponse
+from starlette.middleware.sessions import SessionMiddleware
+
+
 
 
 NUM_LEDS = 150
@@ -32,10 +35,168 @@ current_anim: str | None = None
 class AnimationRequest(BaseModel):
     animation_type: str
     color_index: int = 0
-    hex_color: str | None = None   
-    
+    hex_color: str | None = None   # <-- we already need this
+
 class ColorRequest(BaseModel):
     hex_color: str
+
+
+
+
+app.add_middleware(SessionMiddleware, secret_key="your-very-secret-key-here")
+
+# Admin credentials
+ADMIN_USERNAME = "adminpanel"
+ADMIN_PASSWORD = "RoomB107"
+
+#global variables after ADMIN_USERNAME/ADMIN_PASSWORD
+login_attempts = {}
+lockout_times = {}
+login_lock = threading.Lock()
+
+
+# Track failed login attempts (in-memory, for production use Redis)
+failed_attempts = {}
+lockout_times = {}
+
+# Add to server.py
+@app.post("/reset")
+async def reset_system():
+    # Add your reset logic here
+    return {"status": "reset"}
+
+@app.post("/reboot")
+async def reboot_device():
+    # Add your reboot logic here
+    return {"status": "rebooting"}
+
+@app.post("/shutdown")
+async def shutdown_system():
+    # Add your shutdown logic here
+    return {"status": "shutting_down"}
+
+
+@app.get("/admin/dashboard", response_class=HTMLResponse)
+async def admin_dashboard(request: Request):
+    if not request.session.get("is_admin"):
+        return RedirectResponse(url="/admin/login")
+    
+    # Return the admin panel HTML directly
+    return 
+
+@app.post("/admin/stop")
+async def admin_stop(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    # Call regular stop endpoint
+    await stop_animation()
+    return {"message": "All LEDs turned off"}
+
+@app.post("/admin/reset")
+async def admin_reset(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    # Add your reset logic here
+    return {"message": "System reset complete"}
+
+@app.post("/admin/shutdown")
+async def admin_shutdown(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    # Add shutdown logic here
+    return {"message": "System shutdown initiated"}
+
+@app.post("/admin/reboot")
+async def admin_reboot(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    
+    # Add reboot logic here
+    return {"message": "System rebooting..."}
+
+@app.post("/admin/logout")
+async def admin_logout(request: Request):
+    request.session.clear()
+    return {"status": "success"}
+
+
+@app.post("/admin/login")
+async def admin_login(request: Request, 
+                     username: str = Form(...), 
+                     password: str = Form(...)):
+    ip = request.client.host
+    current_time = time.time()
+    
+    with login_lock:
+        # Check if IP is currently locked out
+        if ip in lockout_times and lockout_times[ip] > current_time:
+            remaining = int(lockout_times[ip] - current_time)
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Too many failed attempts. Please try again in {remaining} seconds."
+            )
+        
+        # Check credentials
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            # Reset failed attempts on successful login
+            if ip in login_attempts:
+                del login_attempts[ip]
+            if ip in lockout_times:
+                del lockout_times[ip]
+                
+            request.session["is_admin"] = True
+            # Return success status without redirect
+            return {"status": "success"}
+        else:
+            # Increment failed attempt count
+            login_attempts[ip] = login_attempts.get(ip, 0) + 1
+            attempt_count = login_attempts[ip]
+            
+            # Calculate lockout parameters
+            lockout_level = (attempt_count - 1) // 3
+            lockout_duration = (2 ** lockout_level) * 60  # in seconds
+            
+            # If reached a multiple of 3, set lockout
+            if attempt_count % 3 == 0:
+                lockout_times[ip] = current_time + lockout_duration
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=f"Too many failed attempts. Account locked for {lockout_duration} seconds."
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect username or password"
+                )
+@app.get("/admin/status")
+async def admin_status(request: Request):
+    return {"is_admin": request.session.get("is_admin", False)}
+
+
+
+@app.post("/admin/reset")
+async def admin_reset(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "System reset complete"}
+
+@app.post("/admin/reboot")
+async def admin_reboot(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "System rebooting..."}
+
+@app.post("/admin/shutdown")
+async def admin_shutdown(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "System shutdown initiated"}
+    
+
+
 
 async def light_up_one_by_one(color_index: int, delay: float = 0.011):
     global stop_requested
@@ -550,12 +711,6 @@ async def fireworks_burst_loop(delay: float = 0.05 / 10):  # 1000% أسرع
         neo.clear_strip()
         neo.update_strip()
 
-        # 4. انتظار عشوائي قبل إطلاق صاروخ جديد
-        wait_time = random.uniform(0.5, 10.0)
-        await asyncio.sleep(wait_time)
-
-    neo.clear_strip()
-    neo.update_strip()
 
 async def meteor_shower_modified_loop():
     """
@@ -607,87 +762,51 @@ async def meteor_shower_modified_loop():
     neo.clear_strip()
     neo.update_strip()
 
-
 async def single_snake_loop():
     """
-    إنيميشن شهاب محسّن:
-    - الرأس هو الأشد سطوعًا
-    - الذيل يبهت تدريجيًا
-    - يظهر تدريجيًا من الرأس
-    - يختفي تدريجيًا من الذيل
-    - تسارع/تباطؤ باستخدام sine
-    - طول عشوائي (15-40)
-    - ألوان متنوعة (فاتح وغامق)
-    - يستمر في الظهور حتى يتم الإيقاف
+    إنيميشن الأفعى السريعة جداً:
+    - تمشي من LED 150 إلى 0 خلال 3 ثواني فقط
+    - طولها 40 LED
+    - تنتظر وقت عشوائي من 0 إلى 10 ثواني قبل أن تبدأ مرة ثانية
     """
-
     global stop_requested
-
-    colors = [
-        (200, 50, 50), (50, 200, 50), (50, 50, 200),   # فاتحة
-        (200, 200, 50), (50, 200, 200),
-        (100, 20, 20), (20, 100, 20), (20, 20, 100),   # غامقة
-        (100, 100, 30), (30, 100, 100)
-    ]
+    trail_length = 40
+    delay_per_step = 3 / (NUM_LEDS + trail_length)  # تقريبًا 0.0157 ثانية
 
     while not stop_requested:
-        trail_length = random.randint(15, 40)
-        color = random.choice(colors)
-
-        travel_time = random.uniform(3, 5)
-        wait_time = random.uniform(5, 20)
-        
-        # انتظار عشوائي قبل بدء الشهاب التالي
+        wait_time = random.uniform(0, 10)  # بدل 30، خليناه من 0 إلى 10
         await asyncio.sleep(wait_time)
-
-        start_time = asyncio.get_event_loop().time()
-
-        # تحريك الشهاب الحالي
-        while not stop_requested:
-            elapsed = asyncio.get_event_loop().time() - start_time
-            progress = elapsed / travel_time
-
-            if progress >= 1.0:
-                break  # انتهاء حركة الشهاب الحالي
-
-            # curve: بطيء → سريع → بطيء
-            eased_progress = (1 - math.cos(progress * math.pi)) / 2
-
-            # الرأس يبدأ من خارج الشريط (-trail_length) ويمشي لآخر LED
-            head_pos = int((1 - eased_progress) * (NUM_LEDS + trail_length)) - trail_length
-
-            # إذا الذيل تخطى آخر LED → خلص
-            if head_pos > NUM_LEDS:
+        
+        color = (
+            random.randint(100, 255),
+            random.randint(100, 255),
+            random.randint(100, 255)
+        )
+        
+        for head_pos in range(NUM_LEDS - 1, -trail_length - 1, -1):
+            if stop_requested:
                 break
-
+            
             neo.clear_strip()
             for t in range(trail_length):
                 led_pos = head_pos + t
                 if 0 <= led_pos < NUM_LEDS:
-                    factor = 1 - (t / trail_length)  # الرأس = أعلى سطوع
-                    
-                    # fade-in في البداية للشهاب الجديد فقط
-                    if elapsed < 0.5:
-                        factor *= min(1.0, elapsed / 0.5)
-
+                    factor = (trail_length - t) / trail_length
                     r = int(color[0] * factor)
                     g = int(color[1] * factor)
                     b = int(color[2] * factor)
-
                     neo.set_led_color(
                         led_pos,
                         int(r * BRIGHTNESS_SCALE),
                         int(g * BRIGHTNESS_SCALE),
                         int(b * BRIGHTNESS_SCALE)
                     )
-
+            
             neo.update_strip()
-            await asyncio.sleep(0.01)
+            # await asyncio.sleep(delay_per_step)
 
-        # تنظيف بعد انتهاء الشهاب
-        if not stop_requested:
-            neo.clear_strip()
-            neo.update_strip()
+    neo.clear_strip()
+    neo.update_strip()
 
 async def custom_fade_loop(hex_color: str, delay: float = 0.02, steps: int = 10):
     """
@@ -743,16 +862,13 @@ async def custom_blink_loop(hex_color: str, on_duration: float = 0.5, off_durati
     Blink a single hex_color on and off across all LEDs.
     """
     global stop_requested
-    r = int(hex_color[1:3], 16)
-    g = int(hex_color[3:5], 16)
-    b = int(hex_color[5:7], 16)
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
     
     while not stop_requested:
         for i in range(NUM_LEDS):
-            neo.set_led_color(i,
-                            int(r * BRIGHTNESS_SCALE),
-                            int(g * BRIGHTNESS_SCALE),
-                            int(b * BRIGHTNESS_SCALE) )
+            neo.set_led_color(i, r_base, g_base, b_base)
         neo.update_strip()
         await asyncio.sleep(on_duration)
         if stop_requested:
@@ -918,19 +1034,16 @@ async def custom_glitch_flash_loop(hex_color: str, interval: float = 0.05):
     - No noticeable loop or pause – feels like it's always running.
     """
     global stop_requested
-    r = int(hex_color[1:3], 16)
-    g = int(hex_color[3:5], 16)
-    b = int(hex_color[5:7], 16)
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
 
     while not stop_requested:
         for i in range(NUM_LEDS):
             if random.random() < 0.5:
                 neo.set_led_color(i, 0, 0, 0)
             else:
-                neo.set_led_color(i, 
-                                int(r * BRIGHTNESS_SCALE),
-                                int(g * BRIGHTNESS_SCALE),
-                                int(b * BRIGHTNESS_SCALE))
+                neo.set_led_color(i, r_base, g_base, b_base)
         neo.update_strip()
         await asyncio.sleep(interval)
 
@@ -1614,7 +1727,6 @@ async def custom_time_warp_loop(hex_color: str, base_delay: float = 0.05):
     neo.clear_strip()
     neo.update_strip()
 
-
 async def custom_quantum_flicker_loop(hex_color: str, interval: float = 0.02):
     """
     Custom Quantum Flicker:
@@ -1676,6 +1788,102 @@ async def custom_running_lights_loop(hex_color: str, delay: float = 0.05):
                 s['color'] = (r_base, g_base, b_base)
     neo.clear_strip()
     neo.update_strip()
+
+
+async def custom_fireworks_burst_loop(hex_color: str, delay_per_step: float = 0.05 / 10):
+    """
+    Custom Fireworks Burst:
+    - Fireworks in chosen color with explosion effect
+    - Rocket with 7 LEDs moving to random position
+    - Explosion and fade effect
+    """
+    global stop_requested
+    
+    # استخراج قيم اللون من HEX
+    r_base = int(hex_color[1:3], 16)
+    g_base = int(hex_color[3:5], 16)
+    b_base = int(hex_color[5:7], 16)
+
+    ROCKET_LENGTH = 7
+    ROCKET_BRIGHTNESSES = [0.25 - (i * 0.03) for i in range(ROCKET_LENGTH)]
+    EXPLOSION_BRIGHTNESS = 1.0
+    FADE_STEPS = 20
+
+    while not stop_requested:
+        explosion_pos = random.randint(ROCKET_LENGTH, NUM_LEDS - ROCKET_LENGTH)
+
+        # حركة الصاروخ
+        for head_pos in range(NUM_LEDS - 1, explosion_pos - 1, -1):
+            if stop_requested:
+                break
+            neo.clear_strip()
+            for i in range(ROCKET_LENGTH):
+                led_pos = head_pos + i
+                if 0 <= led_pos < NUM_LEDS:
+                    brightness = ROCKET_BRIGHTNESSES[i]
+                    r = int(r_base * brightness)
+                    g = int(g_base * brightness)
+                    b = int(b_base * brightness)
+                    neo.set_led_color(
+                        led_pos,
+                        int(r * BRIGHTNESS_SCALE),
+                        int(g * BRIGHTNESS_SCALE),
+                        int(b * BRIGHTNESS_SCALE)
+                    )
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+        if stop_requested:
+            break
+
+        # الانفجار
+        neo.clear_strip()
+        for i in range(NUM_LEDS):
+            r = int(r_base * EXPLOSION_BRIGHTNESS)
+            g = int(g_base * EXPLOSION_BRIGHTNESS)
+            b = int(b_base * EXPLOSION_BRIGHTNESS)
+            neo.set_led_color(
+                i,
+                int(r * BRIGHTNESS_SCALE),
+                int(g * BRIGHTNESS_SCALE),
+                int(b * BRIGHTNESS_SCALE)
+            )
+        neo.update_strip()
+        await asyncio.sleep(0.2)
+
+        # التلاشي التدريجي
+        for fade_step in range(FADE_STEPS):
+            if stop_requested:
+                break
+            factor = 1 - (fade_step / FADE_STEPS)
+            neo.clear_strip()
+            for i in range(NUM_LEDS):
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(0.03)
+
+        neo.clear_strip()
+        neo.update_strip()
+
+        # انتظار عشوائي
+        wait_time = random.uniform(0.5, 10.0)
+        await asyncio.sleep(wait_time)
+
+    neo.clear_strip()
+    neo.update_strip()
+
+
+
+
+# ----------------------------------------------------
 
 async def animation_worker():
     global stop_requested, current_anim
@@ -1790,6 +1998,10 @@ async def animation_worker():
             elif req.animation_type == "custom_running_lights":
                 if req.hex_color:
                     await custom_running_lights_loop(req.hex_color)
+            elif req.animation_type == "custom_fireworks_burst":
+                if req.hex_color:
+                    await custom_fireworks_burst_loop(req.hex_color)
+
 
         await asyncio.sleep(0.1)
 
@@ -1846,6 +2058,7 @@ async def stop_animation():
     current_hex = "#000000"
     return {"status": "stopped"}
 
+from fastapi.responses import StreamingResponse
 
 async def event_generator():
     while True:
