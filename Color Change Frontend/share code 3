@@ -1,16 +1,5 @@
-# --- near top of server.py (بعد التعاريف الحالية) ---
-# قيمة سطوع افتراضية (percentage)
-CURRENT_BRIGHTNESS_PERCENT = 80  # موصى به 80%
-# نخلي BRIGHTNESS_SCALE متماشي مع النسبة الافتراضية
-BRIGHTNESS_SCALE = CURRENT_BRIGHTNESS_PERCENT / 100.0
-
-def set_brightness_percent(percent: float):
-    global CURRENT_BRIGHTNESS_PERCENT, BRIGHTNESS_SCALE
-    try:
-        p = float(percent)
-    except:
-        return False
-    p = max(0.0, min(100.0, p))
-    CURRENT_BRIGHTNESS_PERCENT = p
-    BRIGHTNESS_SCALE = p / 100.0
-    return True
+class AnimationRequest(BaseModel):
+    animation_type: str
+    color_index: int = 0
+    hex_color: str | None = None
+    brightness: float | None = None   # NEW: 0-100 (percent)
