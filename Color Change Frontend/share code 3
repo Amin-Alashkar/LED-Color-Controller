@@ -1,5 +1,15 @@
-class AnimationRequest(BaseModel):
-    animation_type: str
-    color_index: int = 0
-    hex_color: str | None = None
-    brightness: float | None = None   # NEW: 0-100 (percent)
+@app.post("/set_brightness")
+async def set_brightness(req: dict):
+    """
+    POST { "brightness": 0..100 }  --> يحدّث BRIGHTNESS_SCALE فوراً
+    """
+    if "brightness" not in req:
+        return {"status": "error", "message": "missing brightness"}
+    ok = set_brightness_percent(req["brightness"])
+    if not ok:
+        return {"status": "error", "message": "invalid value"}
+    return {"status": "ok", "brightness": CURRENT_BRIGHTNESS_PERCENT}
+
+@app.get("/brightness")
+async def get_brightness():
+    return {"brightness": CURRENT_BRIGHTNESS_PERCENT}
