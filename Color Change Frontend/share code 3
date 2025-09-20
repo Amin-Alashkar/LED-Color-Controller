@@ -1,154 +1,151 @@
 async def fireworks_burst_loop():
     """
-    ألعاب نارية محسّنة باستخدام تقنيات الحركة من single_snake_loop:
-    - مراحل الصاروخ الست: اشتعال، انطلاق بطيء، انطلاق سريع، انفجار، تلاشي، انتظار
-    - استخدام easing function لحركة أكثر سلاسة
-    - رأس الصاروخ يومض طول الوقت
-    - ألوان عشوائية متنوعة
+    ألعاب نارية محسّنة:
+    - اشتعال (2-4s) → رأس واحد يومض بسرعة أعلى
+    - انطلاق بطيء (1-3s) من الخارج إلى منتصف الطريق
+    - انطلاق سريع (0.2-0.8s) إلى موقع الانفجار (ينفجر فور الوصول)
+    - طول الصاروخ عشوائي 4-6 LEDs
+    - الرأس هو الوحيد الذي يومض ويكون الأعلى سطوعاً
+    - حركة مبنية على الوقت مع easing وموضع float للرسم السلس
     """
     global stop_requested
 
     COLORS = [
-        (255, 0, 0), (0, 0, 255), (0, 255, 0),      # أحمر، أزرق، أخضر
-        (255, 255, 0), (255, 0, 255),               # أصفر، أرجواني
-        (0, 255, 255), (255, 165, 0)                # سماوي، برتقالي
+        (255, 0, 0),    # أحمر
+        (0, 0, 255),    # أزرق
+        (0, 255, 0),    # أخضر
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
     ]
 
-    EXPLOSION_BRIGHTNESS = 1.0
     FADE_STEPS = 20
+    FRAME_SLEEP = 0.012  # إطار أسرع → حركة أنعم
 
     while not stop_requested:
-        # اختيار لون وطول الصاروخ عشوائياً
         color = random.choice(COLORS)
-        rocket_len = random.randint(4, 10)  # طول عشوائي بين 4 و 10
-        explosion_pos = random.randint(NUM_LEDS // 4, 3 * NUM_LEDS // 4)  # انفجار في المنطقة الوسطى
+        rocket_len = random.randint(4, 6)              # طول من 4 إلى 6
+        explosion_pos = random.randint(NUM_LEDS//4, 3*NUM_LEDS//4)
 
         # =======================
-        # 1. الاشتعال (Ignition)
+        # 1. الاشتعال (Ignition) — رأس واحد يومض (2-4s)
         # =======================
-        ignition_time = random.uniform(2, 5)
-        start_time = asyncio.get_event_loop().time()
-        
-        while (asyncio.get_event_loop().time() - start_time < ignition_time) and not stop_requested:
-            # رأس الصاروخ يومض (يضوي ويطفي)
-            pulse = (math.sin(asyncio.get_event_loop().time() * 8) + 1) / 2  # تردد أعلى للوميض
-            brightness = 0.3 + 0.7 * pulse
-            
+        ignition_time = random.uniform(2.0, 4.0)
+        t0 = asyncio.get_event_loop().time()
+        while (asyncio.get_event_loop().time() - t0 < ignition_time) and not stop_requested:
+            now = asyncio.get_event_loop().time()
+            # وميض أسرع أثناء الاشتعال
+            pulse = (math.sin(now * 12.0) + 1.0) / 2.0  # تردد أعلى
+            head_brightness = 0.4 + 0.6 * pulse  # يتراوح بين 0.4 - 1.0
+
             neo.clear_strip()
-            # وضع الرأس في أسفل الشريط (المرحلة الأولى)
             neo.set_led_color(
                 0,
-                int(color[0] * brightness * BRIGHTNESS_SCALE),
-                int(color[1] * brightness * BRIGHTNESS_SCALE),
-                int(color[2] * brightness * BRIGHTNESS_SCALE)
+                int(color[0] * head_brightness * BRIGHTNESS_SCALE),
+                int(color[1] * head_brightness * BRIGHTNESS_SCALE),
+                int(color[2] * head_brightness * BRIGHTNESS_SCALE)
             )
             neo.update_strip()
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(FRAME_SLEEP)
 
         if stop_requested:
             break
 
+        # حركة الصاروخ تبدأ من خارج الشريط (start_pos)
+        start_pos = -rocket_len
+        # نختار نقطة وسطية عشوائية للانطلاق البطيء (لا تصل للانفجار)
+        mid_fraction = random.uniform(0.25, 0.55)
+        mid_pos = start_pos + mid_fraction * (explosion_pos - start_pos)
+
         # =======================
-        # 2. الانطلاق البطيء
+        # 2. الانطلاق البطيء (1-3s) — يصل إلى mid_pos
         # =======================
-        slow_time = random.uniform(1, 3)
-        start_time = asyncio.get_event_loop().time()
-        
+        slow_time = random.uniform(1.0, 3.0)
+        t_start = asyncio.get_event_loop().time()
         while not stop_requested:
-            elapsed = asyncio.get_event_loop().time() - start_time
+            elapsed = asyncio.get_event_loop().time() - t_start
             progress = min(1.0, elapsed / slow_time)
-            
-            # استخدام easing function لحركة أكثر سلاسة (مثل single_snake_loop)
-            eased_progress = (1 - math.cos(progress * math.pi)) / 2
-            
-            # حساب موقع الرأس (من الأسفل إلى الأعلى)
-            head_pos = int(eased_progress * (explosion_pos * 0.5))  # يصل إلى منتصف الطريق إلى موقع الانفجار
-            
-            if progress >= 1.0:
-                break
+            eased = (1 - math.cos(progress * math.pi)) / 2  # smooth ease-in-out
+            head_pos_f = start_pos + eased * (mid_pos - start_pos)
+            head_idx = int(round(head_pos_f))
 
+            # ارسم الصاروخ (رأس يومض، الذيل أقل سطوع)
             neo.clear_strip()
-            
-            # رسم الصاروخ بالكامل
+            now = asyncio.get_event_loop().time()
+            pulse = (math.sin(now * 10.0) + 1.0) / 2.0  # وميض خلال الرحلة
             for t in range(rocket_len):
-                led_pos = head_pos - t  # الذيل يكون خلف الرأس
+                led_pos = head_idx - t
                 if 0 <= led_pos < NUM_LEDS:
-                    # تدرج السطوع من الرأس إلى الذيل
-                    factor = 1 - (t / rocket_len)
-                    
-                    # الرأس يلمع باستمرار
+                    # الرأس أعلى سطوع ويومض
                     if t == 0:
-                        pulse = (math.sin(asyncio.get_event_loop().time() * 10) + 1) / 2
-                        factor *= 0.4 + 0.6 * pulse
-                    
-                    # تطبيق الألوان مع تعديل السطوع
+                        factor = 0.6 + 0.4 * pulse  # بين 0.6 و1.0
+                    else:
+                        factor = (1.0 - (t / rocket_len)) * 0.6  # الذيل أضعف
                     r = int(color[0] * factor * BRIGHTNESS_SCALE)
                     g = int(color[1] * factor * BRIGHTNESS_SCALE)
                     b = int(color[2] * factor * BRIGHTNESS_SCALE)
-                    
                     neo.set_led_color(led_pos, r, g, b)
-            
             neo.update_strip()
-            await asyncio.sleep(0.02)
+
+            # إذا وصل الرأس أو تخطى منتصف الهدف (ننتقل للمرحلة التالية)
+            if progress >= 1.0:
+                break
+            await asyncio.sleep(FRAME_SLEEP)
 
         if stop_requested:
             break
 
         # =======================
-        # 3. الانطلاق السريع
+        # 3. الانطلاق السريع — من mid_pos إلى explosion_pos (0.2-0.8s)
+        # انفجار يحدث فور وصول الرأس للموقع (no waiting)
         # =======================
-        fast_time = random.uniform(1, 3)
-        start_time = asyncio.get_event_loop().time()
-        start_pos = head_pos  # يبدأ من حيث انتهى الانطلاق البطيء
-        
+        fast_time = random.uniform(0.2, 0.8)
+        t_start = asyncio.get_event_loop().time()
+        # خذ current head_pos_f كبداية (حتى لو لم يصل بالضبط إلى mid_pos)
+        # لكن نضمن بداية سلسة: نعيد حساب start_f من head_idx السابق
+        # (أو استخدم mid_pos مباشرة)
+        start_f = head_pos_f if 'head_pos_f' in locals() else start_pos
+        target_f = explosion_pos
         while not stop_requested:
-            elapsed = asyncio.get_event_loop().time() - start_time
+            elapsed = asyncio.get_event_loop().time() - t_start
             progress = min(1.0, elapsed / fast_time)
-            
-            # استخدام easing function مختلفة للانطلاق السريع
-            eased_progress = math.sin(progress * math.pi / 2)  # تسارع سريع ثم تباطؤ
-            
-            # حساب موقع الرأس (من موقع البداية إلى موقع الانفجار)
-            head_pos = start_pos + int(eased_progress * (explosion_pos - start_pos))
-            
-            if progress >= 1.0:
-                break
+            eased = math.sin(progress * math.pi / 2)  # سريع ثم يتباطأ خفيف
+            head_pos_f = start_f + eased * (target_f - start_f)
+            head_idx = int(round(head_pos_f))
 
             neo.clear_strip()
-            
-            # رسم الصاروخ بالكامل
+            now = asyncio.get_event_loop().time()
+            pulse = (math.sin(now * 14.0) + 1.0) / 2.0  # وميض أسرع قليلاً
             for t in range(rocket_len):
-                led_pos = head_pos - t  # الذيل يكون خلف الرأس
+                led_pos = head_idx - t
                 if 0 <= led_pos < NUM_LEDS:
-                    # تدرج السطوع من الرأس إلى الذيل
-                    factor = 1 - (t / rocket_len)
-                    
-                    # الرأس يلمع باستمرار وبشدة أكثر
                     if t == 0:
-                        pulse = (math.sin(asyncio.get_event_loop().time() * 12) + 1) / 2
-                        factor *= 0.5 + 0.5 * pulse
-                    
-                    # تطبيق الألوان مع تعديل السطوع
+                        factor = 0.65 + 0.35 * pulse
+                    else:
+                        factor = (1.0 - (t / rocket_len)) * 0.6
                     r = int(color[0] * factor * BRIGHTNESS_SCALE)
                     g = int(color[1] * factor * BRIGHTNESS_SCALE)
                     b = int(color[2] * factor * BRIGHTNESS_SCALE)
-                    
                     neo.set_led_color(led_pos, r, g, b)
-            
             neo.update_strip()
-            await asyncio.sleep(0.01)
+
+            # انفجر فور ما الرأس يصل أو يتجاوز موقع الانفجار
+            if head_pos_f >= explosion_pos or progress >= 1.0:
+                break
+            await asyncio.sleep(FRAME_SLEEP)
 
         if stop_requested:
             break
 
         # =======================
-        # 4. الانفجار
+        # 4. الانفجار (فوراً)
         # =======================
         neo.clear_strip()
         for i in range(NUM_LEDS):
-            r = int(color[0] * EXPLOSION_BRIGHTNESS * BRIGHTNESS_SCALE)
-            g = int(color[1] * EXPLOSION_BRIGHTNESS * BRIGHTNESS_SCALE)
-            b = int(color[2] * EXPLOSION_BRIGHTNESS * BRIGHTNESS_SCALE)
+            r = int(color[0] * BRIGHTNESS_SCALE)
+            g = int(color[1] * BRIGHTNESS_SCALE)
+            b = int(color[2] * BRIGHTNESS_SCALE)
             neo.set_led_color(i, r, g, b)
         neo.update_strip()
         await asyncio.sleep(0.2)
@@ -162,7 +159,7 @@ async def fireworks_burst_loop():
         for fade_step in range(FADE_STEPS):
             if stop_requested:
                 break
-            factor = 1 - (fade_step / FADE_STEPS)
+            factor = 1.0 - (fade_step / FADE_STEPS)
             neo.clear_strip()
             for i in range(NUM_LEDS):
                 r = int(color[0] * factor * BRIGHTNESS_SCALE)
@@ -179,7 +176,10 @@ async def fireworks_burst_loop():
         neo.update_strip()
 
         # =======================
-        # 6. انتظار قبل الصاروخ التالي
+        # 6. انتظار قبل الصاروخ التالي (عشوائي)
         # =======================
-        wait_time = random.uniform(0.5, 10.0)
+        wait_time = random.uniform(0.5, 4.0)
         await asyncio.sleep(wait_time)
+
+    neo.clear_strip()
+    neo.update_strip()
