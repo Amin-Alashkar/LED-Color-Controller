@@ -1,36 +1,101 @@
-<!-- Brightness modal (Android-like slider) -->
-<div id="brightnessModal" class="brightness-modal" style="display:none; position:fixed; z-index:9999;">
-  <div class="brightness-panel">
-    <div class="brightness-title">Set animation brightness</div>
-    <div class="brightness-reco">Recommended: <strong>80%</strong></div>
-    <input id="brightnessRange" type="range" min="0" max="100" step="1" value="80">
-    <div class="brightness-value"><span id="brightnessValue">80</span>%</div>
-    <div class="brightness-actions">
-      <button id="brightnessCancel">Cancel</button>
-      <button id="brightnessApply">Apply</button>
-    </div>
-  </div>
-</div>
+// ---------- Brightness modal helpers ----------
+const brightnessModal = document.getElementById('brightnessModal');
+const brightnessRange = document.getElementById('brightnessRange');
+const brightnessValue = document.getElementById('brightnessValue');
+const brightnessCancel = document.getElementById('brightnessCancel');
+const brightnessApply = document.getElementById('brightnessApply');
 
-<style>
-/* small styles for the slider panel */
-.brightness-modal .brightness-panel {
-  background: #111;
-  color: #fff;
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-  min-width: 220px;
-  text-align: center;
-  font-family: sans-serif;
+// تحديث قيمة العرض النصي عند التغيير
+brightnessRange.addEventListener('input', (e) => {
+    brightnessValue.textContent = e.target.value;
+});
+
+// إظهار اللوحة فوق عنصر (buttonEl) ثم تنفيذ callback(brightness)
+function showBrightnessModal(buttonEl, callback) {
+    if (!brightnessModal) {
+        // ليس موجودًا — fallback to immediate callback with recommended 80
+        callback(80);
+        return;
+    }
+
+    // موضع اللوحة فوق الزر (محسوب)
+    const rect = buttonEl.getBoundingClientRect();
+    const modal = brightnessModal;
+    modal.style.display = 'block';
+    // وضع اللوحة بحيث تكون فوق الزر (مع تعديلات بسيطة)
+    modal.style.left = Math.min(window.innerWidth - 240, Math.max(8, rect.left + rect.width/2 - 110)) + 'px';
+    modal.style.top  = Math.max(8, rect.top - 110) + 'px';
+
+    // قيمة افتراضية
+    brightnessRange.value = 80;
+    brightnessValue.textContent = brightnessRange.value;
+
+    // handlers
+    const onCancel = () => {
+        brightnessCancel.removeEventListener('click', onCancel);
+        brightnessApply.removeEventListener('click', onApply);
+        modal.style.display = 'none';
+    };
+    const onApply = () => {
+        const val = parseInt(brightnessRange.value, 10);
+        brightnessCancel.removeEventListener('click', onCancel);
+        brightnessApply.removeEventListener('click', onApply);
+        modal.style.display = 'none';
+        callback(val);
+    };
+
+    brightnessCancel.addEventListener('click', onCancel);
+    brightnessApply.addEventListener('click', onApply);
 }
-.brightness-title { font-weight:600; margin-bottom:6px; }
-.brightness-reco { font-size:12px; color:#ccc; margin-bottom:6px; }
-#brightnessRange { width: 100%; margin: 8px 0; }
-.brightness-value { font-weight:600; margin-bottom:8px; }
-.brightness-actions button {
-  margin: 0 6px; padding:6px 10px; border-radius:6px; border: none;
-  background: #2b2b2b; color:white; cursor:pointer;
+
+// ---------- helper: start animation with brightness ----------
+async function startAnimationWithBrightness(animation_type, payload = {}) {
+    // If another animation running, stop it first (same behavior)
+    if (isAnimationRunning && currentAnim !== animation_type) {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === animation_type) {
+        await stopAnimation();
+        return;
+    }
+
+    // show slider above the button that triggered it (try to find active button)
+    // We'll pick the DOM element that corresponds to animation_type (mapping)
+    const mapBtn = {
+        "fade_colors": lightOneBtn,
+        "pulse_sync": pulseSyncBtn,
+        "wave_effect": waveEffectBtn,
+        "rainbow_flow": rainbowFlowBtn,
+        "blinking_pattern": blinkingPatternBtn,
+        "running_lights": runningLightsBtn,
+        "breathing_effect": breathingEffectBtn,
+        "meteor_shower": snakesChasingBtn,
+        "single_snake": meteorShowerNewBtn,
+        "fireworks_burst": fireworksBurstBtn
+    };
+    const btnEl = mapBtn[animation_type] || cardElement;
+
+    showBrightnessModal(btnEl, async (brightnessPercent) => {
+        // set UI states
+        isAnimationRunning = true;
+        currentAnim = animation_type;
+
+        // reflect UI (simple)
+        // add active class to the corresponding button if exists
+        if (btnEl && btnEl.classList) {
+            btnEl.classList.add('active');
+            btnEl.textContent = btnEl.textContent.split(' (')[0] + ' (Running)';
+        }
+        cardElement.style.background = "#000000";
+        colorDisplay.textContent = animation_type.replace('_',' ');
+
+        // send animate request with brightness included
+        const body = Object.assign({ animation_type: animation_type, brightness: brightnessPercent }, payload);
+        await sendRequest('/animate', body);
+
+        // also update server brightness explicitly (optional)
+        try {
+            await sendRequest('/set_brightness', { brightness: brightnessPercent });
+        } catch (e) { /* ignore */ }
+    });
 }
-.brightness-actions button:hover { opacity:0.9; }
-</style>
