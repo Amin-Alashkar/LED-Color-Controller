@@ -1,15 +1,6 @@
-@app.post("/set_brightness")
-async def set_brightness(req: dict):
-    """
-    POST { "brightness": 0..100 }  --> يحدّث BRIGHTNESS_SCALE فوراً
-    """
-    if "brightness" not in req:
-        return {"status": "error", "message": "missing brightness"}
-    ok = set_brightness_percent(req["brightness"])
-    if not ok:
-        return {"status": "error", "message": "invalid value"}
-    return {"status": "ok", "brightness": CURRENT_BRIGHTNESS_PERCENT}
-
-@app.get("/brightness")
-async def get_brightness():
-    return {"brightness": CURRENT_BRIGHTNESS_PERCENT}
+            # إذا المرسل حدد سطوع مع الطلب → نطبّق
+            if hasattr(req, "brightness") and req.brightness is not None:
+                try:
+                    set_brightness_percent(req.brightness)
+                except Exception:
+                    pass
