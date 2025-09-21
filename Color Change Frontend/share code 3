@@ -1,1 +1,53 @@
-‏nimation” تضهر لوحه السطوع وبعدين المستخدم يحدد السطوع ولما يكبس على Apply تختفي هاي الوحه— واذا المستخدم بده الوحه مره ثانه لازم يكبس على الازر مرتين على شان تضهر (مو ضروري مرتين وراء بعض)— يعني كتالي: المستخدم دخل الموقع— كبس على زر — قبل ماتشتغل الانميشن لازم يحدد السطوع عن طريق هاي الوحه— بعد تحديد السطوع الاوحه تختفي — بعد ماتختفي لازم المستخدم يكبس كبسه ثانه وبعدين كمان كبسه ثانيه على شان ترجع تضهر الوحه — بعدين بيرجع يحط السطوع — بعدين تختفي الوحه وتشتغل الانميشن — بعدين يرجع يكبس كبستين على الزر نفسه حتى ترجع الاوحه تضهر والخ….. مهم جدا: قانون الكبستين لازم يطبق على الزر نفسه فقط مثال: المستخدم شغل انميشن Fade Colors اول كبسه تضهر الاوحه — يحدد السطوع — تختفي الوحه — لازم يكبس كبستين على شان الوحه ترجع — المثال هو انه : المستخدم كبس على زر Fade Colors - ضهرت الوحه - حدد السطوع - اختفت الاوحه — المستخدم حب يشغل انميشن غير هاي على سبيل المثال  Wave Effect لازم من الكبسه الولا تضهر الوحه — يختار السطوع — تختفي — اذا بده يرجع يشغل Wave مره ثانيه لازم يكبس كبستين على شان تضهر الاوحه
+الان بدي منك تضيف 10 ألوان عشوائية بدي 3 كمان تخلي كل من هاي النصوص تضهر بي شكل عشوائي حسب خانتها:
+
+Fade Colors :
+
+	1.	:
+“Colors appear, then vanish—tweak the brightness, set your vibe.”
+	2.:
+“Random shades flash in and out, never settling. Adjust the glow to match your mood.”
+	3.	:
+“It feels like controlled chaos—one moment the light is here, the next it’s gone, returning differently each time. You can dial the brightness to your liking.”
+	4.	-:
+“A hypnotic rhythm of colors fading in and out, syncing only with their own unpredictable flow. Control the intensity and let it breathe in your space.”
+	5.	:
+“The LEDs move gently, swapping shades, disappearing, then returning like they were never gone. Adjust the brightness—make it subtle or let it shine boldly.”
+	6.	:
+“A cycle of presence and absence—colors vanish before you even get used to them, only to reappear in new shades. You control the glow, the mood, the flow.”
+	7.	:
+“Think of it as meditative light—colors show up, fade, and renew endlessly. Brightness is yours to command.”
+
+⸻
+
+Wave Effect 
+	١:
+“Waves of light moving through the strip—control the glow, set your pace.”
+	2.	-:
+“Colors travel in rhythm, sweeping LED by LED. Adjust brightness to match the flow.”
+	3.	:
+“Imagine a pulse of color stretching and shifting forward, one LED at a time. You decide how strong it shines.”
+	4.	-:
+“A continuous wave of motion—colors ripple through the strip, alive and flowing. Dial the brightness to suit your vibe.”
+	5.	:
+“It’s more than movement; it’s choreography in light. Each LED joins the wave at the perfect moment. Control the glow to make it yours.”
+	6.	:
+“Every shift feels like momentum—a tide of color rolling endlessly. Adjust brightness, let it be subtle or striking.”
+	7.	:
+“Think of it as energy made visible—waves of light flowing in sequence. Brightness is in your hands.”
+
+Rainbom Flow:
+
+	1.	:
+“A spectrum that never stops—adjust the brightness, set your vibe.”
+	2.	-:
+“Colors chase each other endlessly. You decide how bright or soft they shine.”
+	3.	:
+“Every shade flows into the next, never pausing. Dial the brightness to match your mood.”
+	4.-:
+“It’s less about the rainbow, more about the journey—colors fading, blending, shifting endlessly. Control the glow and make it yours.”
+	5.	:
+“Not just colors—it’s a cycle that refuses to settle, each shade slipping into the next before you can even name it. You can tweak the brightness to set the room’s energy exactly how you like.”
+	6.	:
+“Think of it as a story of motion and color—light traveling, shifting, never repeating itself. Push the brightness up or keep it subtle; it’s your scene to control.”
+	7.	:
+“A continuous flow of color, alive and unpredictable. Adjust the glow to make the effect your own.”
