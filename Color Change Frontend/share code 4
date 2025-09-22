@@ -1,9 +1,9 @@
-const FadeColorsCustomDescriptions = [
-  'Pick your vibe, let it fade—smooth transitions, one chosen color drifting across the strip.',
-  'Your color, your rhythm. LEDs breathe slowly in and out, like the strip itself is alive, whispering your chosen shade.',
-  'Custom color fades in a hypnotic loop—slow, deliberate, mesmerizing. Brightness in your hands, every blink is controlled by you.',
-  'One color takes over, flowing gently across the strip, fading in and out as if it has a mind of its own.',
-  'It’s not random, it’s personal—select your color and watch it pulse, fade, and glow, perfectly synced with your mood.',
-  'A single hue, endless possibilities. Smooth, slow fades that let you control the intensity and make the strip feel alive.',
-  'Fade in, fade out, repeat. Your color, your rules. The LEDs obey, moving in rhythm with your choice and brightness.'
+const BlinkingCustomDescriptions = [
+  'Your color, your chaos—LEDs blink sharp and sudden, controlled by your choice.',
+  'Pick a shade, watch it pop. Random flashes, but now you decide the hue and intensity.',
+  'Blink in your style—your color dances across the strip in unpredictable bursts, brightness in your hands.',
+  'LEDs obey your color command, flashing in short bursts, long pulses, or anything in between.',
+  'This isn’t random anymore—it’s your custom blink, each spark chosen by you, every flash a signature.',
+  'Short, long, medium—your color sets the pace. Quick bursts or slow blinks, the strip listens.',
+  'Blinking isn’t just a pattern—it’s your vibe. You pick the hue, the LEDs do the magic, fading in and out as you like.'
 ]
