@@ -1,7 +1,10 @@
-	•	“Red… because drama is mandatory.”
-	•	“Warning: not for beginners.”
-	•	“Red vibes only—stand out or go home.”
-	•	“Red… the color that says ‘watch me.’”
-	•	“When you’re mad but make it visual.”
-	•	“Red: because black is basic and blue is boring.”
-	•	“Red… the official color of overthinkers.”
+// --- Custom Fireworks Burst ---
+const CustomFireworksBurstDescriptions = [
+  'Launch your color rocket—blasts randomly across the strip, colors explode in chaos.',
+  'Your chosen hue shoots skyward, then bursts in neon chaos—each explosion unique.',
+  'Firework streaks in your shade, flying fast, detonating bright and random.',
+  'Pick a color, ignite, watch LEDs explode in unpredictable brilliance.',
+  'Rocket launch! Your color arcs, explodes, fades—every burst alive.',
+  'Color rockets zoom, explode, vanish—controlled chaos at your fingertips.',
+  'Random explosions of your hue, dazzling, fast, ephemeral—a visual symphony.'
+]
