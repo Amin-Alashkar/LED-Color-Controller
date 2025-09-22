@@ -1,32 +1,9 @@
-async def running_lights_loop(delay: float = 0.05):
-    """
-    تأثير أضواء متحركة بألوان عشوائية:
-    - لدينا سبع نقاط انطلاق: 19,16,13,10,7,4,1
-    - لكل نقطة، نختار لونًا عشوائيًا ثم نحركه إلى الأسفل حتى الصفر
-    - عندما يصل إلى ما دون 0، نعيد تهيئته بلون جديد عند موقع الانطلاق الأصلي
-    - يستمر هذا التكرار باستمرار طالما لم يُطلَب الإيقاف
-    """
-    global stop_requested
-    spawn_positions = list(range(149, -1, -3))  # [19,16,13,10,7,4,1]
-    # نهيئ الشرارات الثلاث في المواقع الأصلية
-    sparks = []
-    for p in spawn_positions:
-        color = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
-        sparks.append({'start': p, 'pos': p, 'color': color})
-
-    while not stop_requested:
-        neo.clear_strip()
-        # رسم كل شرارة في موقعها الحالي
-        for s in sparks:
-            if 0 <= s['pos'] < NUM_LEDS:
-                neo.set_led_color(s['pos'], *s['color'])
-        neo.update_strip()
-        await asyncio.sleep(delay)
-        # تحديث كل شرارة: نقلها خطوة لأسفل أو إعادة تهيئتها
-        for s in sparks:
-            s['pos'] -= 1
-            if s['pos'] < 0:
-                s['pos'] = s['start']
-                s['color'] = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
-    neo.clear_strip()
-    neo.update_strip()
+const BlinkingDescriptions = [
+    'Fast flashes, random, gone in an instant.',
+    'LEDs blink sharp and sudden, each color a quick spark that disappears before you catch it—brightness stays in your hands.',
+    'No rhythm, no pattern—just a restless storm of colors flashing in and out, like the strip is alive with hidden energy. One moment bright, the next completely gone, leaving you waiting for the next unpredictable strike.',
+    'Sudden sparks of light—blink and you’ll miss it.',
+    'A strobe-like effect, but wilder—random flashes that feel like coded signals only your eyes can decode.',
+    'This isn’t gentle or calm—it’s electricity in motion. The LEDs erupt in quick bursts, each blink random and impatient, as if the strip is trying to get your attention with every flash. You decide how blinding or subtle it gets with brightness control.',
+    'Flashes of color hit at random, then vanish as quickly as they came, keeping the whole effect tense and alive.'
+]
