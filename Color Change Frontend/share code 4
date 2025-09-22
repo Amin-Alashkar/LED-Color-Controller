@@ -1,9 +1,9 @@
-const BreathingEffectDescriptions = [
-  'Lights that inhale and exhale—slow, soft, alive.',
-  'Colors fade in and fade out at their own pace, like the strip itself is breathing. Adjust the brightness, and you control how gentle or intense each breath feels.',
-  'It’s not a blink, not a flash—it’s a rhythm of presence and absence. Each shade appears slowly, settles in the room, then dissolves as if the LEDs are sighing. The cycle never repeats the same way twice, and with brightness in your hands, you decide if it feels like calm meditation or something deeper.',
-  'Random tones emerge quietly, glow for a moment, then slip away like they were never there.',
-  'Think of it as heartbeat energy—soft pulses of color flowing in and out, too slow to chase, too real to ignore.',
-  'The effect feels alive, like the LEDs are syncing with a hidden rhythm you can’t quite catch. Lower the brightness and it whispers; raise it, and it feels like the room itself is breathing fire.',
-  'Colors dissolve into nothing, only to return smoother and slower, like a light practicing patience.'
+const SnakesChasingDescriptions = [
+  'Snakes of light racing after each other, never stopping.',
+  'Each LED forms a serpent—random colors sliding forward, one chasing the next. Adjust the brightness to decide if they slither smooth or strike sharp.',
+  'It’s a hunt made of color—multiple snakes twisting through the strip, every body a random shade, every chase endless. They don’t move in chaos but in pursuit, like coded signals of light chasing their own reflections. You choose if the scene glows faint like whispers or burns hot like fire with brightness control.',
+  'Fast trails of color that look alive, like light has found its own prey.',
+  'Think of it as neon serpents, each with its own shade, weaving across the strip in an endless pursuit.',
+  'The effect isn’t static—it’s alive, serpents of color looping through the LEDs, chasing endlessly but never catching. Lower the brightness for subtle motion, raise it and the chase becomes electric.',
+  'Lines of light slither forward, random in color but unified in motion, like snakes racing into the dark.'
 ]
