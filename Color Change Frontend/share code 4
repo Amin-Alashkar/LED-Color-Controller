@@ -1,9 +1,9 @@
-const FireworksBurstDescriptions = [
-  'A rocket of light, gone in a flash, exploding where you least expect.',
-  'Colors launch fast, racing up the strip before bursting into random sparks. Brightness decides if it’s a quiet pop or a blinding explosion.',
-  'It feels like celebration coded into LEDs—single rockets darting forward, each in its own shade, before erupting in bursts of light at random spots. Every explosion is different, unpredictable, alive. With brightness under your hand, it shifts from subtle shimmer to firework chaos.',
-  'One second it’s a streak, the next it’s gone—only sparks left behind.',
-  'Think of it as neon fireworks—fast, random, always surprising.',
-  'The strip becomes a sky for digital rockets—colors shooting, exploding, fading away. Dial down the brightness for gentle sparks, or push it up and flood the strip with wild energy.',
-  'Unpredictable bursts of color, each one short-lived but impossible to ignore.'
+const MeteorShowerDescriptions = [
+  'Sudden streaks of light, blazing across the strip—each meteor unique in color, length, and speed.',
+  'Random meteors shoot fast, unpredictable, each one a different flash. Brightness controls whether it’s a soft glow or a blinding streak.',
+  'The LEDs become a night sky—meteors appear when they feel like it, some short, some long, all racing across with their own random colors and speeds. You never know which one will hit next.',
+  'Fast, fleeting, random flashes—blink and a meteor is gone.',
+  'Like a digital night sky in motion—chaotic, vibrant, and alive.',
+  'Every meteor is its own story: color, speed, length all randomized. Tweak the brightness to make them whisper past or scream across the strip.',
+  'Unpredictable streaks of light, zipping across at random intervals—keeping the whole effect tense, alive, and hypnotic.'
 ]
