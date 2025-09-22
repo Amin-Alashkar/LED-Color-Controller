@@ -1,4 +1,4 @@
-.about-body{
+.about-body {
   padding: 36px;
   color: #E6E6EA;
   font-size: 1.05rem;
@@ -6,4 +6,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  min-height: 100vh;  /* يخليها توصل لنهاية الشاشة */
+  box-sizing: border-box; /* padding محسوب داخل الطول */
 }
