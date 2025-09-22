@@ -1,36 +1,222 @@
-.about-btn {
-  display: block;
+<!-- ABOUT BUTTON (placed at end of the page) -->
+<footer class="site-footer">
+  <button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
+</footer>
+
+<!-- ABOUT MODAL -->
+<div id="aboutModal" class="modal-backdrop about-modal" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-content about-content" role="document" aria-labelledby="aboutTitle">
+    <div class="modal-header about-header">
+      <h2 id="aboutTitle">About</h2>
+      <button id="aboutClose" class="close-btn" aria-label="Close about panel">&times;</button>
+    </div>
+    <div class="modal-body about-body">
+      <p id="aboutText">hi</p>
+    </div>
+  </div>
+</div>
+
+
+
+/* ---------- About button (epic) ---------- */
+.site-footer {
   width: 100%;
-  padding: 18px;
-  margin-top: 26px;
-  font-size: 1.3rem;
+  display: flex;
+  justify-content: center;
+  padding: 28px 0 60px;
+  z-index: 15;
+}
+
+.about-btn{
+  padding: 16px 40px;
+  font-size: 1.05rem;
+  font-weight: 800;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  color: #0b0710;
+  background: linear-gradient(90deg, #FF8A00 0%, #FF3D7F 40%, #6A5CFF 100%);
+  box-shadow:
+    0 8px 30px rgba(106, 92, 255, 0.18),
+    0 2px 8px rgba(0,0,0,0.25);
+  transition: transform .22s cubic-bezier(.2,.9,.3,1), box-shadow .22s;
+  position: relative;
+  overflow: visible;
+  z-index: 10005;
+}
+
+/* subtle glossy sheen */
+.about-btn::after{
+  content: "";
+  position: absolute;
+  left: -20%;
+  top: -40%;
+  width: 140%;
+  height: 140%;
+  background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.25), rgba(255,255,255,0) 25%);
+  transform: rotate(-18deg);
+  pointer-events: none;
+  filter: blur(8px);
+  opacity: 0.9;
+}
+
+.about-btn:hover{
+  transform: translateY(-6px) scale(1.02);
+  box-shadow:
+    0 20px 48px rgba(106,92,255,0.26),
+    0 6px 18px rgba(0,0,0,0.28);
+}
+
+/* small pulse to draw attention */
+.about-btn:focus {
+  outline: none;
+  box-shadow:
+    0 20px 60px rgba(106,92,255,0.28),
+    0 0 0 6px rgba(106,92,255,0.12);
+}
+
+/* ---------- About modal (large, professional, smooth) ---------- */
+.about-modal {
+  display: none; /* hidden by default */
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  z-index: 10010;
+  background: rgba(6, 8, 16, 0.6);
+  backdrop-filter: blur(8px) saturate(1.1);
+}
+
+/* when visible */
+.about-modal.show {
+  display: flex;
+  animation: aboutFadeIn .28s ease-out both;
+}
+
+@keyframes aboutFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.about-content {
+  width: 92%;
+  max-width: 920px;
+  height: min(72vh, 720px);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, rgba(18,20,30,0.98), rgba(12,14,22,0.95));
+  box-shadow: 0 30px 80px rgba(6,8,16,0.6), 0 6px 20px rgba(100,60,180,0.12);
+  border: 1px solid rgba(255,255,255,0.04);
+  transform-origin: center top;
+  animation: contentPop .26s cubic-bezier(.2,.9,.25,1);
+}
+
+@keyframes contentPop {
+  0% { transform: translateY(10px) scale(.98); opacity: 0; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.about-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26px 30px;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+  background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+}
+
+.about-header h2 {
+  margin: 0;
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  color: #FFF;
   font-weight: 800;
   text-transform: uppercase;
-  border: none;
-  border-radius: 14px;
-  cursor: pointer;
-  color: #1a1a1a;
-  background: linear-gradient(145deg, #f0f0f0, #c0c0c0);
-  box-shadow: 
-    inset 2px 2px 4px rgba(255,255,255,0.9),
-    inset -3px -3px 6px rgba(160,160,160,0.6),
-    0 6px 16px rgba(0,0,0,0.4);
-  transition: all 0.18s ease-in-out;
+  text-shadow: 0 2px 12px rgba(106,92,255,0.08);
 }
 
-.about-btn:hover {
-  background: linear-gradient(145deg, #ffffff, #b5b5b5);
-  transform: translateY(-3px);
-  box-shadow: 
-    inset 1px 1px 3px rgba(255,255,255,0.8),
-    inset -2px -2px 5px rgba(150,150,150,0.5),
-    0 12px 24px rgba(0,0,0,0.45);
+.about-body{
+  padding: 36px;
+  color: #E6E6EA;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.about-btn:active {
-  transform: translateY(2px);
-  box-shadow: 
-    inset 2px 2px 4px rgba(150,150,150,0.6),
-    inset -3px -3px 6px rgba(255,255,255,0.8),
-    0 4px 10px rgba(0,0,0,0.35);
+/* large centered 'hi' feel */
+#aboutText {
+  font-weight: 800;
+  font-size: 3.2rem;
+  letter-spacing: 1px;
+  color: #fff;
+  text-transform: none;
+  margin: 0;
+  text-align: center;
+  text-shadow: 0 8px 40px rgba(106,92,255,0.16);
 }
+
+/* responsive tweaks */
+@media (max-width: 600px) {
+  .about-content { height: 58vh; padding: 0; }
+  #aboutText { font-size: 2.2rem; padding: 10px; }
+  .about-body { padding: 20px; }
+  .site-footer { padding-bottom: 30px; }
+}
+
+
+
+// -------- About modal logic --------
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutModal = document.getElementById('aboutModal');
+const aboutClose = document.getElementById('aboutClose');
+
+function openAbout() {
+  if (!aboutModal) return;
+  aboutModal.classList.add('show');
+  aboutModal.setAttribute('aria-hidden', 'false');
+  // prevent background scroll
+  document.documentElement.style.overflow = 'hidden';
+  document.body.style.overflow = 'hidden';
+  // focus for accessibility
+  aboutClose.focus();
+}
+
+function closeAbout() {
+  if (!aboutModal) return;
+  aboutModal.classList.remove('show');
+  aboutModal.setAttribute('aria-hidden', 'true');
+  document.documentElement.style.overflow = '';
+  document.body.style.overflow = '';
+  aboutBtn.focus();
+}
+
+// open
+if (aboutBtn) aboutBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  openAbout();
+});
+
+// close by close button
+if (aboutClose) aboutClose.addEventListener('click', (e) => {
+  e.preventDefault();
+  closeAbout();
+});
+
+// close when clicking on backdrop (outside modal content)
+if (aboutModal) {
+  aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) {
+      closeAbout();
+    }
+  });
+}
+
+// close on ESC
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Escape' || e.key === 'Esc') && aboutModal && aboutModal.classList.contains('show')) {
+    closeAbout();
+  }
+});
