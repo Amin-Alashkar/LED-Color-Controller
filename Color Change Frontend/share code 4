@@ -1,9 +1,9 @@
-const BlinkingCustomDescriptions = [
-  'Your color, your chaos—LEDs blink sharp and sudden, controlled by your choice.',
-  'Pick a shade, watch it pop. Random flashes, but now you decide the hue and intensity.',
-  'Blink in your style—your color dances across the strip in unpredictable bursts, brightness in your hands.',
-  'LEDs obey your color command, flashing in short bursts, long pulses, or anything in between.',
-  'This isn’t random anymore—it’s your custom blink, each spark chosen by you, every flash a signature.',
-  'Short, long, medium—your color sets the pace. Quick bursts or slow blinks, the strip listens.',
-  'Blinking isn’t just a pattern—it’s your vibe. You pick the hue, the LEDs do the magic, fading in and out as you like.'
+const BreathingCustomDescriptions = [
+  'Your color, your chill—LEDs breathe slowly, fading in and out like they’re alive, all in the hue you picked.',
+  'Pick a shade, watch it inhale and exhale. Slow, hypnotic pulses that you control.',
+  'Breathing in your vibe—LEDs swell and fade, rhythm set by your chosen color and brightness.',
+  'Soft glow, long fade, short pulse—your color dances through the strip, calm but alive.',
+  'The strip isn’t just breathing, it’s syncing to your color choice. Each fade a signature of your style.',
+  'Choose the color, adjust the brightness, let the LEDs take their slow, hypnotic ride across the strip.',
+  'Breathing effect but make it yours—your hue, your intensity, your mood, all wrapped in a smooth pulse.'
 ]
