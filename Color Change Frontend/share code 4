@@ -1,9 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Light Controller - About</title>
     <style>
         * {
             margin: 0;
@@ -167,56 +161,3 @@
             }
         }
     </style>
-</head>
-<body>
-    <div class="about-container">
-        <div class="about-header">
-            <h1>Smart Light Controller</h1>
-            <p>The easiest way to customize your lighting experience</p>
-        </div>
-        
-        <div class="about-content">
-            <div class="about-section">
-                <p>Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.</p>
-            </div>
-            
-            <div class="about-section">
-                <h3 class="section-title">✨ What you can do</h3>
-                <ul class="feature-list">
-                    <li><span class="highlight">Choose colors freely</span>: Pick from a full spectrum of colors to match your mood or event.</li>
-                    <li><span class="highlight">Try dynamic animations</span>: From smooth breathing to fast-moving waves, fireworks, and other cool effects. Each animation can be stopped, started, or changed anytime.</li>
-                    <li><span class="highlight">Adjust brightness</span>: Make the lights subtle for relaxing nights or bright for parties.</li>
-                    <li><span class="highlight">Real-time control</span>: Changes happen instantly as long as your device is on the same Wi-Fi network as the lights. No delay, no lag.</li>
-                </ul>
-            </div>
-            
-            <div class="about-section">
-                <h3 class="section-title">⚡ Important things to know</h3>
-                <ul class="feature-list">
-                    <li>The app works only on the same local network. Devices outside your Wi-Fi won't be able to control the lights.</li>
-                    <li>Some light effects may look slightly different depending on your chosen brightness and color combinations.</li>
-                    <li>The lights stay on the last selected animation until you change them. You don't need to keep the app open all the time.</li>
-                    <li><span class="highlight">Privacy and safety</span>: No internet is required. All communication happens locally on your network, so your data stays private.</li>
-                </ul>
-            </div>
-            
-            <div class="about-section">
-                <h3 class="section-title">💡 Tips for best experience</h3>
-                <ul class="feature-list">
-                    <li>Experiment with combinations of colors and animations — you'll discover new looks you didn't expect.</li>
-                    <li>Adjust brightness according to the room size and environment to get the most dramatic effects.</li>
-                    <li>Try using multiple devices on the same network — you and your friends can control the lights together in real time.</li>
-                </ul>
-            </div>
-            
-            <div class="about-section">
-                <p>This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.</p>
-            </div>
-        </div>
-        
-        <div class="footer-note">
-            <p>Smart Light Controller - Version 1.0</p>
-        </div>
-    </div>
-</body>
-</html>
