@@ -1,9 +1,9 @@
-const MeteorShowerDescriptions = [
-  'Sudden streaks of light, blazing across the strip—each meteor unique in color, length, and speed.',
-  'Random meteors shoot fast, unpredictable, each one a different flash. Brightness controls whether it’s a soft glow or a blinding streak.',
-  'The LEDs become a night sky—meteors appear when they feel like it, some short, some long, all racing across with their own random colors and speeds. You never know which one will hit next.',
-  'Fast, fleeting, random flashes—blink and a meteor is gone.',
-  'Like a digital night sky in motion—chaotic, vibrant, and alive.',
-  'Every meteor is its own story: color, speed, length all randomized. Tweak the brightness to make them whisper past or scream across the strip.',
-  'Unpredictable streaks of light, zipping across at random intervals—keeping the whole effect tense, alive, and hypnotic.'
+const FadeColorsCustomDescriptions = [
+  'Pick your vibe, let it fade—smooth transitions, one chosen color drifting across the strip.',
+  'Your color, your rhythm. LEDs breathe slowly in and out, like the strip itself is alive, whispering your chosen shade.',
+  'Custom color fades in a hypnotic loop—slow, deliberate, mesmerizing. Brightness in your hands, every blink is controlled by you.',
+  'One color takes over, flowing gently across the strip, fading in and out as if it has a mind of its own.',
+  'It’s not random, it’s personal—select your color and watch it pulse, fade, and glow, perfectly synced with your mood.',
+  'A single hue, endless possibilities. Smooth, slow fades that let you control the intensity and make the strip feel alive.',
+  'Fade in, fade out, repeat. Your color, your rules. The LEDs obey, moving in rhythm with your choice and brightness.'
 ]
