@@ -1,9 +1,9 @@
-const PulseSyncDescriptions = [
-  'A serpent runs right to left, then another returns—endless back-and-forth.',
-  'Light travels across the strip like a pulse: one snake slides to the end, then a new one rises from the other side in a fresh random shade. Brightness control makes it either smooth or intense.',
-  'It’s symmetry in motion—snakes of color taking turns crossing the strip, first one direction, then the other. Each carries a random hue, disappearing as soon as it arrives. The pattern loops like a heartbeat, but you decide if it glows soft like breath or burns sharp like lightning with brightness control.',
-  'One path forward, another back—an infinite chase between colors.',
-  'Every run feels like a reply: a serpent crosses, then another answers from the opposite side in its own tone.',
-  'The strip becomes a corridor of movement—light snakes sliding right, then left, endlessly. The flow is balanced, yet unpredictable in color. Lower brightness for subtle dialogue, raise it to watch the strip scream with energy.',
-  'A constant rhythm of departure and return—color snakes moving in opposite directions, never the same shade twice.'
+const FireworksBurstDescriptions = [
+  'A rocket of light, gone in a flash, exploding where you least expect.',
+  'Colors launch fast, racing up the strip before bursting into random sparks. Brightness decides if it’s a quiet pop or a blinding explosion.',
+  'It feels like celebration coded into LEDs—single rockets darting forward, each in its own shade, before erupting in bursts of light at random spots. Every explosion is different, unpredictable, alive. With brightness under your hand, it shifts from subtle shimmer to firework chaos.',
+  'One second it’s a streak, the next it’s gone—only sparks left behind.',
+  'Think of it as neon fireworks—fast, random, always surprising.',
+  'The strip becomes a sky for digital rockets—colors shooting, exploding, fading away. Dial down the brightness for gentle sparks, or push it up and flood the strip with wild energy.',
+  'Unpredictable bursts of color, each one short-lived but impossible to ignore.'
 ]
