@@ -1,9 +1,9 @@
-const SnakesChasingDescriptions = [
-  'Snakes of light racing after each other, never stopping.',
-  'Each LED forms a serpent—random colors sliding forward, one chasing the next. Adjust the brightness to decide if they slither smooth or strike sharp.',
-  'It’s a hunt made of color—multiple snakes twisting through the strip, every body a random shade, every chase endless. They don’t move in chaos but in pursuit, like coded signals of light chasing their own reflections. You choose if the scene glows faint like whispers or burns hot like fire with brightness control.',
-  'Fast trails of color that look alive, like light has found its own prey.',
-  'Think of it as neon serpents, each with its own shade, weaving across the strip in an endless pursuit.',
-  'The effect isn’t static—it’s alive, serpents of color looping through the LEDs, chasing endlessly but never catching. Lower the brightness for subtle motion, raise it and the chase becomes electric.',
-  'Lines of light slither forward, random in color but unified in motion, like snakes racing into the dark.'
+const PulseSyncDescriptions = [
+  'A serpent runs right to left, then another returns—endless back-and-forth.',
+  'Light travels across the strip like a pulse: one snake slides to the end, then a new one rises from the other side in a fresh random shade. Brightness control makes it either smooth or intense.',
+  'It’s symmetry in motion—snakes of color taking turns crossing the strip, first one direction, then the other. Each carries a random hue, disappearing as soon as it arrives. The pattern loops like a heartbeat, but you decide if it glows soft like breath or burns sharp like lightning with brightness control.',
+  'One path forward, another back—an infinite chase between colors.',
+  'Every run feels like a reply: a serpent crosses, then another answers from the opposite side in its own tone.',
+  'The strip becomes a corridor of movement—light snakes sliding right, then left, endlessly. The flow is balanced, yet unpredictable in color. Lower brightness for subtle dialogue, raise it to watch the strip scream with energy.',
+  'A constant rhythm of departure and return—color snakes moving in opposite directions, never the same shade twice.'
 ]
