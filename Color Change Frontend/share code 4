@@ -1,8 +1,9 @@
-.modal-content {
-  height: 100%;
-}
-
-.modal-body {
-  height: calc(100% - 60px); /* ناقص الهيدر والفوتر */
-  overflow-y: auto;
+.about-body{
+  padding: 36px;
+  color: #E6E6EA;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
