@@ -1,29 +1,8 @@
-<div class="modal-body about-body">
-  <div class="about-info">
-    <h3>Welcome to the Light Switcher 🔦</h3>
-    <p>
-      This website lets you play with <strong>colors</strong> — pick one and watch the room light up.  
-      Each color has its own little <em>attitude</em>, so don’t take their roast personally. 😏
-    </p>
+.modal-content {
+  height: 100%;
+}
 
-    <ul>
-      <li><strong>Blue:</strong> Cool, calm, smarter than you (at least it thinks so).</li>
-      <li><strong>Yellow:</strong> Bright, loud, and probably judging your choices.</li>
-      <li><strong>Green:</strong> Fresh, alive… basically grass. <em>Go touch some.</em></li>
-      <li><strong>Orange:</strong> Warm, deep, a bit dramatic — just like your search history.</li>
-      <li><strong>Purple:</strong> Royal, mysterious, and way too confident.</li>
-      <li><strong>White:</strong> The plain one. Pure, simple, still roasting you.</li>
-      <li><strong>Off (Black):</strong> Darkness itself. The ultimate power. <span style="color:#aaa;">W dev.</span></li>
-    </ul>
-
-    <p>
-      👉 <strong>How it works:</strong> Just click a color button and the lights change.  
-      Click <em>Off</em> to shut it all down (aka pure black screen).  
-    </p>
-
-    <p style="margin-top:18px; font-size:0.95rem; color:#bbb;">
-      PS: All roasts are just for fun — don’t take them seriously.  
-      Unless you pick <em>Orange</em>… then you deserve it. 😈
-    </p>
-  </div>
-</div>
+.modal-body {
+  height: calc(100% - 60px); /* ناقص الهيدر والفوتر */
+  overflow-y: auto;
+}
