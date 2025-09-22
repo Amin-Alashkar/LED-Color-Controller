@@ -1,11 +1,20 @@
-المشكلة عندك إن الصندوق (اللوحة / المودال) موجود غالبًا جوا الـ card أو عنصر ثاني محدود الحجم. هذا بيخلي عرضه وارتفاعه مرتبطين بالـ card، ومهما كبرت النصوص ما رح يمدد الصندوق لآخر الصفحة. كمان الـ .about-body معمول له display:flex; align-items:center; justify-content:center;، وهذا بيخلي النص يتجمع بالوسط بدل ما يتمدد طبيعي ويظهر كله، ومع overflow:hidden أو غيابه النص ممكن يختفي.
+Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.
 
-الحل:
-	1.	انقل المودال خارج الـ card وحطه مباشرة داخل <body> حتى يكون حر ومش محكوم بقيود البطاقة.
-	2.	خلي المودال ياخذ position: fixed ويغطي الشاشة كلها، وهيك يظل فوق كل العناصر مهما كانت.
-	3.	خليه يكون عنده z-index أعلى من أي card، حتى ما يختفي تحته.
-	4.	بدل ما تستخدم flex في .about-body، خليه display:block مع نفس الـ padding:36px، وهيك النص يبين كامل.
-	5.	إذا النص طويل، لازم تعطي .about-body overflow:auto و max-height مساوية لارتفاع الشاشة ناقص شوية مساحة للرأس والتذييل. هيك بيطلع عندك سكرول داخلي وما بيختفي المحتوى.
-	6.	وأخيرًا، لازم تربط زر الفتح والإغلاق بحيث يضيف/يشيل كلاس show عشان يتحكم في ظهور المودال والـ backdrop، وكمان تمنع التمرير في الخلفية لما المودال مفتوح.
+✨ What you can do:
+	•	Choose colors freely: Pick from a full spectrum of colors to match your mood or event.
+	•	Try dynamic animations: From smooth breathing to fast-moving waves, fireworks, and other cool effects. Each animation can be stopped, started, or changed anytime.
+	•	Adjust brightness: Make the lights subtle for relaxing nights or bright for parties.
+	•	Real-time control: Changes happen instantly as long as your device is on the same Wi-Fi network as the lights. No delay, no lag.
 
-الخلاصة: سبب المشكلة إن المودال مربوط بعنصر محدود (card) ومعرّف بـ flex يضغط النص، والحل إنك تطلعه برا وتخليه ثابت فوق الصفحة مع overflow داخلي
+⚡ Important things to know:
+	•	The app works only on the same local network. Devices outside your Wi-Fi won’t be able to control the lights.
+	•	Some light effects may look slightly different depending on your chosen brightness and color combinations.
+	•	The lights stay on the last selected animation until you change them. You don’t need to keep the app open all the time.
+	•	Privacy and safety: No internet is required. All communication happens locally on your network, so your data stays private.
+
+💡 Tips for best experience:
+	•	Experiment with combinations of colors and animations — you’ll discover new looks you didn’t expect.
+	•	Adjust brightness according to the room size and environment to get the most dramatic effects.
+	•	Try using multiple devices on the same network — you and your friends can control the lights together in real time.
+
+This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.
