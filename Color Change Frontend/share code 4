@@ -1,9 +1,8 @@
-const BreathingCustomDescriptions = [
-  'Your color, your chill—LEDs breathe slowly, fading in and out like they’re alive, all in the hue you picked.',
-  'Pick a shade, watch it inhale and exhale. Slow, hypnotic pulses that you control.',
-  'Breathing in your vibe—LEDs swell and fade, rhythm set by your chosen color and brightness.',
-  'Soft glow, long fade, short pulse—your color dances through the strip, calm but alive.',
-  'The strip isn’t just breathing, it’s syncing to your color choice. Each fade a signature of your style.',
-  'Choose the color, adjust the brightness, let the LEDs take their slow, hypnotic ride across the strip.',
-  'Breathing effect but make it yours—your hue, your intensity, your mood, all wrapped in a smooth pulse.'
+const MeteorShowerCustomDescriptions = [
+  'Random meteors, now in your color—zap across the strip at insane speeds, each streak unique, brightness under your control.',
+  'You pick the hue, the meteor decides the chaos—fast, bright, and fleeting. Colors chase, vanish, repeat.',
+  'A cosmic storm, but you hold the palette. Meteors shoot in random timing, length, and speed, leaving a trail that’s all yours.',
+  'Speedy streaks explode in your chosen color, unpredictable yet under your command.',
+  'It’s your color, your chaos—meteors appear when they want, fly fast, fade fast, and keep the strip alive.',
+  'Blink, and you’ll miss it. Each meteor bursts in the color you picked, racing across the LEDs in random flashes.'
 ]
