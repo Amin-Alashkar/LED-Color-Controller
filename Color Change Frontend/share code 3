@@ -1,53 +1,32 @@
-الان بدي منك تضيف 10 ألوان عشوائية بدي 3 كمان تخلي كل من هاي النصوص تضهر بي شكل عشوائي حسب خانتها:
+async def running_lights_loop(delay: float = 0.05):
+    """
+    تأثير أضواء متحركة بألوان عشوائية:
+    - لدينا سبع نقاط انطلاق: 19,16,13,10,7,4,1
+    - لكل نقطة، نختار لونًا عشوائيًا ثم نحركه إلى الأسفل حتى الصفر
+    - عندما يصل إلى ما دون 0، نعيد تهيئته بلون جديد عند موقع الانطلاق الأصلي
+    - يستمر هذا التكرار باستمرار طالما لم يُطلَب الإيقاف
+    """
+    global stop_requested
+    spawn_positions = list(range(149, -1, -3))  # [19,16,13,10,7,4,1]
+    # نهيئ الشرارات الثلاث في المواقع الأصلية
+    sparks = []
+    for p in spawn_positions:
+        color = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+        sparks.append({'start': p, 'pos': p, 'color': color})
 
-Fade Colors :
-
-	1.	:
-“Colors appear, then vanish—tweak the brightness, set your vibe.”
-	2.:
-“Random shades flash in and out, never settling. Adjust the glow to match your mood.”
-	3.	:
-“It feels like controlled chaos—one moment the light is here, the next it’s gone, returning differently each time. You can dial the brightness to your liking.”
-	4.	-:
-“A hypnotic rhythm of colors fading in and out, syncing only with their own unpredictable flow. Control the intensity and let it breathe in your space.”
-	5.	:
-“The LEDs move gently, swapping shades, disappearing, then returning like they were never gone. Adjust the brightness—make it subtle or let it shine boldly.”
-	6.	:
-“A cycle of presence and absence—colors vanish before you even get used to them, only to reappear in new shades. You control the glow, the mood, the flow.”
-	7.	:
-“Think of it as meditative light—colors show up, fade, and renew endlessly. Brightness is yours to command.”
-
-⸻
-
-Wave Effect 
-	١:
-“Waves of light moving through the strip—control the glow, set your pace.”
-	2.	-:
-“Colors travel in rhythm, sweeping LED by LED. Adjust brightness to match the flow.”
-	3.	:
-“Imagine a pulse of color stretching and shifting forward, one LED at a time. You decide how strong it shines.”
-	4.	-:
-“A continuous wave of motion—colors ripple through the strip, alive and flowing. Dial the brightness to suit your vibe.”
-	5.	:
-“It’s more than movement; it’s choreography in light. Each LED joins the wave at the perfect moment. Control the glow to make it yours.”
-	6.	:
-“Every shift feels like momentum—a tide of color rolling endlessly. Adjust brightness, let it be subtle or striking.”
-	7.	:
-“Think of it as energy made visible—waves of light flowing in sequence. Brightness is in your hands.”
-
-Rainbom Flow:
-
-	1.	:
-“A spectrum that never stops—adjust the brightness, set your vibe.”
-	2.	-:
-“Colors chase each other endlessly. You decide how bright or soft they shine.”
-	3.	:
-“Every shade flows into the next, never pausing. Dial the brightness to match your mood.”
-	4.-:
-“It’s less about the rainbow, more about the journey—colors fading, blending, shifting endlessly. Control the glow and make it yours.”
-	5.	:
-“Not just colors—it’s a cycle that refuses to settle, each shade slipping into the next before you can even name it. You can tweak the brightness to set the room’s energy exactly how you like.”
-	6.	:
-“Think of it as a story of motion and color—light traveling, shifting, never repeating itself. Push the brightness up or keep it subtle; it’s your scene to control.”
-	7.	:
-“A continuous flow of color, alive and unpredictable. Adjust the glow to make the effect your own.”
+    while not stop_requested:
+        neo.clear_strip()
+        # رسم كل شرارة في موقعها الحالي
+        for s in sparks:
+            if 0 <= s['pos'] < NUM_LEDS:
+                neo.set_led_color(s['pos'], *s['color'])
+        neo.update_strip()
+        await asyncio.sleep(delay)
+        # تحديث كل شرارة: نقلها خطوة لأسفل أو إعادة تهيئتها
+        for s in sparks:
+            s['pos'] -= 1
+            if s['pos'] < 0:
+                s['pos'] = s['start']
+                s['color'] = (random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
+    neo.clear_strip()
+    neo.update_strip()
