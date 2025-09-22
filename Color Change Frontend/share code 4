@@ -1,19 +1,137 @@
-<!-- داخل .card — ضع هذا بعد <h1 class="led-title">LED Color Controller</h1> -->
-<button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
+/* ===== About Button (epic) ===== */
+.about-btn {
+  position: absolute;
+  top: 22px;
+  right: 22px;
+  padding: 10px 18px;
+  font-weight: 700;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(255,200,0,1), rgba(255,120,40,1));
+  color: #071127;
+  box-shadow:
+    0 6px 20px rgba(255,140,30,0.18),
+    0 2px 6px rgba(0,0,0,0.4),
+    0 0 40px rgba(255,160,60,0.12);
+  transform: translateZ(0);
+  transition: transform .2s ease, box-shadow .25s ease, opacity .2s ease;
+  z-index: 30;
+}
+.about-btn:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 32px rgba(255,140,30,0.22); }
 
-<!-- ...باقي المحتوى... -->
+/* ===== Backdrop + Modal ===== */
+.about-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  background: rgba(5,8,15,0.6);
+  backdrop-filter: blur(6px) saturate(120%);
+  z-index: 10000;
+  padding: 30px;
+}
 
-<!-- ضع هذا المودال قبل السطر: <script src="app.js"></script> -->
-<div id="aboutBackdrop" class="about-backdrop" aria-hidden="true">
-  <div id="aboutModal" class="about-modal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
-    <button class="about-close" aria-label="Close about dialog">&times;</button>
-    <div class="about-inner">
-      <h2 id="aboutTitle">About</h2>
-      <p class="about-content">hi</p>
-      <!-- لاحقًا تحط هنا وصف المشروع/روابط/credits -->
-      <div class="about-footer">
-        <button id="aboutOkay" class="about-action">Cool</button>
-      </div>
-    </div>
-  </div>
-</div>
+.about-backdrop.show {
+  display: flex;
+  animation: about-fade-in .28s cubic-bezier(.2,.9,.2,1);
+}
+
+@keyframes about-fade-in {
+  from { opacity: 0; transform: scale(.995); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.about-modal {
+  width: min(920px, 95vw);
+  max-width: 920px;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 30px 80px rgba(3,6,20,0.7), 0 2px 8px rgba(0,0,0,0.5);
+  background: linear-gradient(180deg, rgba(17,24,44,0.98), rgba(8,12,25,0.96));
+  border: 1px solid rgba(255,255,255,0.04);
+  transform: translateY(6px);
+  animation: about-slide-up .36s cubic-bezier(.16,1,.3,1);
+  z-index: 10001;
+}
+
+/* Thin decorative top aura */
+.about-modal::before{
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(255,120,40,0.85), rgba(255,200,60,0.9), rgba(80,200,255,0.6));
+  filter: blur(10px);
+  opacity: .95;
+}
+
+/* modal content */
+.about-inner {
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  color: #e6eefc;
+  text-align: center;
+}
+.about-inner h2 {
+  margin: 0;
+  font-size: 1.9rem;
+  letter-spacing: .6px;
+  color: #fff;
+  text-shadow: 0 6px 30px rgba(80,160,255,0.08);
+}
+.about-content {
+  font-size: 1.1rem;
+  color: rgba(230,238,252,0.95);
+  margin-top: 6px;
+}
+
+/* footer action */
+.about-footer { margin-top: 8px; display:flex; justify-content:center; gap:12px; }
+.about-action {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, rgba(60,150,255,1), rgba(80,200,255,1));
+  color: #021028;
+  font-weight: 700;
+  box-shadow: 0 10px 30px rgba(60,150,255,0.16);
+}
+
+/* close button */
+.about-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform .15s ease, background .15s ease;
+}
+.about-close:hover { transform: rotate(90deg) scale(1.03); background: rgba(255,255,255,0.09); }
+
+/* small screens */
+@media (max-width: 520px) {
+  .about-inner { padding: 20px; }
+  .about-inner h2 { font-size: 1.4rem; }
+  .about-close { top: 10px; right: 10px; width: 40px; height: 40px; }
+}
+
+/* subtle slide animation */
+@keyframes about-slide-up {
+  from { transform: translateY(14px) scale(.995); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
+}
