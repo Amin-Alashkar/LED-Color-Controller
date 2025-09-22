@@ -1,32 +1,11 @@
-// افتراض: زر فتح لديه id="openAboutBtn" و زر إغلاق داخل المودال لديه class="close-about"
-const aboutModal = document.querySelector('.about-modal');
-const modalBackdrop = document.querySelector('.modal-backdrop');
-const openAboutBtn = document.getElementById('openAboutBtn');
-const closeAboutBtns = document.querySelectorAll('.close-about, .about-modal .close-btn');
+المشكلة عندك إن الصندوق (اللوحة / المودال) موجود غالبًا جوا الـ card أو عنصر ثاني محدود الحجم. هذا بيخلي عرضه وارتفاعه مرتبطين بالـ card، ومهما كبرت النصوص ما رح يمدد الصندوق لآخر الصفحة. كمان الـ .about-body معمول له display:flex; align-items:center; justify-content:center;، وهذا بيخلي النص يتجمع بالوسط بدل ما يتمدد طبيعي ويظهر كله، ومع overflow:hidden أو غيابه النص ممكن يختفي.
 
-// فتح المودال
-function openAbout() {
-  modalBackdrop.classList.add('show');
-  aboutModal.classList.add('show');
-  // منع سكرول الخلفية إن أردت:
-  document.documentElement.style.overflow = 'hidden';
-}
+الحل:
+	1.	انقل المودال خارج الـ card وحطه مباشرة داخل <body> حتى يكون حر ومش محكوم بقيود البطاقة.
+	2.	خلي المودال ياخذ position: fixed ويغطي الشاشة كلها، وهيك يظل فوق كل العناصر مهما كانت.
+	3.	خليه يكون عنده z-index أعلى من أي card، حتى ما يختفي تحته.
+	4.	بدل ما تستخدم flex في .about-body، خليه display:block مع نفس الـ padding:36px، وهيك النص يبين كامل.
+	5.	إذا النص طويل، لازم تعطي .about-body overflow:auto و max-height مساوية لارتفاع الشاشة ناقص شوية مساحة للرأس والتذييل. هيك بيطلع عندك سكرول داخلي وما بيختفي المحتوى.
+	6.	وأخيرًا، لازم تربط زر الفتح والإغلاق بحيث يضيف/يشيل كلاس show عشان يتحكم في ظهور المودال والـ backdrop، وكمان تمنع التمرير في الخلفية لما المودال مفتوح.
 
-// إغلاق المودال
-function closeAbout() {
-  aboutModal.classList.remove('show');
-  modalBackdrop.classList.remove('show');
-  document.documentElement.style.overflow = ''; // إعادة السلوك الطبيعي
-}
-
-// ربط الأحداث
-if (openAboutBtn) openAboutBtn.addEventListener('click', openAbout);
-closeAboutBtns.forEach(btn => btn.addEventListener('click', closeAbout));
-
-// إغلاق عند الضغط خارج المحتوى (على الـ backdrop)
-modalBackdrop.addEventListener('click', closeAbout);
-
-// إغلاق بمفتاح ESC
-document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && aboutModal.classList.contains('show')) closeAbout();
-});
+الخلاصة: سبب المشكلة إن المودال مربوط بعنصر محدود (card) ومعرّف بـ flex يضغط النص، والحل إنك تطلعه برا وتخليه ثابت فوق الصفحة مع overflow داخلي
