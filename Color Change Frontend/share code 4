@@ -1,8 +1,8 @@
-const MeteorShowerCustomDescriptions = [
-  'Random meteors, now in your color—zap across the strip at insane speeds, each streak unique, brightness under your control.',
-  'You pick the hue, the meteor decides the chaos—fast, bright, and fleeting. Colors chase, vanish, repeat.',
-  'A cosmic storm, but you hold the palette. Meteors shoot in random timing, length, and speed, leaving a trail that’s all yours.',
-  'Speedy streaks explode in your chosen color, unpredictable yet under your command.',
-  'It’s your color, your chaos—meteors appear when they want, fly fast, fade fast, and keep the strip alive.',
-  'Blink, and you’ll miss it. Each meteor bursts in the color you picked, racing across the LEDs in random flashes.'
+const PulseSyncCustomDescriptions = [
+  'Your color, your pulse—fades in and out unpredictably, each blink arriving like it owns its own timeline.',
+  'Fade-in, fade-out, random beats—but all in your chosen hue. The strip breathes your color in chaotic harmony.',
+  'Each pulse dances alone, yet part of the flow, fading up and down at random times. You control the shade, not the chaos.',
+  'Colors rise and vanish at their own pace, synced in randomness—your chosen hue runs the show.',
+  'It’s like the LEDs are breathing your color, each fade coming when it wants, unpredictable but hypnotic.',
+  'Your hue takes center stage. Pulses fade-in and fade-out at random intervals, creating a living rhythm across the strip.'
 ]
