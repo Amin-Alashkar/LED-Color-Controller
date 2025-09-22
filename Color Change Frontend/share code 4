@@ -1,9 +1,9 @@
-const RunningLightsDescriptions = [
-  'Colors racing down the strip—fast, random, alive.',
-  'Tiny sparks keep running, one after another, colors changing as they fall—like light chasing itself. Brightness? You’re in charge.',
-  'It feels like streaks of energy are being released from hidden points, racing endlessly toward the bottom. Each spark dies only to be reborn in a new shade, creating an endless cycle of movement. With brightness control, you choose if it’s a quiet run or a blinding chase.',
-  'Flashes on the run—never stopping, never the same color twice.',
-  'Random bursts of light keep dropping in sequence, like rain made of neon sparks, looping forever.',
-  'The strip becomes a track for colors—each light sprinting downward, resetting, and starting over. It’s chaotic but rhythmic, infinite but always new. Dial the brightness, and the race feels either calm or explosive.',
-  'Running sparks—falling, resetting, glowing again. It never really stops, just keeps moving in its own strange rhythm.'
+const BreathingEffectDescriptions = [
+  'Lights that inhale and exhale—slow, soft, alive.',
+  'Colors fade in and fade out at their own pace, like the strip itself is breathing. Adjust the brightness, and you control how gentle or intense each breath feels.',
+  'It’s not a blink, not a flash—it’s a rhythm of presence and absence. Each shade appears slowly, settles in the room, then dissolves as if the LEDs are sighing. The cycle never repeats the same way twice, and with brightness in your hands, you decide if it feels like calm meditation or something deeper.',
+  'Random tones emerge quietly, glow for a moment, then slip away like they were never there.',
+  'Think of it as heartbeat energy—soft pulses of color flowing in and out, too slow to chase, too real to ignore.',
+  'The effect feels alive, like the LEDs are syncing with a hidden rhythm you can’t quite catch. Lower the brightness and it whispers; raise it, and it feels like the room itself is breathing fire.',
+  'Colors dissolve into nothing, only to return smoother and slower, like a light practicing patience.'
 ]
