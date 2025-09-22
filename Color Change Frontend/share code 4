@@ -1,68 +1,32 @@
-/* اجعل الـ about modal يغطي الشاشة ويظل فوق الكارد */
-.about-modal {
-  position: fixed;        /* <-- مهم */
-  inset: 0;               /* top:0; right:0; bottom:0; left:0; */
-  display: none;          /* يظهر فقط عند إضافة .show */
-  align-items: center;
-  justify-content: center;
-  z-index: 10010;         /* أعلى من .card (الـ card لديك z-index:10) */
-  pointer-events: auto;
-  background: transparent; /* الخلفية صبح مسؤولية modal-backdrop */
+// افتراض: زر فتح لديه id="openAboutBtn" و زر إغلاق داخل المودال لديه class="close-about"
+const aboutModal = document.querySelector('.about-modal');
+const modalBackdrop = document.querySelector('.modal-backdrop');
+const openAboutBtn = document.getElementById('openAboutBtn');
+const closeAboutBtns = document.querySelectorAll('.close-about, .about-modal .close-btn');
+
+// فتح المودال
+function openAbout() {
+  modalBackdrop.classList.add('show');
+  aboutModal.classList.add('show');
+  // منع سكرول الخلفية إن أردت:
+  document.documentElement.style.overflow = 'hidden';
 }
 
-/* الخلفية المعتمة - خلّها تظهر مع الكلاس .show */
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.6);
-  backdrop-filter: blur(6px);
-  display: none;       /* نظهرها برمجياً مع المودال */
-  z-index: 10005;      /* أقل من about-modal لكن فوق الكارد */
+// إغلاق المودال
+function closeAbout() {
+  aboutModal.classList.remove('show');
+  modalBackdrop.classList.remove('show');
+  document.documentElement.style.overflow = ''; // إعادة السلوك الطبيعي
 }
 
-/* عند الظهور */
-.about-modal.show { display: flex; }
-.modal-backdrop.show { display: block; }
+// ربط الأحداث
+if (openAboutBtn) openAboutBtn.addEventListener('click', openAbout);
+closeAboutBtns.forEach(btn => btn.addEventListener('click', closeAbout));
 
-/* المحتوى نفسه داخل المودال */
-.about-content {
-  width: 92%;
-  max-width: 920px;
-  max-height: calc(100vh - 80px); /* لا يتجاوز ارتفاع الشاشة */
-  height: auto;
-  border-radius: 14px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background: linear-gradient(180deg, rgba(18,20,30,0.98), rgba(12,14,22,0.95));
-  box-shadow: 0 30px 80px rgba(6,8,16,0.6);
-}
+// إغلاق عند الضغط خارج المحتوى (على الـ backdrop)
+modalBackdrop.addEventListener('click', closeAbout);
 
-/* ضع الـ about-body قابل للتمرير داخلياً مع الحفاظ على padding */
-.about-body {
-  padding: 36px;                /* تحفظ الـ padding اللي بدك ياها */
-  box-sizing: border-box;       /* padding محسوب داخل الأبعاد */
-  color: #E6E6EA;
-  font-size: 1.05rem;
-  line-height: 1.6;
-  display: block;               /* ليس flex-center حتى يمرر النص بشكل طبيعي */
-  overflow: auto;               /* يسمح بالـ scroll داخل المودال إذا النص طويل */
-  max-height: calc(100vh - 220px); /* يخلّي مساحة للرأس والتذييل */
-}
-
-/* لو تبي تترك محتوى الوسطي في المنتصف (اختياري) */
-.about-body .center-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 120px;
-}
-
-/* غيّر ترتيب z-index للـ card لو لزم لتجنب التضارب */
-.card {
-  z-index: 10;
-  position: relative;
-}
+// إغلاق بمفتاح ESC
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && aboutModal.classList.contains('show')) closeAbout();
+});
