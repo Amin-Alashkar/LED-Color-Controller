@@ -1,0 +1,403 @@
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="image.icon">
+    <link rel="stylesheet" href="s.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <title>LED Color Controller</title>
+</head>
+<body>
+    <div class="card">
+        <h1 class="led-title">LED Color Controller</h1>
+        <div class="color-display" id="colorDisplay">Loading…</div>
+
+        <h2 class="button-title">Colors</h2>
+        <div class="button-container">
+            <button id="redBtn"    onclick="changeColor('#ff0000')">Red</button>
+            <button id="blueBtn"   onclick="changeColor('#0000ff')">Blue</button>
+            <button id="greenBtn"  onclick="changeColor('#00ff00')">Green</button>
+            <button id="orangeBtn" onclick="changeColor('#FFA500')">Orange</button>
+            <button id="yellowBtn" onclick="changeColor('#FFFF00')">Yellow</button>
+            <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple</button>
+            <!-- <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button> -->
+            <button id="whiteBtn"  onclick="changeColor('#FFFFFF')">White</button>
+            <!-- <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button> -->
+            <!-- <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button> -->
+            <br>
+            <button id="offBtn" onclick="changeColor('#000000')">Off</button>
+        </div>
+
+        <h2 class="button-title">Animation</h2>
+        <div class="button-container">
+            <button id="lightOneBtn" class="custom-animation-btn">Fade Colors</button>
+            <button id="WaveEffectBtn" class="custom-animation-btn">Wave Effect</button>
+            <button id="RainbowFlowBtn" class="custom-animation-btn">Rainbow Flow</button>
+            <button id="BlinkingPatternBtn" class="custom-animation-btn">Blinking Pattern</button>
+            <button id="RunningLightsBtn" class="custom-animation-btn">Running Lights</button>
+            <button id="BreathingEffectBtn" class="custom-animation-btn">Breathing Effect</button>
+            <button id="MeteorShowerBtn" class="custom-animation-btn">Meteor Shower</button>
+            <button id="PulseSyncBtn" class="custom-animation-btn">Pulse Sync</button>
+            <button id="FireworksBurstBtn" class="custom-animation-btn">Fireworks Burst</button>
+            <button id="MeteorShowerNewBtn" class="custom-animation-btn">Meteor Shower</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+        </div>
+
+        <h2 class="button-title">Color Picker</h2>
+        <div class="color-picker-wrapper">
+            <div class="color-ring"></div>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
+
+        <h2 class="button-title">Custom animation</h2>
+        <div class="button-container">
+            <button id="customFadeBtn">Fade Colors </button>
+            <button id="customBlinkBtn">Blinking Pattern</button>
+            <button id="customBreathingBtn">Breathing Effect</button>
+            <button id="customMeteorShowerBtn">Meteor Shower</button>
+            <button id="customPulseSyncBtn">Pulse Sync</button>
+            <button id="customGlitchFlashBtn">Glitch Flash</button>
+            <button id="customHeartBeatBtn">Heart Beat</button>
+            <button id="customTunnelEffectBtn">Tunnel Effect</button>
+            <button id="customLaserShotBtn">Laser Shot</button>
+            <button id="customSparklingStarsBtn">Sparkling Stars</button>
+            <button id="customStrobeFlashBtn">Strobe Flash</button>
+            <button id="customKnightRiderBtn">Knight Rider</button>
+            <button id="customBounceBackBtn">Bounce Back</button>
+            <button id="customRippleTouchBtn">Ripple Touch</button>
+            <button id="customFireFlickerBtn">Fire Flicker</button>
+            <button id="customColorWipeBtn">Color Wipe</button>
+            <button id="customStaticGlowBtn">Static Glow with Flicker</button>
+            <button id="customColorEchoBtn">Color Echo</button>
+            <button id="customTimeWarpBtn">Time Warp</button>
+            <button id="customQuantumFlickerBtn">Quantum Flicker</button>
+            <button id="customRunningLightsBtn">Running Lights</button>
+            <button id="customFireworksBurstBtn">Fireworks Burst</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+
+
+        </div>
+        <!-- <div class="container">
+        <div class="header">
+            <h1>Premium Dashboard</h1>
+            <p>Access exclusive content and powerful management tools with your VIP privileges</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="content-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Advanced Analytics</h3>
+                <p>Gain insights with real-time data visualization and performance metrics for your business.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-users-cog"></i>
+                <h3>User Management</h3>
+                <p>Control access levels, permissions, and roles for all users in your organization.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security Center</h3>
+                <p>Monitor security events, configure firewalls, and protect your valuable assets.</p>
+            </div>
+        </div> -->
+        <!-- ABOUT BUTTON (placed at end of the page) -->
+        <footer class="site-footer">
+        <button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
+        </footer>
+    </div>
+
+        <!-- ABOUT MODAL -->
+        <div id="aboutModal" class="modal-backdrop about-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content about-content" role="document" aria-labelledby="aboutTitle">
+            <div class="modal-header about-header">
+            <h2 id="aboutTitle">About</h2>
+            <button id="aboutClose" class="close-btn" aria-label="Close about panel" onclick="closeAbout()">&times;</button>
+            </div>
+            <div class="modal-body about-body">
+            <div class="about-info">
+                <div class="about-container">
+                    <div class="about-header">
+                        <h1>Smart Light Controller</h1>
+                        <p>The easiest way to customize your lighting experience</p>
+                    </div>
+                    
+                    <div class="about-content">
+                        <div class="about-section">
+                            <p>Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.</p>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">✨ What you can do</h3>
+                            <ul class="feature-list">
+                                <li><span class="highlight">Choose colors freely</span>: Pick from a full spectrum of colors to match your mood or event.</li>
+                                <li><span class="highlight">Try dynamic animations</span>: From smooth breathing to fast-moving waves, fireworks, and other cool effects. Each animation can be stopped, started, or changed anytime.</li>
+                                <li><span class="highlight">Adjust brightness</span>: Make the lights subtle for relaxing nights or bright for parties.</li>
+                                <li><span class="highlight">Real-time control</span>: Changes happen instantly as long as your device is on the same Wi-Fi network as the lights. No delay, no lag.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">⚡ Important things to know</h3>
+                            <ul class="feature-list">
+                                <li>The app works only on the same local network. Devices outside your Wi-Fi won't be able to control the lights.</li>
+                                <li>Some light effects may look slightly different depending on your chosen brightness and color combinations.</li>
+                                <li>The lights stay on the last selected animation until you change them. You don't need to keep the app open all the time.</li>
+                                <li><span class="highlight">Privacy and safety</span>: No internet is required. All communication happens locally on your network, so your data stays private.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">💡 Tips for best experience</h3>
+                            <ul class="feature-list">
+                                <li>Experiment with combinations of colors and animations — you'll discover new looks you didn't expect.</li>
+                                <li>Adjust brightness according to the room size and environment to get the most dramatic effects.</li>
+                                <li>Try using multiple devices on the same network — you and your friends can control the lights together in real time.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <p>This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-note">
+                        <p>Smart Light Controller - Version 1.0</p>
+                    </div>
+                    <style>
+                        * {
+                            margin: 0;
+                            padding: 0;
+                            box-sizing: border-box;
+                            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                        }
+
+                        body {
+                            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+                            color: #f5f5f5;
+                            min-height: 100vh;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 20px;
+                        }
+
+                        .about-container {
+                            max-width: 900px;
+                            width: 100%;
+                            background: rgba(255, 255, 255, 0.05);
+                            backdrop-filter: blur(10px);
+                            border-radius: 20px;
+                            padding: 40px;
+                            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+                            border: 1px solid rgba(255, 255, 255, 0.1);
+                            position: relative;
+                            overflow: hidden;
+                        
+                        }
+
+                        .about-container::before {
+                            content: '';
+                            position: absolute;
+                            top: -50%;
+                            left: -50%;
+                            width: 200%;
+                            height: 200%;
+                            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+                            transform: rotate(30deg);
+                            z-index: -1;
+                        }
+
+                        .about-header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                            position: relative;
+                        }
+
+                        .about-header h1 {
+                            font-size: 2.5rem;
+                            margin-bottom: 10px;
+                            background: linear-gradient(90deg, #00c6ff, #0072ff);
+                            -webkit-background-clip: text;
+                            background-clip: text;
+                            color: transparent;
+                            text-shadow: 0 2px 10px rgba(0, 114, 255, 0.2);
+                        }
+
+                        .about-header p {
+                            font-size: 1.1rem;
+                            opacity: 0.8;
+                        }
+
+                        .about-content {
+                            line-height: 1.7;
+                        }
+
+                        .about-section {
+                            margin-bottom: 30px;
+                            padding: 20px;
+                            background: rgba(255, 255, 255, 0.03);
+                            border-radius: 15px;
+                            transition: transform 0.3s ease, box-shadow 0.3s ease;
+                        }
+
+                        .about-section:hover {
+                            transform: translateY(-5px);
+                            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+                            background: rgba(255, 255, 255, 0.05);
+                        }
+
+                        .section-title {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 15px;
+                            font-size: 1.3rem;
+                            color: #64b5f6;
+                        }
+
+                        .section-title::before {
+                            content: '';
+                            display: inline-block;
+                            width: 20px;
+                            height: 20px;
+                            margin-right: 10px;
+                            background: linear-gradient(135deg, #00c6ff, #0072ff);
+                            border-radius: 50%;
+                        }
+
+                        .feature-list {
+                            list-style-type: none;
+                            padding-left: 10px;
+                        }
+
+                        .feature-list li {
+                            margin-bottom: 12px;
+                            position: relative;
+                            padding-left: 30px;
+                        }
+
+                        .feature-list li::before {
+                            content: '•';
+                            position: absolute;
+                            left: 0;
+                            color: #64b5f6;
+                            font-size: 1.5rem;
+                            line-height: 1;
+                        }
+
+                        .highlight {
+                            background: linear-gradient(90deg, rgba(100, 181, 246, 0.2), transparent);
+                            padding: 2px 5px;
+                            border-radius: 4px;
+                        }
+
+                        .footer-note {
+                            text-align: center;
+                            margin-top: 40px;
+                            padding-top: 20px;
+                            border-top: 1px solid rgba(255, 255, 255, 0.1);
+                            font-style: italic;
+                            opacity: 0.7;
+                        }
+
+                        @media (max-width: 768px) {
+                            .about-container {
+                                padding: 25px;
+                            }
+                            
+                            .about-header h1 {
+                                font-size: 2rem;
+                            }
+                            
+                            .about-section {
+                                padding: 15px;
+                            }
+                        }
+
+                        @media (max-width: 480px) {
+                            .about-container {
+                                padding: 20px 15px;
+                            }
+                            
+                            .about-header h1 {
+                                font-size: 1.8rem;
+                            }
+                            
+                            .section-title {
+                                font-size: 1.2rem;
+                            }
+                        }
+                    </style>
+                </div>
+
+            </div>
+            </div>
+        </div>
+        </div>
+
+    <!-- Modal -->
+    <!-- <div id="adminModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Panel</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="password-input" placeholder="Enter admin username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="password-input" placeholder="Enter your password">
+                </div>
+                
+                <button class="submit-btn">Access Dashboard</button>
+                
+                <div class="footer-note">
+                    <p>Restricted access. Unauthorized use is prohibited.</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+        <div id="page-overlay"></div>
+    <div class="stars-container">
+        
+    </div>
+
+
+
+    <!-- Brightness Control Panel -->
+    <div id="brightnessPanel" class="brightness-panel hidden">
+        <div class="brightness-header">
+            <h3>Set Animation Brightness</h3>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="brightness-content">
+            <p class="brightness-recommendation">Recommended limit: 25%</p>
+            <div class="brightness-slider-container">
+                <input type="range" min="0" max="100" value="25" class="brightness-slider" id="brightnessSlider">
+                <span class="brightness-value" id="brightnessValue">25%</span>
+            </div>
+            <button class="brightness-apply-btn" id="applyBrightness">Apply</button>
+        </div>
+    </div>
+    <!-- إضافة عنصر الـ tooltip -->
+    <div id="animationTooltip" class="animation-tooltip">
+        <div class="tooltip-content">
+            <h3 id="tooltipTitle">Animation Name</h3>
+            <p id="tooltipDescription">Animation description will appear here.</p>
+        </div>
+        <div class="tooltip-arrow"></div>
+    </div>
+
+
+    <script src="app.js"></script>
+</body>
+</html>
