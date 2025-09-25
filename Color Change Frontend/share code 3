@@ -1,9 +1,45 @@
-const BlinkingDescriptions = [
-    'Fast flashes, random, gone in an instant.',
-    'LEDs blink sharp and sudden, each color a quick spark that disappears before you catch it—brightness stays in your hands.',
-    'No rhythm, no pattern—just a restless storm of colors flashing in and out, like the strip is alive with hidden energy. One moment bright, the next completely gone, leaving you waiting for the next unpredictable strike.',
-    'Sudden sparks of light—blink and you’ll miss it.',
-    'A strobe-like effect, but wilder—random flashes that feel like coded signals only your eyes can decode.',
-    'This isn’t gentle or calm—it’s electricity in motion. The LEDs erupt in quick bursts, each blink random and impatient, as if the strip is trying to get your attention with every flash. You decide how blinding or subtle it gets with brightness control.',
-    'Flashes of color hit at random, then vanish as quickly as they came, keeping the whole effect tense and alive.'
-]
+async def fade_colors_loop(delay: float = 0.0001, steps: int = 10):
+    global stop_requested
+    COLORS = [
+        (255, 255, 255),
+        (255,   0,   0),
+        (0,     0, 255),
+        (0,   255,   0),
+        (255, 255,   0),
+        (255,   0, 255),
+        (0,   255, 255),
+    ]
+    while not stop_requested:
+        for (r_t, g_t, b_t) in COLORS:
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_t * factor)
+                g = int(g_t * factor)
+                b = int(b_t * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_t * factor)
+                g = int(g_t * factor)
+                b = int(b_t * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
