@@ -19,6 +19,7 @@ const blinkingPatternBtn        = document.getElementById('BlinkingPatternBtn');
 const runningLightsBtn          = document.getElementById('RunningLightsBtn');
 const breathingEffectBtn        = document.getElementById('BreathingEffectBtn');
 const snakesChasingBtn          = document.getElementById('MeteorShowerBtn');
+const randomColorsBtn           = document.getElementById('RandomColorsBtn');
 const meteorShowerNewBtn        = document.getElementById('MeteorShowerNewBtn');
 const pulseSyncBtn              = document.getElementById('PulseSyncBtn');
 const fireworksBurstBtn         = document.getElementById('FireworksBurstBtn');
@@ -182,6 +183,18 @@ async function fetchAndApplyState() {
         } else {
             snakesChasingBtn.classList.remove('active');
             snakesChasingBtn.textContent = 'Snakes Chasing';
+        }
+        // ----------- Random Colors ----------
+        if (animation === "random_colors") {
+            isAnimationRunning = true;
+            currentAnim = "random_colors";
+            randomColorsBtn.classList.add('active');
+            randomColorsBtn.textContent = 'Random Colors (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Random Colors";
+        } else {
+            randomColorsBtn.classList.remove('active');
+            randomColorsBtn.textContent = 'Random Colors';
         }
 
         // ———  single snake (New Meteor Shower) ———
@@ -522,6 +535,8 @@ async function fetchAndApplyState() {
         meteorShowerNewBtn.classList.remove('active');
         meteorShowerNewBtn.textContent = 'Meteor Shower';
         fireworksBurstBtn.classList.remove('active');
+        randomColorsBtn.textContent = 'Random Colors';
+        randomColorsBtn.classList.remove('active')
         fireworksBurstBtn.textContent = 'Fireworks Burst';
         customFadeBtn.classList.remove('active');
         customFadeBtn.textContent = 'Fade Colors - Custom';
@@ -605,6 +620,8 @@ async function stopAnimation() {
     meteorShowerNewBtn.classList.remove('active');
     meteorShowerNewBtn.textContent = 'Meteor Shower';
     fireworksBurstBtn.classList.remove('active');
+    randomColorsBtn.textContent = 'Random Colors';
+    randomColorsBtn.classList.remove('active')
     fireworksBurstBtn.textContent = 'Fireworks Burst';
     customFadeBtn.classList.remove('active');
     customFadeBtn.textContent = 'Fade Colors - Custom';
@@ -818,6 +835,23 @@ async function startSingleSnake() {
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Meteor Shower";
     await sendRequest("/animate", { animation_type: "single_snake" });
+}
+
+async function startRandomColors() {
+    if (isAnimationRunning && currentAnim !== "Random Colors") {
+        await stopAnimation();
+    }
+    if (isAnimationRunning && currentAnim === "Random Colors") {
+        await stopAnimation();
+        return;
+    }
+    isAnimationRunning = true;
+    currentAnim = "Random Colors";
+    randomColorsBtn.classList.add('active');
+    randomColorsBtn.textContent = 'Random Colors (Running)';
+    cardElement.style.background = "#000000";
+    colorDisplay.textContent = "Random Colors";
+    await sendRequest("/animate", { animation_type: "Random Colors" });
 }
 
 // Fireworks Burst
@@ -1483,6 +1517,7 @@ runningLightsBtn        .addEventListener("click", startRunningLights);
 breathingEffectBtn      .addEventListener("click", startBreathingAnimation);
 snakesChasingBtn        .addEventListener("click", startSnakesChasing);
 meteorShowerNewBtn      .addEventListener("click", startSingleSnake);
+randomColorsBtn         .addEventListener("click", startRandomColors);
 fireworksBurstBtn       .addEventListener("click", startFireworksBurst);
 offBtn                  .addEventListener("click", stopAnimation);
 off2Btn                 .addEventListener("click", stopAnimation);
@@ -1642,6 +1677,18 @@ evtSource.onmessage = e => {
         } else {
             meteorShowerNewBtn.classList.remove('active');
             meteorShowerNewBtn.textContent = 'Meteor Shower';
+        }
+
+        if (animation === "random_colors") {
+            isAnimationRunning = true;
+            currentAnim = "random_colors";
+            randomColorsBtn.classList.add('active');
+            randomColorsBtn.textContent = 'Random Colors (Running)';
+            cardElement.style.background = "#000000";
+            colorDisplay.textContent = "Random Colors";
+        } else {
+            randomColorsBtn.classList.remove('active');
+            randomColorsBtn.textContent = 'Random Colors';
         }
 
         if (animation === "fireworks_burst") {
@@ -2108,6 +2155,8 @@ document.querySelectorAll('.button-container button, .custom-animation-btn').for
         && button.id !== 'PulseSyncBtn'
         && button.id !== 'FireworksBurstBtn'
         && button.id !== 'MeteorShowerNewBtn'
+        && button.id !== 'RandomColorsBtn'
+
     ) {
         button.addEventListener('click', function() {
             // Store the current animation type
@@ -2189,25 +2238,26 @@ async function updateBrightness(brightness) {
 // بيانات التلميحات لكل زر
 const tooltipData = {
     // أزرار الألوان
-    'redBtn': { title: 'Red Color' },
-    'blueBtn': { title: 'Blue Color' },
-    'greenBtn': { title: 'Green Color' },
-    'orangeBtn': { title: 'Orange Color' },
-    'yellowBtn': { title: 'Yellow Color' },
-    'purpleBtn': { title: 'Purple Color' },
-    'whiteBtn': { title: 'White Color' },
-    'offBtn': { title: 'Turn Off' },
-    'off2Btn': { title: 'Turn Off'},
+    'redBtn'                    : { title: 'Red Color' },
+    'blueBtn'                   : { title: 'Blue Color' },
+    'greenBtn'                  : { title: 'Green Color' },
+    'orangeBtn'                 : { title: 'Orange Color' },
+    'yellowBtn'                 : { title: 'Yellow Color' },
+    'purpleBtn'                 : { title: 'Purple Color' },
+    'whiteBtn'                  : { title: 'White Color' },
+    'offBtn'                    : { title: 'Turn Off' },
+    'off2Btn'                   : { title: 'Turn Off'},
     
     // أزرار الأنيميشن الأساسية
 
-    'lightOneBtn'               :{ title: 'Fade Colors' },
+    'lightOneBtn'               : { title: 'Fade Colors' },
     'WaveEffectBtn'             : { title: 'Wave Effect' },
     'RainbowFlowBtn'            : { title: 'Rainbow Flow' },
     'BlinkingPatternBtn'        : { title: 'Blinking Pattern' },
     'RunningLightsBtn'          : { title: 'Running Lights' },
     'BreathingEffectBtn'        : { title: 'Breathing Effect' },
     'MeteorShowerBtn'           : { title: 'Snakes Chasing' },
+    'RandomColorsBtn'           : { title: 'Random Colors' },
     'PulseSyncBtn'              : { title: 'Pulse Sync' },
     'FireworksBurstBtn'         : { title: 'Fireworks Burst' },
     'MeteorShowerNewBtn'        : { title: 'Meteor Shower' },
@@ -2585,6 +2635,10 @@ const OffDescriptions = [
     'Off is black. Black is nothing. Nothing… like your choices. W dev.',
 ]
 
+const RandomColorsDescriptions = [
+    'Nothing yet'
+]
+
 // تهيئة الـ Tooltip
 function initTooltips() {
     const tooltip = document.getElementById('animationTooltip');
@@ -2836,12 +2890,23 @@ function initTooltips() {
             }
         }
 
-        if (buttonId == 'offBtn' || 'off2Btn') {
+        if (buttonId == 'offBtn') {
             if (Array.isArray(OffDescriptions) && OffDescriptions.length) {
                 return OffDescriptions[Math.floor(Math.random() * OffDescriptions.length)]
             }
         }
 
+        if (buttonId == 'off2Btn') {
+            if (Array.isArray(OffDescriptions) && OffDescriptions.length) {
+                return OffDescriptions[Math.floor(Math.random() * OffDescriptions.length)]
+            }
+        }
+        
+        if (buttonId == 'RandomColorsBtn') {
+            if (Array.isArray(RandomColorsDescriptions) && RandomColorsDescriptions.length) {
+                return RandomColorsDescriptions[Math.floor(Math.random() * RandomColorsDescriptions.length)]
+            }
+        }
 
         return (tooltipData[buttonId] && tooltipData[buttonId].description) || '';
     }
