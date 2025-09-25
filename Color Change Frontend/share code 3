@@ -1,37 +1,33 @@
-async def blinking_pattern_loop(delay: float = 0.5):
+async def blinking_pattern_loop_random(delay: float = 0.5):
     global stop_requested
-    color_steps = [
-        (255, 255, 255),
-        (255, 255, 229),
-        (255, 255, 178),
-        (255, 255,   0),
-        (255, 127,   0),
-        (255,   0,   0),
-        (255,   0, 255),
-        (  0,   0, 255),
-        (  0, 255, 255),
-        (  0, 255,   0)
-    ]
-    idx = 0
-    total = len(color_steps)
+    
     while not stop_requested:
-        r, g, b = color_steps[idx]
+        # توليد لون عشوائي كامل
+        r = random.randint(0, 255)
+        g = random.randint(0, 255)
+        b = random.randint(0, 255)
+        
+        # إضاءة كل الليدات باللون المختار
         for i in range(NUM_LEDS):
             neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
+                i,
+                int(r * BRIGHTNESS_SCALE),
+                int(g * BRIGHTNESS_SCALE),
+                int(b * BRIGHTNESS_SCALE)
+            )
         neo.update_strip()
         await asyncio.sleep(delay)
+        
         if stop_requested:
             break
+        
+        # إطفاء كل الليدات
         for i in range(NUM_LEDS):
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
         await asyncio.sleep(delay)
-        idx = (idx + 1) % total
+
+    # تنظيف بعد انتهاء اللوب
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
