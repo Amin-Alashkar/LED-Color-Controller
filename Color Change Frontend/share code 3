@@ -12,31 +12,41 @@ async def meteor_shower_loop(delay_per_step: float = 0.05):
     # قائمة لتخزين الأفاعي النشطة
     active_snakes = []
     next_snake_id = 0
-    last_snake_end = -100  # لتتبع نهاية آخر أفعى
+    last_snake_tail_pos = -100  # لتتبع نهاية آخر أفعى (ذيلها)
     
     while not stop_requested:
-        # تحديد إذا كان يجب إضافة أفعى جديدة
-        current_pos = len(active_snakes)
+        # حساب موضع نهاية آخر أفعى نشطة
+        current_tail_pos = -100
+        if active_snakes:
+            # نأخذ أبعد موضع ذيل بين الأفاعي النشطة
+            current_tail_pos = max(snake['head_pos'] - snake['length'] for snake in active_snakes)
+        else:
+            current_tail_pos = -100
         
-        # شرط إضافة أفعى جديدة: لا توجد أفاعي أو انتهت المسافة الآمنة
+        # شرط إضافة أفعى جديدة: يجب أن يكون هناك مسافة كافية من آخر أفعى
+        # المسافة بين 3 و15 فراغ من نهاية آخر أفعى
+        distance_from_last = current_tail_pos - last_snake_tail_pos if last_snake_tail_pos > -100 else 100
+        
         should_add_snake = (len(active_snakes) == 0 or 
-                           (last_snake_end <= current_pos - 3 and 
-                            current_pos - last_snake_end <= 15))
+                           (distance_from_last >= 3 and distance_from_last <= 15 and 
+                            random.random() < 0.3))  # 30% فرصة لإضافة أفعى جديدة عندما تكون الشروط متاحة
         
-        if should_add_snake and random.choice([True, False]):  # عشوائية في الوقت
+        if should_add_snake:
             # إنشاء أفعى جديدة بخصائص عشوائية
             snake_length = random.randint(5, 12)  # طول عشوائي بين 5 و12
             snake_color = get_random_color()      # لون عشوائي
             
-            active_snakes.append({
+            new_snake = {
                 'id': next_snake_id,
                 'length': snake_length,
                 'color': snake_color,
                 'progress': 0,
-                'head_pos': 0
-            })
+                'head_pos': 0  # تبدأ من بداية الشريط
+            }
+            
+            active_snakes.append(new_snake)
             next_snake_id += 1
-            last_snake_end = current_pos + snake_length
+            last_snake_tail_pos = current_tail_pos
         
         # مسح الشريط
         neo.clear_strip()
@@ -72,18 +82,13 @@ async def meteor_shower_loop(delay_per_step: float = 0.05):
             snake['head_pos'] += 1
             snake['progress'] += 1
             
-            #檢查 إذا كانت الأفعى قد انتهت (خرجت من الشريط)
+            # التحقق إذا كانت الأفعى قد انتهت (خرجت من الشريط)
             if snake['head_pos'] - snake_length >= NUM_LEDS:
                 snakes_to_remove.append(snake)
         
         # إزالة الأفاعي المنتهية
         for snake in snakes_to_remove:
             active_snakes.remove(snake)
-            # تحديث آخر موضع لأفعى (لضمان المسافات)
-            if active_snakes:
-                last_snake_end = max(snake['head_pos'] for snake in active_snakes)
-            else:
-                last_snake_end = -100
         
         # تطبيق التحديثات
         neo.update_strip()
