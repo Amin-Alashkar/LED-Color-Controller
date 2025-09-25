@@ -1,45 +1,53 @@
+import random
+
 async def fade_colors_loop(delay: float = 0.0001, steps: int = 10):
     global stop_requested
     COLORS = [
-        (255, 255, 255),
-        (255,   0,   0),
-        (0,     0, 255),
-        (0,   255,   0),
-        (255, 255,   0),
-        (255,   0, 255),
-        (0,   255, 255),
+        (255, 255, 255),  # أبيض
+        (255,   0,   0),  # أحمر
+        (0,     0, 255),  # أزرق
+        (0,   255,   0),  # أخضر
+        (255, 255,   0),  # أصفر
+        (255,   0, 255),  # أرجواني
+        (0,   255, 255),  # تركواز
     ]
+    
     while not stop_requested:
-        for (r_t, g_t, b_t) in COLORS:
-            for step in range(steps):
-                if stop_requested:
-                    return
-                factor = step / (steps - 1)
-                r = int(r_t * factor)
-                g = int(g_t * factor)
-                b = int(b_t * factor)
-                for i in range(NUM_LEDS):
-                    neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-                neo.update_strip()
-                await asyncio.sleep(delay)
-            for step in range(steps):
-                if stop_requested:
-                    return
-                factor = 1 - (step / (steps - 1))
-                r = int(r_t * factor)
-                g = int(g_t * factor)
-                b = int(b_t * factor)
-                for i in range(NUM_LEDS):
-                    neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-                neo.update_strip()
-                await asyncio.sleep(delay)
+        # اختيار لون عشوائي من القائمة
+        r_t, g_t, b_t = random.choice(COLORS)
+        
+        # fade-in (التدرج من الأسود إلى اللون)
+        for step in range(steps):
+            if stop_requested:
+                return
+            factor = step / (steps - 1)
+            r = int(r_t * factor)
+            g = int(g_t * factor)
+            b = int(b_t * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        
+        # fade-out (التدرج من اللون إلى الأسود)
+        for step in range(steps):
+            if stop_requested:
+                return
+            factor = 1 - (step / (steps - 1))
+            r = int(r_t * factor)
+            g = int(g_t * factor)
+            b = int(b_t * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
