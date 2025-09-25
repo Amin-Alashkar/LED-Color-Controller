@@ -1,73 +1,68 @@
-async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
-    global stop_requested
 
-    # دالة لتوليد ألوان عشوائية
-    def get_random_color():
-        return (
-            random.randint(50, 255),   # الأحمر
-            random.randint(50, 255),   # الأخضر  
-            random.randint(50, 255)    # الأزرق
-        )
+        <!-- ABOUT BUTTON (placed at end of the page) -->
+        <footer class="site-footer">
+        <button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
+        </footer>
+    </div>
 
-    position = 0
-    direction = 1
-    # طول عشوائي بين 10 و30
-    trail_length = random.randint(10, 30)
-    # لون عشوائي بداية
-    r_base, g_base, b_base = get_random_color()
+        <!-- ABOUT MODAL -->
+        <div id="aboutModal" class="modal-backdrop about-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content about-content" role="document" aria-labelledby="aboutTitle">
+            <div class="modal-header about-header">
+            <h2 id="aboutTitle">About</h2>
+            <button id="aboutClose" class="close-btn" aria-label="Close about panel" onclick="closeAbout()">&times;</button>
+            </div>
+            <div class="modal-body about-body">
+            <div class="about-info">
+                <div class="about-container">
+                    <div class="about-header">
+                        <h1>Smart Light Controller</h1>
+                        <p>The easiest way to customize your lighting experience</p>
+                    </div>
+                    
+                    <div class="about-content">
+                        <div class="about-section">
+                            <p>Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.</p>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">✨ What you can do</h3>
+                            <ul class="feature-list">
+                                <li><span class="highlight">Choose colors freely</span>: Pick from a full spectrum of colors to match your mood or event.</li>
+                                <li><span class="highlight">Try dynamic animations</span>: From smooth breathing to fast-moving waves, fireworks, and other cool effects. Each animation can be stopped, started, or changed anytime.</li>
+                                <li><span class="highlight">Adjust brightness</span>: Make the lights subtle for relaxing nights or bright for parties.</li>
+                                <li><span class="highlight">Real-time control</span>: Changes happen instantly as long as your device is on the same Wi-Fi network as the lights. No delay, no lag.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">⚡ Important things to know</h3>
+                            <ul class="feature-list">
+                                <li>The app works only on the same local network. Devices outside your Wi-Fi won't be able to control the lights.</li>
+                                <li>Some light effects may look slightly different depending on your chosen brightness and color combinations.</li>
+                                <li>The lights stay on the last selected animation until you change them. You don't need to keep the app open all the time.</li>
+                                <li><span class="highlight">Privacy and safety</span>: No internet is required. All communication happens locally on your network, so your data stays private.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">💡 Tips for best experience</h3>
+                            <ul class="feature-list">
+                                <li>Experiment with combinations of colors and animations — you'll discover new looks you didn't expect.</li>
+                                <li>Adjust brightness according to the room size and environment to get the most dramatic effects.</li>
+                                <li>Try using multiple devices on the same network — you and your friends can control the lights together in real time.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <p>This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-note">
+                        <p>Smart Light Controller - Version 1.0</p>
+                    </div>
+                </div>
 
-    while not stop_requested:
-        neo.clear_strip()
-
-        # رسم الرأس والذيل
-        for t in range(trail_length):
-            pos = position - (t * direction)
-            if 0 <= pos < NUM_LEDS:
-                factor = (trail_length - t) / trail_length
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                neo.set_led_color(
-                    pos,
-                    int(r * BRIGHTNESS_SCALE),
-                    int(g * BRIGHTNESS_SCALE),
-                    int(b * BRIGHTNESS_SCALE)
-                )
-
-        neo.update_strip()
-        await asyncio.sleep(delay)
-
-        position += direction
-
-        # إذا وصل الطرف:
-        if position >= NUM_LEDS - 1 or position <= 0:
-            # يبقى الرأس فقط مضيء والباقي يتلاشى
-            for i in range(trail_length):
-                neo.clear_strip()
-
-                # فقط الرأس يبقى، الباقي يتلاشى
-                for t in range(trail_length - i):
-                    pos = position - (t * direction)
-                    if 0 <= pos < NUM_LEDS:
-                        factor = (trail_length - i - t) / trail_length
-                        r = int(r_base * factor)
-                        g = int(g_base * factor)
-                        b = int(b_base * factor)
-                        neo.set_led_color(
-                            pos,
-                            int(r * BRIGHTNESS_SCALE),
-                            int(g * BRIGHTNESS_SCALE),
-                            int(b * BRIGHTNESS_SCALE)
-                        )
-                neo.update_strip()
-                await asyncio.sleep(delay)
-
-            # بعد ما الرأس يضل لحاله → نغير اللون والطول
-            r_base, g_base, b_base = get_random_color()
-            trail_length = random.randint(10, 30)  # طول عشوائي جديد
-
-            # عكس الاتجاه
-            direction *= -1
-
-    neo.clear_strip()
-    neo.update_strip()
+            </div>
+            </div>
