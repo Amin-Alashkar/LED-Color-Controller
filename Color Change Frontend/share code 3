@@ -1,45 +1,48 @@
-import random
+async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
 
-async def blinking_pattern_loop(delay: float = 0.5):
     global stop_requested
-    color_steps = [
-        (255, 255, 255),  # أبيض
-        (255, 255, 229),
-        (255, 255, 178),
-        (255, 255,   0),  # أصفر
-        (255, 127,   0),  # برتقالي
-        (255,   0,   0),  # أحمر
-        (255,   0, 255),  # أرجواني
-        (  0,   0, 255),  # أزرق
-        (  0, 255, 255),  # تركواز
-        (  0, 255,   0)   # أخضر
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (128, 0, 128),  # بنفسجي
+        (255, 192, 203) # وردي
     ]
-    
     while not stop_requested:
-        # اختيار لون عشوائي من القائمة
-        r, g, b = random.choice(color_steps)
-        
-        # إضاءة كل الليدات باللون المختار
-        for i in range(NUM_LEDS):
-            neo.set_led_color(
-                i,
-                int(r * BRIGHTNESS_SCALE),
-                int(g * BRIGHTNESS_SCALE),
-                int(b * BRIGHTNESS_SCALE)
-            )
-        neo.update_strip()
-        await asyncio.sleep(delay)
-        
-        if stop_requested:
-            break
-        
-        # إطفاء كل الليدات
-        for i in range(NUM_LEDS):
-            neo.set_led_color(i, 0, 0, 0)
-        neo.update_strip()
-        await asyncio.sleep(delay)
-
-    # تنظيف بعد انتهاء اللوب
-    for i in range(NUM_LEDS):
-        neo.set_led_color(i, 0, 0, 0)
-    neo.update_strip()
+        for (r_base, g_base, b_base) in COLORS:
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = step / (steps - 1)
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
+            for step in range(steps):
+                if stop_requested:
+                    return
+                factor = 1 - (step / (steps - 1))
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                for i in range(NUM_LEDS):
+                    neo.set_led_color(
+                        i,
+                        int(r* BRIGHTNESS_SCALE),
+                        int(g* BRIGHTNESS_SCALE),
+                        int(b* BRIGHTNESS_SCALE)
+                    )
+                neo.update_strip()
+                await asyncio.sleep(delay)
