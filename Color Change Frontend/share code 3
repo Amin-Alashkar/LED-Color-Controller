@@ -1,11 +1,23 @@
-async def blinking_pattern_loop_random(delay: float = 0.5):
+import random
+
+async def blinking_pattern_loop(delay: float = 0.5):
     global stop_requested
+    color_steps = [
+        (255, 255, 255),  # أبيض
+        (255, 255, 229),
+        (255, 255, 178),
+        (255, 255,   0),  # أصفر
+        (255, 127,   0),  # برتقالي
+        (255,   0,   0),  # أحمر
+        (255,   0, 255),  # أرجواني
+        (  0,   0, 255),  # أزرق
+        (  0, 255, 255),  # تركواز
+        (  0, 255,   0)   # أخضر
+    ]
     
     while not stop_requested:
-        # توليد لون عشوائي كامل
-        r = random.randint(0, 255)
-        g = random.randint(0, 255)
-        b = random.randint(0, 255)
+        # اختيار لون عشوائي من القائمة
+        r, g, b = random.choice(color_steps)
         
         # إضاءة كل الليدات باللون المختار
         for i in range(NUM_LEDS):
