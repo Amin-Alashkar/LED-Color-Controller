@@ -79,75 +79,76 @@ async def light_up_one_by_one(color_index: int, delay: float = 0.011):
         neo.set_led_color(j, *color)
     neo.update_strip()
 
+
 async def fade_colors_loop(delay: float = 0.0001, steps: int = 10):
     global stop_requested
     COLORS = [
-        (255, 255, 255),
-        (255,   0,   0),
-        (0,     0, 255),
-        (0,   255,   0),
-        (255, 255,   0),
-        (255,   0, 255),
-        (0,   255, 255),
+        (255, 255, 255),  # أبيض
+        (255,   0,   0),  # أحمر
+        (0,     0, 255),  # أزرق
+        (0,   255,   0),  # أخضر
+        (255, 255,   0),  # أصفر
+        (255,   0, 255),  # أرجواني
+        (0,   255, 255),  # تركواز
     ]
+    
     while not stop_requested:
-        for (r_t, g_t, b_t) in COLORS:
-            for step in range(steps):
-                if stop_requested:
-                    return
-                factor = step / (steps - 1)
-                r = int(r_t * factor)
-                g = int(g_t * factor)
-                b = int(b_t * factor)
-                for i in range(NUM_LEDS):
-                    neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-                neo.update_strip()
-                await asyncio.sleep(delay)
-            for step in range(steps):
-                if stop_requested:
-                    return
-                factor = 1 - (step / (steps - 1))
-                r = int(r_t * factor)
-                g = int(g_t * factor)
-                b = int(b_t * factor)
-                for i in range(NUM_LEDS):
-                    neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-                neo.update_strip()
-                await asyncio.sleep(delay)
+        # اختيار لون عشوائي من القائمة
+        r_t, g_t, b_t = random.choice(COLORS)
+        
+        # fade-in (التدرج من الأسود إلى اللون)
+        for step in range(steps):
+            if stop_requested:
+                return
+            factor = step / (steps - 1)
+            r = int(r_t * factor)
+            g = int(g_t * factor)
+            b = int(b_t * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        
+        # fade-out (التدرج من اللون إلى الأسود)
+        for step in range(steps):
+            if stop_requested:
+                return
+            factor = 1 - (step / (steps - 1))
+            r = int(r_t * factor)
+            g = int(g_t * factor)
+            b = int(b_t * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
 
 async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
-
     global stop_requested
 
-    COLORS = [
-        (255, 0, 0),    # أحمر
-        (0, 255, 0),    # أخضر
-        (0, 0, 255),    # أزرق
-        (255, 255, 0),  # أصفر
-        (255, 0, 255),  # أرجواني
-        (0, 255, 255),  # سماوي
-        (255, 165, 0),  # برتقالي
-        (255, 192, 203),# وردي
-        (138, 43, 226), # أزرق بنفسجي
-        (50, 205, 50)   # أخضر ليموني
-    ]
+    # دالة لتوليد ألوان عشوائية
+    def get_random_color():
+        return (
+            random.randint(50, 255),   # الأحمر
+            random.randint(50, 255),   # الأخضر  
+            random.randint(50, 255)    # الأزرق
+        )
 
     position = 0
     direction = 1
-    trail_length = 20
-    color_index = 0
-
-    r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+    # طول عشوائي بين 10 و30
+    trail_length = random.randint(10, 30)
+    # لون عشوائي بداية
+    r_base, g_base, b_base = get_random_color()
 
     while not stop_requested:
         neo.clear_strip()
@@ -174,7 +175,7 @@ async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
 
         # إذا وصل الطرف:
         if position >= NUM_LEDS - 1 or position <= 0:
-            #    يبقى الرأس فقط مضيء والباقي يتلاشى
+            # يبقى الرأس فقط مضيء والباقي يتلاشى
             for i in range(trail_length):
                 neo.clear_strip()
 
@@ -193,11 +194,11 @@ async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
                             int(b * BRIGHTNESS_SCALE)
                         )
                 neo.update_strip()
-                # await asyncio.sleep(delay)
+                await asyncio.sleep(delay)
 
-            # بعد ما الرأس يضل لحاله → نغير اللون
-            color_index += 1
-            r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+            # بعد ما الرأس يضل لحاله → نغير اللون والطول
+            r_base, g_base, b_base = get_random_color()
+            trail_length = random.randint(10, 30)  # طول عشوائي جديد
 
             # عكس الاتجاه
             direction *= -1
@@ -213,7 +214,15 @@ async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
     while not stop_requested:
         for i in range(NUM_LEDS):
             hue = (i / NUM_LEDS + step) % 1.0
-            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
+            r_f, g_f, b_f = [
+                (255, 255, 255),  # أبيض
+                (255,   0,   0),  # أحمر
+                (0,     0, 255),  # أزرق
+                (0,   255,   0),  # أخضر
+                (255, 255,   0),  # أصفر
+                (255,   0, 255),  # أرجواني
+                (0,   255, 255),  # تركواز
+            ]
             r = int(r_f * 255)
             g = int(g_f * 255)
             b = int(b_f * 255)
@@ -253,40 +262,47 @@ async def rainbow_flow_loop(delay: float = 0.05, steps: int = 100):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
 
+
 async def blinking_pattern_loop(delay: float = 0.5):
     global stop_requested
     color_steps = [
-        (255, 255, 255),
+        (255, 255, 255),  # أبيض
         (255, 255, 229),
         (255, 255, 178),
-        (255, 255,   0),
-        (255, 127,   0),
-        (255,   0,   0),
-        (255,   0, 255),
-        (  0,   0, 255),
-        (  0, 255, 255),
-        (  0, 255,   0)
+        (255, 255,   0),  # أصفر
+        (255, 127,   0),  # برتقالي
+        (255,   0,   0),  # أحمر
+        (255,   0, 255),  # أرجواني
+        (  0,   0, 255),  # أزرق
+        (  0, 255, 255),  # تركواز
+        (  0, 255,   0)   # أخضر
     ]
-    idx = 0
-    total = len(color_steps)
+    
     while not stop_requested:
-        r, g, b = color_steps[idx]
+        # اختيار لون عشوائي من القائمة
+        r, g, b = random.choice(color_steps)
+        
+        # إضاءة كل الليدات باللون المختار
         for i in range(NUM_LEDS):
             neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
+                i,
+                int(r * BRIGHTNESS_SCALE),
+                int(g * BRIGHTNESS_SCALE),
+                int(b * BRIGHTNESS_SCALE)
+            )
         neo.update_strip()
         await asyncio.sleep(delay)
+        
         if stop_requested:
             break
+        
+        # إطفاء كل الليدات
         for i in range(NUM_LEDS):
             neo.set_led_color(i, 0, 0, 0)
         neo.update_strip()
         await asyncio.sleep(delay)
-        idx = (idx + 1) % total
+
+    # تنظيف بعد انتهاء اللوب
     for i in range(NUM_LEDS):
         neo.set_led_color(i, 0, 0, 0)
     neo.update_strip()
@@ -380,6 +396,132 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
     neo.clear_strip()
     neo.update_strip()
 
+
+
+async def random_colors_loop(delay_per_step: float = 0.05, min_trail_length: int = 5, max_trail_length: int = 20):
+    global stop_requested
+
+    SNAKE_COLORS = [
+        (255,   0,   0),   # أحمر
+        (  0,   0, 255),   # أزرق
+        (  0, 255,   0),   # أخضر
+        (255, 255,   0),   # أصفر
+        (255,   0, 255),   # أرجواني
+        (  0, 255, 255),   # سماوي
+        (255, 165,   0),   # برتقالي
+        (255, 192, 203),   # وردي
+        (138,  43, 226),   # بنفسجي
+        ( 50, 205,  50)    # أخضر ليموني
+    ]
+
+    while not stop_requested:
+        # مسح الشريط
+        neo.clear_strip()
+        neo.update_strip()
+
+        # قائمة تمثل الأفاعي النشطة حاليًا
+        active_snakes = []
+        global_frame = 0
+        
+        # وقت إطلاق الأفعى التالية (يبدأ بإطلاق أول أفعى فورًا)
+        next_spawn_time = 0
+        last_snake_head_pos = -20  # وضعية تخيلية للأفعى السابقة (خارج النطاق)
+
+        while not stop_requested:
+            # إذا حان وقت إطلاق أفعى جديدة ولم نطلب التوقف
+            if global_frame >= next_spawn_time and not stop_requested:
+                # تحديد تباعد عشوائي عن الأفعى السابقة (3 إلى 15 فراغ)
+                min_gap = 3
+                max_gap = 15
+                
+                # إذا كانت هناك أفعى سابقة، نتحقق من التباعد
+                if last_snake_head_pos >= 0:
+                    current_gap = global_frame - last_snake_head_pos
+                    if current_gap < min_gap:
+                        # إذا كان التباعد أقل من الحد الأدنى، ننتظر
+                        next_spawn_time = global_frame + (min_gap - current_gap)
+                    else:
+                        # تباعد عشوائي بين min_gap و max_gap
+                        gap = random.randint(min_gap, max_gap)
+                        next_spawn_time = global_frame + gap
+                else:
+                    # أول أفعى - نطلقها فورًا
+                    gap = 0
+                    next_spawn_time = global_frame + gap
+
+                # توليد أفعى عشوائية
+                trail_length = random.randint(min_trail_length, max_trail_length)
+                color_base = random.choice(SNAKE_COLORS)
+                
+                # إضافة الأفعى الجديدة
+                active_snakes.append({
+                    'trail_length': trail_length,
+                    'color_base': color_base,
+                    'progress': 0,
+                    'head_start_frame': global_frame + gap  # توقيت بداية الرأس
+                })
+                
+                last_snake_head_pos = global_frame + gap
+
+            # مسح الشريط
+            neo.clear_strip()
+
+            # تحديث ورسم كل الأفاعي النشطة
+            snakes_to_remove = []
+            
+            for snake in active_snakes:
+                trail_length = snake['trail_length']
+                color_base = snake['color_base']
+                progress = snake['progress']
+                
+                # حساب وضعية الرأس (تبدأ من خارج الشريط وتتحرك داخله)
+                head_pos = NUM_LEDS - progress
+                
+                # رسم ذيل الأفعى
+                for t in range(trail_length):
+                    pos = head_pos + t
+                    if 0 <= pos < NUM_LEDS:
+                        # حساب التدريج (فاتح في الرأس، داكن في الذيل)
+                        factor = (trail_length - t) / trail_length
+                        r = int(color_base[0] * factor)
+                        g = int(color_base[1] * factor)
+                        b = int(color_base[2] * factor)
+                        neo.set_led_color(
+                            pos,
+                            int(r * BRIGHTNESS_SCALE),
+                            int(g * BRIGHTNESS_SCALE),
+                            int(b * BRIGHTNESS_SCALE)
+                        )
+                
+                # تحديث تقدم الأفعى
+                snake['progress'] += 1
+                
+                # إذا تجاوزت الأفعى المسار كاملاً (خرج الذيل كله)
+                if snake['progress'] > NUM_LEDS + trail_length:
+                    snakes_to_remove.append(snake)
+
+            # إزالة الأفاعي المنتهية
+            for snake in snakes_to_remove:
+                active_snakes.remove(snake)
+
+            # تطبيق التحديث على الشريط
+            neo.update_strip()
+            await asyncio.sleep(delay_per_step)
+
+            global_frame += 1
+            
+            # إذا لم يكن هناك أفاعي نشطة ولم نطلب إطلاق المزيد، نكسر الدورة
+            if not active_snakes and global_frame > next_spawn_time + 100:
+                break
+
+        # استراحة قصيرة بين الدورات
+        if not stop_requested:
+            await asyncio.sleep(1)
+
+    # تنظيف بعد انتهاء اللوب
+    neo.clear_strip()
+    neo.update_strip()
+
 async def running_lights_loop(delay: float = 0.05):
 
     global stop_requested
@@ -407,8 +549,8 @@ async def running_lights_loop(delay: float = 0.05):
     neo.clear_strip()
     neo.update_strip()
 
-async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
 
+async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
     global stop_requested
     COLORS = [
         (255, 0, 0),    # أحمر
@@ -421,40 +563,46 @@ async def breathing_effect_loop(delay: float = 0.02, steps: int = 50):
         (128, 0, 128),  # بنفسجي
         (255, 192, 203) # وردي
     ]
+    
     while not stop_requested:
-        for (r_base, g_base, b_base) in COLORS:
-            for step in range(steps):
-                if stop_requested:
-                    return
-                factor = step / (steps - 1)
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                for i in range(NUM_LEDS):
-                    neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-                neo.update_strip()
-                await asyncio.sleep(delay)
-            for step in range(steps):
-                if stop_requested:
-                    return
-                factor = 1 - (step / (steps - 1))
-                r = int(r_base * factor)
-                g = int(g_base * factor)
-                b = int(b_base * factor)
-                for i in range(NUM_LEDS):
-                    neo.set_led_color(
-                        i,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-                neo.update_strip()
-                await asyncio.sleep(delay)
+        # اختيار لون عشوائي من القائمة
+        r_base, g_base, b_base = random.choice(COLORS)
+        
+        # fade-in (التنفس للإضاءة)
+        for step in range(steps):
+            if stop_requested:
+                return
+            factor = step / (steps - 1)
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
+        
+        # fade-out (التنفس للإطفاء)
+        for step in range(steps):
+            if stop_requested:
+                return
+            factor = 1 - (step / (steps - 1))
+            r = int(r_base * factor)
+            g = int(g_base * factor)
+            b = int(b_base * factor)
+            for i in range(NUM_LEDS):
+                neo.set_led_color(
+                    i,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+            neo.update_strip()
+            await asyncio.sleep(delay)
 
 async def fireworks_burst_loop():
 
@@ -1830,6 +1978,8 @@ async def animation_worker():
                 await blinking_pattern_loop()
             elif req.animation_type == "meteor_shower":
                 await meteor_shower_loop()
+            elif req.animation_type == "random_colors":
+                await random_colors_loop()
             elif req.animation_type == "running_lights":
                 await running_lights_loop()
             elif req.animation_type == "breathing_effect":
