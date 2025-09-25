@@ -66,3 +66,60 @@
 
             </div>
             </div>
+
+
+
+// about.js
+// -------- About modal logic --------
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutModal = document.getElementById('aboutModal');
+const aboutClose = document.getElementById('aboutClose');
+
+function openAbout() {
+  if (!aboutModal) return;
+  aboutModal.classList.add('show');
+  aboutModal.setAttribute('aria-hidden', 'false');
+  
+  // منع التمرير في الخلفية
+  document.body.classList.add('modal-open');
+  
+  // focus للوصولية
+  aboutClose.focus();
+}
+
+function closeAbout() {
+  if (!aboutModal) return;
+  aboutModal.classList.remove('show');
+  aboutModal.setAttribute('aria-hidden', 'true');
+  
+  // إعادة التمرير في الخلفية
+  document.body.classList.remove('modal-open');
+  
+  aboutBtn.focus();
+}
+
+// open
+if (aboutBtn) aboutBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  openAbout();
+});
+
+// close by close button
+if (aboutClose) aboutClose.addEventListener('click', (e) => {
+  e.preventDefault();
+  closeAbout();
+});
+
+// close when clicking on backdrop (outside modal content)
+aboutModal.addEventListener('click', (e) => {
+  if (e.target === aboutModal) {
+    closeAbout();
+  }
+});
+
+// close on ESC
+document.addEventListener('keydown', (e) => {
+  if ((e.key === 'Escape' || e.key === 'Esc') && aboutModal && aboutModal.classList.contains('show')) {
+    closeAbout();
+  }
+});
