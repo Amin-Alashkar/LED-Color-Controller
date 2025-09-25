@@ -214,15 +214,7 @@ async def wave_effect_loop(delay: float = 0.05, wave_speed: float = 0.02):
     while not stop_requested:
         for i in range(NUM_LEDS):
             hue = (i / NUM_LEDS + step) % 1.0
-            r_f, g_f, b_f = [
-                (255, 255, 255),  # أبيض
-                (255,   0,   0),  # أحمر
-                (0,     0, 255),  # أزرق
-                (0,   255,   0),  # أخضر
-                (255, 255,   0),  # أصفر
-                (255,   0, 255),  # أرجواني
-                (0,   255, 255),  # تركواز
-            ]
+            r_f, g_f, b_f = colorsys.hsv_to_rgb(hue, 1.0, brightness)
             r = int(r_f * 255)
             g = int(g_f * 255)
             b = int(b_f * 255)
