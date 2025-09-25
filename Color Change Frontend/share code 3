@@ -1,99 +1,79 @@
-async def meteor_shower_loop(delay_per_step: float = 0.05):
+async def pulse_sync_loop(delay: float = 0.03, steps: int = 20):
+
     global stop_requested
-    
-    # ألوان عشوائية - يمكن توليد أي لون
-    def get_random_color():
-        return (
-            random.randint(50, 255),   # الأحمر
-            random.randint(50, 255),   # الأخضر
-            random.randint(50, 255)    # الأزرق
-        )
-    
-    # قائمة لتخزين الأفاعي النشطة
-    active_snakes = []
-    next_snake_id = 0
-    last_snake_tail_pos = -100  # لتتبع نهاية آخر أفعى (ذيلها)
-    
+
+    COLORS = [
+        (255, 0, 0),    # أحمر
+        (0, 255, 0),    # أخضر
+        (0, 0, 255),    # أزرق
+        (255, 255, 0),  # أصفر
+        (255, 0, 255),  # أرجواني
+        (0, 255, 255),  # سماوي
+        (255, 165, 0),  # برتقالي
+        (255, 192, 203),# وردي
+        (138, 43, 226), # أزرق بنفسجي
+        (50, 205, 50)   # أخضر ليموني
+    ]
+
+    position = 0
+    direction = 1
+    trail_length = 20
+    color_index = 0
+
+    r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
     while not stop_requested:
-        # حساب موضع نهاية آخر أفعى نشطة
-        current_tail_pos = -100
-        if active_snakes:
-            # نأخذ أبعد موضع ذيل بين الأفاعي النشطة
-            current_tail_pos = max(snake['head_pos'] - snake['length'] for snake in active_snakes)
-        else:
-            current_tail_pos = -100
-        
-        # شرط إضافة أفعى جديدة: يجب أن يكون هناك مسافة كافية من آخر أفعى
-        # المسافة بين 3 و15 فراغ من نهاية آخر أفعى
-        distance_from_last = current_tail_pos - last_snake_tail_pos if last_snake_tail_pos > -100 else 100
-        
-        should_add_snake = (len(active_snakes) == 0 or 
-                           (distance_from_last >= 3 and distance_from_last <= 15 and 
-                            random.random() < 0.3))  # 30% فرصة لإضافة أفعى جديدة عندما تكون الشروط متاحة
-        
-        if should_add_snake:
-            # إنشاء أفعى جديدة بخصائص عشوائية
-            snake_length = random.randint(5, 12)  # طول عشوائي بين 5 و12
-            snake_color = get_random_color()      # لون عشوائي
-            
-            new_snake = {
-                'id': next_snake_id,
-                'length': snake_length,
-                'color': snake_color,
-                'progress': 0,
-                'head_pos': 0  # تبدأ من بداية الشريط
-            }
-            
-            active_snakes.append(new_snake)
-            next_snake_id += 1
-            last_snake_tail_pos = current_tail_pos
-        
-        # مسح الشريط
         neo.clear_strip()
-        
-        # تحديث ورسم الأفاعي النشطة
-        snakes_to_remove = []
-        
-        for snake in active_snakes:
-            snake_id = snake['id']
-            snake_length = snake['length']
-            color_base = snake['color']
-            progress = snake['progress']
-            head_pos = snake['head_pos']
-            
-            # رسم الأفعى (الرأس والذيل)
-            for i in range(snake_length):
-                pos = head_pos - i  # الذيل يمتد للخلف
-                if 0 <= pos < NUM_LEDS:
-                    # تدرج اللون (فاتح في الرأس، داكن في الذيل)
-                    factor = (snake_length - i) / snake_length
-                    r = int(color_base[0] * factor)
-                    g = int(color_base[1] * factor)
-                    b = int(color_base[2] * factor)
-                    
-                    neo.set_led_color(
-                        pos,
-                        int(r * BRIGHTNESS_SCALE),
-                        int(g * BRIGHTNESS_SCALE),
-                        int(b * BRIGHTNESS_SCALE)
-                    )
-            
-            # تحريك الأفعى
-            snake['head_pos'] += 1
-            snake['progress'] += 1
-            
-            # التحقق إذا كانت الأفعى قد انتهت (خرجت من الشريط)
-            if snake['head_pos'] - snake_length >= NUM_LEDS:
-                snakes_to_remove.append(snake)
-        
-        # إزالة الأفاعي المنتهية
-        for snake in snakes_to_remove:
-            active_snakes.remove(snake)
-        
-        # تطبيق التحديثات
+
+        # رسم الرأس والذيل
+        for t in range(trail_length):
+            pos = position - (t * direction)
+            if 0 <= pos < NUM_LEDS:
+                factor = (trail_length - t) / trail_length
+                r = int(r_base * factor)
+                g = int(g_base * factor)
+                b = int(b_base * factor)
+                neo.set_led_color(
+                    pos,
+                    int(r * BRIGHTNESS_SCALE),
+                    int(g * BRIGHTNESS_SCALE),
+                    int(b * BRIGHTNESS_SCALE)
+                )
+
         neo.update_strip()
-        await asyncio.sleep(delay_per_step)
-    
-    # تنظيف عند التوقف
+        await asyncio.sleep(delay)
+
+        position += direction
+
+        # إذا وصل الطرف:
+        if position >= NUM_LEDS - 1 or position <= 0:
+            #    يبقى الرأس فقط مضيء والباقي يتلاشى
+            for i in range(trail_length):
+                neo.clear_strip()
+
+                # فقط الرأس يبقى، الباقي يتلاشى
+                for t in range(trail_length - i):
+                    pos = position - (t * direction)
+                    if 0 <= pos < NUM_LEDS:
+                        factor = (trail_length - i - t) / trail_length
+                        r = int(r_base * factor)
+                        g = int(g_base * factor)
+                        b = int(b_base * factor)
+                        neo.set_led_color(
+                            pos,
+                            int(r * BRIGHTNESS_SCALE),
+                            int(g * BRIGHTNESS_SCALE),
+                            int(b * BRIGHTNESS_SCALE)
+                        )
+                neo.update_strip()
+                # await asyncio.sleep(delay)
+
+            # بعد ما الرأس يضل لحاله → نغير اللون
+            color_index += 1
+            r_base, g_base, b_base = COLORS[color_index % len(COLORS)]
+
+            # عكس الاتجاه
+            direction *= -1
+
     neo.clear_strip()
     neo.update_strip()
