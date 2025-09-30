@@ -1,1 +1,16 @@
 
+.about-content {
+  width: auto;            /* يخليها تمشي حسب الـ container */
+  max-width: 100%;        /* ما تتعدى حجم الـ container */
+}
+
+.about-body {
+  flex: 1;
+  overflow-y: auto;       /* scroll عمودي */
+  overflow-x: hidden;     /* منع scroll أفقي */
+}
+
+.about-container {
+  height: 100%;
+  box-sizing: border-box;
+}
