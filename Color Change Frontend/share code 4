@@ -1,16 +1,1001 @@
 
+/* ---------- About modal (enhanced professional design) ---------- */
+.about-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10010;
+  background: rgba(6, 8, 16, 0.75);
+  backdrop-filter: blur(12px) saturate(1.2);
+  animation: aboutFadeIn .35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+
+.about-modal.show {
+  display: flex;
+}
+
+@keyframes aboutFadeIn {
+  from { 
+    opacity: 0; 
+    backdrop-filter: blur(0px) saturate(1);
+  }
+  to { 
+    opacity: 1; 
+    backdrop-filter: blur(12px) saturate(1.2);
+  }
+}
+
 .about-content {
-  width: auto;            /* يخليها تمشي حسب الـ container */
-  max-width: 100%;        /* ما تتعدى حجم الـ container */
+  width: 92%;
+  max-width: 880px;
+  max-height: 85vh;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(135deg, 
+    rgba(22, 24, 38, 0.95) 0%, 
+    rgba(16, 18, 30, 0.98) 50%, 
+    rgba(12, 14, 24, 0.95) 100%);
+  box-shadow: 
+    0 40px 120px rgba(6, 8, 16, 0.8),
+    0 12px 40px rgba(100, 60, 180, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  animation: modalSlideIn .4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation-delay: 0.1s;
+}
+
+@keyframes modalSlideIn {
+  from { 
+    transform: translateY(40px) scale(0.95); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0) scale(1); 
+    opacity: 1; 
+  }
+}
+
+.about-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 32px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  background: linear-gradient(90deg, 
+    rgba(106, 92, 255, 0.03) 0%, 
+    rgba(255, 138, 0, 0.02) 50%, 
+    rgba(255, 61, 127, 0.03) 100%);
+  position: relative;
+}
+
+.about-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, 
+    transparent 0%, 
+    rgba(106, 92, 255, 0.3) 50%, 
+    transparent 100%);
+}
+
+.about-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: #E6E6EA;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: linear-gradient(90deg, #FF8A00, #FF3D7F, #6A5CFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 4px 20px rgba(106, 92, 255, 0.2);
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #A8A9AD;
+  font-size: 1.5rem;
+  transition: all 0.2s ease;
+  backdrop-filter: blur(10px);
+}
+
+.close-btn:hover {
+  background: rgba(255, 61, 127, 0.15);
+  color: #FF3D7F;
+  border-color: rgba(255, 61, 127, 0.3);
+  transform: scale(1.1);
 }
 
 .about-body {
+  padding: 0;
+  color: #E6E6EA;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  display: block;
+  overflow-y: auto;
+  overflow-x: hidden;
+  max-height: calc(85vh - 100px); 
   flex: 1;
-  overflow-y: auto;       /* scroll عمودي */
-  overflow-x: hidden;     /* منع scroll أفقي */
 }
 
-.about-container {
-  height: 100%;
-  box-sizing: border-box;
+.about-body::-webkit-scrollbar {
+  width: 6px;
 }
+
+.about-body::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.about-body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #6A5CFF, #FF3D7F);
+  border-radius: 3px;
+}
+
+.about-body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #7B6EFF, #FF4D8A);
+}
+
+/* About Content Styles */
+.about-container {
+  padding: 32px;
+  height: auto;
+  min-height: 100%;
+}
+
+.about-content-inner {
+  height: auto;
+}
+
+
+.about-header h1 {
+  font-size: 2.8rem;
+  font-weight: 800;
+  background: linear-gradient(90deg, #FF8A00, #FF3D7F, #6A5CFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 8px 0;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.about-header p {
+  font-size: 1.2rem;
+  color: #A8A9AD;
+  text-align: center;
+  margin: 0 0 40px 0;
+  font-weight: 500;
+}
+
+.about-section {
+  margin-bottom: 32px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.03);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.about-section:hover {
+  border-color: rgba(106, 92, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.section-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #FF8A00;
+  margin: 0 0 16px 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-title::before {
+  content: "✦";
+  font-size: 1.1rem;
+}
+
+.feature-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.feature-list li {
+  margin-bottom: 12px;
+  padding-left: 24px;
+  position: relative;
+  color: #C8C9CD;
+}
+
+.feature-list li::before {
+  content: "▸";
+  position: absolute;
+  left: 8px;
+  color: #6A5CFF;
+  font-weight: bold;
+}
+
+.highlight {
+  color: #FF8A00;
+  font-weight: 600;
+  background: rgba(255, 138, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.about-section p {
+  margin: 0;
+  color: #C8C9CD;
+  font-size: 1.05rem;
+  line-height: 1.7;
+}
+
+.footer-note {
+  text-align: center;
+  padding: 24px 0 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: 24px;
+  color: #A8A9AD;
+  font-size: 0.95rem;
+}
+
+.footer-note p {
+  margin: 0;
+  font-style: italic;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .about-content {
+    width: 95%;
+    max-height: 90vh;
+    border-radius: 20px;
+  }
+
+  .about-body {
+    max-height: calc(90vh - 100px);
+  }
+  
+  .about-container {
+    padding: 24px 20px;
+  }
+
+  .about-container {
+    padding: 24px 20px;
+  }
+  
+  .about-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .about-header p {
+    font-size: 1.1rem;
+  }
+  
+  .about-section {
+    padding: 20px;
+    margin-bottom: 24px;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+  }
+  
+  .site-footer {
+    padding: 20px 0 40px;
+  }
+  
+  .about-btn {
+    padding: 14px 32px;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-content {
+    width: 98%;
+    max-height: 95vh;
+    border-radius: 16px;
+  }
+  
+  .about-container {
+    padding: 20px 16px;
+  }
+  
+  .about-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .about-section {
+    padding: 16px;
+  }
+  
+  .feature-list li {
+    padding-left: 20px;
+    font-size: 1rem;
+  }
+
+  .about-body {
+    max-height: calc(95vh - 100px);
+  }
+  
+}
+
+.about-section {
+  animation: fadeInUp 0.6s ease-out both;
+}
+
+.about-section:nth-child(1) { animation-delay: 0.1s; }
+.about-section:nth-child(2) { animation-delay: 0.2s; }
+.about-section:nth-child(3) { animation-delay: 0.3s; }
+.about-section:nth-child(4) { animation-delay: 0.4s; }
+.about-section:nth-child(5) { animation-delay: 0.5s; }
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+<!-- index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="image.icon">
+    <link rel="stylesheet" href="s.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <title>LED Color Controller</title>
+</head>
+<body>
+    <div class="card">
+        <h1 class="led-title">LED Color Controller</h1>
+        <div class="color-display" id="colorDisplay">Loading…</div>
+
+        <h2 class="button-title">Colors</h2>
+        <div class="button-container">
+            <button id="redBtn"    onclick="changeColor('#ff0000')">Red</button>
+            <button id="blueBtn"   onclick="changeColor('#0000ff')">Blue</button>
+            <button id="greenBtn"  onclick="changeColor('#00ff00')">Green</button>
+            <button id="orangeBtn" onclick="changeColor('#FFA500')">Orange</button>
+            <button id="yellowBtn" onclick="changeColor('#FFFF00')">Yellow</button>
+            <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple</button>
+            <!-- <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button> -->
+            <button id="whiteBtn"  onclick="changeColor('#FFFFFF')">White</button>
+            <!-- <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button> -->
+            <!-- <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button> -->
+            <br>
+            <button id="offBtn" onclick="changeColor('#000000')">Off</button>
+        </div>
+
+        <h2 class="button-title">Animation</h2>
+        <div class="button-container">
+            <button id="lightOneBtn" class="custom-animation-btn">Fade Colors</button>
+            <button id="WaveEffectBtn" class="custom-animation-btn">Wave Effect</button>
+            <button id="RainbowFlowBtn" class="custom-animation-btn">Rainbow Flow</button>
+            <button id="BlinkingPatternBtn" class="custom-animation-btn">Blinking Pattern</button>
+            <button id="RunningLightsBtn" class="custom-animation-btn">Running Lights</button>
+            <button id="BreathingEffectBtn" class="custom-animation-btn">Breathing Effect</button>
+            <button id="MeteorShowerBtn" class="custom-animation-btn">Meteor Shower</button>
+            <button id="RandomColorsBtn" class="custom-animation-btn">Random Colors</button>
+            <button id="PulseSyncBtn" class="custom-animation-btn">Pulse Sync</button>
+            <button id="FireworksBurstBtn" class="custom-animation-btn">Fireworks Burst</button>
+            <button id="MeteorShowerNewBtn" class="custom-animation-btn">Meteor Shower</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+        </div>
+
+        <h2 class="button-title">Color Picker</h2>
+        <div class="color-picker-wrapper">
+            <div class="color-ring"></div>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
+
+        <h2 class="button-title">Custom animation</h2>
+        <div class="button-container">
+            <button id="customFadeBtn">Fade Colors </button>
+            <button id="customBlinkBtn">Blinking Pattern</button>
+            <button id="customBreathingBtn">Breathing Effect</button>
+            <button id="customMeteorShowerBtn">Meteor Shower</button>
+            <button id="customPulseSyncBtn">Pulse Sync</button>
+            <button id="customGlitchFlashBtn">Glitch Flash</button>
+            <button id="customHeartBeatBtn">Heart Beat</button>
+            <button id="customTunnelEffectBtn">Tunnel Effect</button>
+            <button id="customLaserShotBtn">Laser Shot</button>
+            <button id="customSparklingStarsBtn">Sparkling Stars</button>
+            <button id="customStrobeFlashBtn">Strobe Flash</button>
+            <button id="customKnightRiderBtn">Knight Rider</button>
+            <button id="customBounceBackBtn">Bounce Back</button>
+            <button id="customRippleTouchBtn">Ripple Touch</button>
+            <button id="customFireFlickerBtn">Fire Flicker</button>
+            <button id="customColorWipeBtn">Color Wipe</button>
+            <button id="customStaticGlowBtn">Static Glow with Flicker</button>
+            <button id="customColorEchoBtn">Color Echo</button>
+            <button id="customTimeWarpBtn">Time Warp</button>
+            <button id="customQuantumFlickerBtn">Quantum Flicker</button>
+            <button id="customRunningLightsBtn">Running Lights</button>
+            <button id="customFireworksBurstBtn">Fireworks Burst</button>
+            <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
+
+
+        </div>
+        <!-- <div class="container">
+        <div class="header">
+            <h1>Premium Dashboard</h1>
+            <p>Access exclusive content and powerful management tools with your VIP privileges</p>
+        </div>
+        
+        <div class="content-grid">
+            <div class="content-card">
+                <i class="fas fa-chart-line"></i>
+                <h3>Advanced Analytics</h3>
+                <p>Gain insights with real-time data visualization and performance metrics for your business.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-users-cog"></i>
+                <h3>User Management</h3>
+                <p>Control access levels, permissions, and roles for all users in your organization.</p>
+            </div>
+            
+            <div class="content-card">
+                <i class="fas fa-shield-alt"></i>
+                <h3>Security Center</h3>
+                <p>Monitor security events, configure firewalls, and protect your valuable assets.</p>
+            </div>
+        </div> -->
+
+        
+        <!-- ABOUT BUTTON (placed at end of the page) -->
+        <footer class="site-footer">
+        <button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
+        </footer>
+    </div>
+
+        <!-- ABOUT MODAL -->
+        <div id="aboutModal" class="modal-backdrop about-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content about-content" role="document" aria-labelledby="aboutTitle">
+            <div class="modal-header about-header">
+            <h2 id="aboutTitle">About</h2>
+            <button id="aboutClose" class="close-btn" aria-label="Close about panel" onclick="closeAbout()">&times;</button>
+            </div>
+            <div class="modal-body about-body">
+            <div class="about-info">
+                <div class="about-container">
+                    <div class="about-header">
+                        <h1>Smart Light Controller</h1>
+                        <p>The easiest way to customize your lighting experience</p>
+                    </div>
+                    
+                    <div class="about-content">
+                        <div class="about-section">
+                            <p>Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.</p>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">✨ What you can do</h3>
+                            <ul class="feature-list">
+                                <li><span class="highlight">Choose colors freely</span>: Pick from a full spectrum of colors to match your mood or event.</li>
+                                <li><span class="highlight">Try dynamic animations</span>: From smooth breathing to fast-moving waves, fireworks, and other cool effects. Each animation can be stopped, started, or changed anytime.</li>
+                                <li><span class="highlight">Adjust brightness</span>: Make the lights subtle for relaxing nights or bright for parties.</li>
+                                <li><span class="highlight">Real-time control</span>: Changes happen instantly as long as your device is on the same Wi-Fi network as the lights. No delay, no lag.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">⚡ Important things to know</h3>
+                            <ul class="feature-list">
+                                <li>The app works only on the same local network. Devices outside your Wi-Fi won't be able to control the lights.</li>
+                                <li>Some light effects may look slightly different depending on your chosen brightness and color combinations.</li>
+                                <li>The lights stay on the last selected animation until you change them. You don't need to keep the app open all the time.</li>
+                                <li><span class="highlight">Privacy and safety</span>: No internet is required. All communication happens locally on your network, so your data stays private.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">💡 Tips for best experience</h3>
+                            <ul class="feature-list">
+                                <li>Experiment with combinations of colors and animations — you'll discover new looks you didn't expect.</li>
+                                <li>Adjust brightness according to the room size and environment to get the most dramatic effects.</li>
+                                <li>Try using multiple devices on the same network — you and your friends can control the lights together in real time.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <p>This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-note">
+                        <p>Smart Light Controller - Version 1.0</p>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+        </div>
+
+    <!-- Modal -->
+    <!-- <div id="adminModal" class="modal-backdrop">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Admin Panel</h2>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="password-input" placeholder="Enter admin username">
+                </div>
+                
+                <div class="input-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="password-input" placeholder="Enter your password">
+                </div>
+                
+                <button class="submit-btn">Access Dashboard</button>
+                
+                <div class="footer-note">
+                    <p>Restricted access. Unauthorized use is prohibited.</p>
+                </div>
+            </div>
+        </div>
+    </div> -->
+        <div id="page-overlay"></div>
+    <div class="stars-container">
+        
+    </div>
+
+
+
+    <!-- Brightness Control Panel -->
+    <div id="brightnessPanel" class="brightness-panel hidden">
+        <div class="brightness-header">
+            <h3>Set Animation Brightness</h3>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="brightness-content">
+            <p class="brightness-recommendation">Recommended limit: 25%</p>
+            <div class="brightness-slider-container">
+                <input type="range" min="0" max="100" value="25" class="brightness-slider" id="brightnessSlider">
+                <span class="brightness-value" id="brightnessValue">25%</span>
+            </div>
+            <button class="brightness-apply-btn" id="applyBrightness">Apply</button>
+        </div>
+    </div>
+    <!-- إضافة عنصر الـ tooltip -->
+    <div id="animationTooltip" class="animation-tooltip">
+        <div class="tooltip-content">
+            <h3 id="tooltipTitle">Animation Name</h3>
+            <p id="tooltipDescription">Animation description will appear here.</p>
+        </div>
+        <div class="tooltip-arrow"></div>
+    </div>
+
+
+    <script src="app.js"></script>
+    <script src="about.js"></script>
+</body>
+</html>
+
+// about.js
+// -------- About modal logic with advanced effects --------
+
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutModal = document.getElementById('aboutModal');
+const aboutClose = document.getElementById('aboutClose');
+
+class ParticleSystem {
+    constructor(container) {
+        this.container = container;
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.mouse = { x: 0, y: 0, radius: 100 };
+        this.init();
+    }
+
+    init() {
+        this.canvas.className = 'particles-canvas';
+        this.container.appendChild(this.canvas);
+        this.resize();
+        this.createParticles();
+        this.animate();
+        
+        // Mouse tracking
+        this.container.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+        });
+
+        window.addEventListener('resize', () => this.resize());
+    }
+
+    resize() {
+        this.canvas.width = this.container.offsetWidth;
+        this.canvas.height = this.container.offsetHeight;
+    }
+
+    createParticles() {
+        const particleCount = Math.min(80, Math.floor(window.innerWidth / 15));
+        this.particles = [];
+        
+        for (let i = 0; i < particleCount; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5,
+                color: `rgba(${106 + Math.random() * 150}, ${92 + Math.random() * 100}, ${255}, ${0.3 + Math.random() * 0.4})`
+            });
+        }
+    }
+
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw connections and particles
+        for (let i = 0; i < this.particles.length; i++) {
+            const p = this.particles[i];
+            
+            // Update position
+            p.x += p.speedX;
+            p.y += p.speedY;
+            
+            // Bounce off walls
+            if (p.x <= 0 || p.x >= this.canvas.width) p.speedX *= -1;
+            if (p.y <= 0 || p.y >= this.canvas.height) p.speedY *= -1;
+            
+            // Draw particle
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.fill();
+            
+            // Draw connections to nearby particles
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const p2 = this.particles[j];
+                const distance = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2);
+                
+                if (distance < 100) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(106, 92, 255, ${0.2 * (1 - distance/100)})`;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.moveTo(p.x, p.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            // Interaction with mouse
+            const distanceToMouse = Math.sqrt((p.x - this.mouse.x) ** 2 + (p.y - this.mouse.y) ** 2);
+            if (distanceToMouse < this.mouse.radius) {
+                p.x += (p.x - this.mouse.x) * 0.02;
+                p.y += (p.y - this.mouse.y) * 0.02;
+            }
+        }
+        
+        requestAnimationFrame(() => this.animate());
+    }
+}
+
+// Typing effect for title
+function typeWriter(element, text, speed = 50) {
+    return new Promise((resolve) => {
+        let i = 0;
+        element.innerHTML = '';
+        
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
+}
+
+// Animate elements on scroll
+function setupScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.about-section').forEach((section, index) => {
+        section.style.animationDelay = `${index * 0.1}s`;
+        observer.observe(section);
+    });
+}
+
+// Enhanced modal functions
+let particleSystem = null;
+
+async function openAbout() {
+    if (!aboutModal) return;
+    
+    // Prevent multiple openings
+    if (aboutModal.classList.contains('show')) return;
+    
+    // Add loading state to button
+    aboutBtn.classList.add('loading');
+    aboutBtn.innerHTML = 'Loading...';
+    
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Show modal with animation
+    aboutModal.classList.add('show');
+    aboutModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    
+    // Initialize particle system
+    if (!particleSystem) {
+        particleSystem = new ParticleSystem(aboutModal);
+    }
+    
+    // Typing effect for title
+    const title = document.querySelector('.about-header h1');
+    if (title) {
+        await typeWriter(title, 'Smart Light Controller', 60);
+    }
+    
+    // Setup scroll animations
+    setupScrollAnimations();
+    
+    // Restore button state
+    aboutBtn.classList.remove('loading');
+    aboutBtn.innerHTML = 'About';
+    
+    // Focus management
+    aboutClose.focus();
+    
+    // Add subtle vibration to modal on open
+    aboutModal.querySelector('.about-content').style.animation = 'modalVibrate 0.3s ease-out';
+    setTimeout(() => {
+        aboutModal.querySelector('.about-content').style.animation = '';
+    }, 300);
+}
+
+function closeAbout() {
+    if (!aboutModal) return;
+    
+    // Add closing animation
+    aboutModal.style.animation = 'aboutFadeOut 0.25s ease-in both';
+    
+    setTimeout(() => {
+        aboutModal.classList.remove('show');
+        aboutModal.setAttribute('aria-hidden', 'true');
+        aboutModal.style.animation = '';
+        document.body.classList.remove('modal-open');
+        aboutBtn.focus();
+    }, 250);
+}
+
+// Enhanced event listeners
+if (aboutBtn) {
+    aboutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await openAbout();
+    });
+    
+    // Add ripple effect to button
+    aboutBtn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
+}
+
+if (aboutClose) {
+    aboutClose.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeAbout();
+    });
+}
+
+// Enhanced backdrop click
+aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) {
+        closeAbout();
+    }
+});
+
+// Enhanced keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && aboutModal.classList.contains('show')) {
+        closeAbout();
+    }
+    
+    // Tab key trapping inside modal
+    if (e.key === 'Tab' && aboutModal.classList.contains('show')) {
+        const focusableElements = aboutModal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+            }
+        } else {
+            if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+            }
+        }
+    }
+});
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes modalVibrate {
+        0% { transform: translateY(-10px) scale(0.95); opacity: 0; }
+        70% { transform: translateY(2px) scale(1.01); }
+        100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    
+    @keyframes aboutFadeOut {
+        from { opacity: 1; transform: scale(1); }
+        to { opacity: 0; transform: scale(0.95); }
+    }
+    
+    .about-btn.loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+    
+    .particles-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+    }
+    
+    .about-section {
+        animation: slideInUp 0.6s ease-out both;
+        animation-play-state: paused;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px) rotateX(10deg);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) rotateX(0);
+        }
+    }
+    
+    /* Enhanced feature list items */
+    .feature-list li {
+        transition: all 0.3s ease;
+        cursor: default;
+    }
+    
+    .feature-list li:hover {
+        transform: translateX(8px);
+        background: rgba(106, 92, 255, 0.05);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-left: -12px;
+    }
+    
+    .feature-list li::before {
+        transition: all 0.3s ease;
+    }
+    
+    .feature-list li:hover::before {
+        color: #FF8A00;
+        transform: scale(1.5);
+    }
+`;
+
+document.head.appendChild(style);
+
+// Initialize hover effects for feature list
+document.addEventListener('DOMContentLoaded', () => {
+    const features = document.querySelectorAll('.feature-list li');
+    features.forEach(feature => {
+        feature.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    });
+});
+
+// Performance optimization
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (particleSystem) {
+            particleSystem.resize();
+            particleSystem.createParticles();
+        }
+    }, 250);
+});
+
+// Export for global access
+window.AboutModal = {
+    open: openAbout,
+    close: closeAbout,
+    particleSystem
+};
