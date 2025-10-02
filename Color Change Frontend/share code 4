@@ -131,10 +131,9 @@ function setupScrollAnimations() {
         });
     }, { threshold: 0.1 });
 
-    // تحديث المسار للعناصر الجديدة
-    document.querySelectorAll('.about-section, .about-title-section, .about-sections-container').forEach((element, index) => {
-        element.style.animationDelay = `${index * 0.1}s`;
-        observer.observe(element);
+    document.querySelectorAll('.about-section').forEach((section, index) => {
+        section.style.animationDelay = `${index * 0.1}s`;
+        observer.observe(section);
     });
 }
 
@@ -163,17 +162,10 @@ async function openAbout() {
         particleSystem = new ParticleSystem(aboutModal);
     }
     
-    // Typing effect for title - تحديث المسار للعنوان الجديد
-    const title = document.querySelector('.about-title-section h1');
+    // Typing effect for title
+    const title = document.querySelector('.about-header h1');
     if (title) {
         await typeWriter(title, 'Smart Light Controller', 60);
-    }
-    
-    // إظهار المحتوى فور انتهاء الكتابة
-    const aboutBody = document.querySelector('.about-body');
-    if (aboutBody) {
-        aboutBody.style.opacity = '1';
-        aboutBody.style.visibility = 'visible';
     }
     
     // Setup scroll animations
@@ -187,13 +179,10 @@ async function openAbout() {
     aboutClose.focus();
     
     // Add subtle vibration to modal on open
-    const aboutContent = aboutModal.querySelector('.about-content');
-    if (aboutContent) {
-        aboutContent.style.animation = 'modalVibrate 0.3s ease-out';
-        setTimeout(() => {
-            aboutContent.style.animation = '';
-        }, 300);
-    }
+    aboutModal.querySelector('.about-content').style.animation = 'modalVibrate 0.3s ease-out';
+    setTimeout(() => {
+        aboutModal.querySelector('.about-content').style.animation = '';
+    }, 300);
 }
 
 function closeAbout() {
@@ -207,14 +196,7 @@ function closeAbout() {
         aboutModal.setAttribute('aria-hidden', 'true');
         aboutModal.style.animation = '';
         document.body.classList.remove('modal-open');
-        if (aboutBtn) aboutBtn.focus();
-        
-        // إعادة تعيين المحتوى لإخفائه
-        const aboutBody = document.querySelector('.about-body');
-        if (aboutBody) {
-            aboutBody.style.opacity = '0';
-            aboutBody.style.visibility = 'hidden';
-        }
+        aboutBtn.focus();
     }, 250);
 }
 
@@ -331,7 +313,7 @@ style.textContent = `
         pointer-events: none;
     }
     
-    .about-section, .about-title-section, .about-sections-container {
+    .about-section {
         animation: slideInUp 0.6s ease-out both;
         animation-play-state: paused;
     }
@@ -368,29 +350,6 @@ style.textContent = `
     .feature-list li:hover::before {
         color: #FF8A00;
         transform: scale(1.5);
-    }
-    
-    /* إضافة أنيميشن للعناوين والأقسام الجديدة */
-    .about-title-section {
-        animation: fadeInDown 0.6s ease-out both;
-    }
-    
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-    
-    /* التأكد من ظهور المحتوى بعد الكتابة */
-    .about-body {
-        opacity: 1;
-        visibility: visible;
-        transition: opacity 0.3s ease;
     }
 `;
 
