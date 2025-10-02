@@ -1,0 +1,128 @@
+
+
+.random-color-1 { background-color: #FF6B6B; color: white; }
+.random-color-2 { background-color: #4ECDC4; color: white; }
+.random-color-3 { background-color: #FFE66D; color: #333; }
+.random-color-4 { background-color: #6A0572; color: white; }
+.random-color-5 { background-color: #1A535C; color: white; }
+.random-color-6 { background-color: #FF9F1C; color: white; }
+.random-color-7 { background-color: #E71D36; color: white; }
+.random-color-8 { background-color: #2EC4B6; color: white; }
+.random-color-9 { background-color: #F46036; color: white; }
+.random-color-10 { background-color: #5B6C5D; color: white; }
+
+/* أنماط الـ Tooltip مع أطراف عشوائية */
+.animation-tooltip {
+    position: fixed;
+    background: rgba(30, 30, 40, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 15px;
+    max-width: 300px;
+    box-shadow: 
+        0 5px 25px rgba(0, 0, 0, 0.3),
+        0 0 0 2px var(--random-color-1, rgba(100, 100, 255, 0.5)),
+        0 0 10px 2px var(--random-color-2, rgba(255, 100, 100, 0.5)),
+        0 0 20px 2px var(--random-color-3, rgba(100, 255, 100, 0.5));
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    transform: translateY(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: borderGlow 3s infinite alternate;
+}
+
+.animation-tooltip.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.tooltip-content h3 {
+    margin: 0 0 8px 0;
+    color: var(--random-color-1, #4e44ce);
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--random-color-1, rgba(78, 68, 206, 0.5));
+}
+
+.tooltip-content p {
+    margin: 0;
+    color: #e0e0e0;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.tooltip-arrow {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: rgba(30, 30, 40, 0.95);
+    transform: rotate(45deg);
+    bottom: -6px;
+    left: 50%;
+    margin-left: -6px;
+    border-right: 2px solid var(--random-color-1, rgba(255, 255, 255, 0.1));
+    border-bottom: 2px solid var(--random-color-2, rgba(255, 255, 255, 0.1));
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes borderGlow {
+    0% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--random-color-1),
+            0 0 10px 2px var(--random-color-2),
+            0 0 20px 2px var(--random-color-3);
+    }
+    33% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--random-color-2),
+            0 0 10px 2px var(--random-color-3),
+            0 0 20px 2px var(--random-color-1);
+    }
+    66% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--random-color-3),
+            0 0 10px 2px var(--random-color-1),
+            0 0 20px 2px var(--random-color-2);
+    }
+    100% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--random-color-1),
+            0 0 10px 2px var(--random-color-3),
+            0 0 20px 2px var(--random-color-2);
+    }
+}
+
+/* تأثيرات إضافية للزر عند التمرير */
+button:hover::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80%;
+    height: 2px;
+    background: linear-gradient(90deg, 
+        var(--random-color-1, #4e44ce), 
+        var(--random-color-2, #ff5e5e), 
+        var(--random-color-3, #5eff5e));
+    border-radius: 2px;
+    animation: buttonUnderline 0.3s ease;
+}
+
+@keyframes buttonUnderline {
+    from { width: 0; opacity: 0; }
+    to { width: 80%; opacity: 1; }
+}
+.color-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 14px rgba(0,0,0,0.3);
+    filter: brightness(1.2);
+}
+
