@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="image.icon">
     <link rel="stylesheet" href="s.css">
+    <link rel="stylesheet" href="about.css">
+    <link rel="stylesheet" href="tooltip.css">
+    <link rel="stylesheet" href="BrightnessControl.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>LED Color Controller</title>
@@ -34,16 +37,17 @@
 
         <h2 class="button-title">Animation</h2>
         <div class="button-container">
-            <button id="lightOneBtn">Fade Colors</button>
-            <button id="WaveEffectBtn">Wave Effect</button>
-            <button id="RainbowFlowBtn">Rainbow Flow</button>
-            <button id="BlinkingPatternBtn">Blinking Pattern</button>
-            <button id="RunningLightsBtn">Running Lights</button>
-            <button id="BreathingEffectBtn">Breathing Effect</button>
-            <button id="MeteorShowerBtn">Meteor Shower</button>
-            <button id="PulseSyncBtn">Pulse Sync</button>
-            <button id="FireworksBurstBtn">Fireworks Burst</button> 
-            <button id="MeteorShowerNewBtn">Meteor Shower</button>
+            <button id="lightOneBtn" class="custom-animation-btn">Fade Colors</button>
+            <button id="WaveEffectBtn" class="custom-animation-btn">Wave Effect</button>
+            <button id="RainbowFlowBtn" class="custom-animation-btn">Rainbow Flow</button>
+            <button id="BlinkingPatternBtn" class="custom-animation-btn">Blinking Pattern</button>
+            <button id="RunningLightsBtn" class="custom-animation-btn">Running Lights</button>
+            <button id="BreathingEffectBtn" class="custom-animation-btn">Breathing Effect</button>
+            <button id="MeteorShowerBtn" class="custom-animation-btn">Meteor Shower</button>
+            <button id="RandomColorsBtn" class="custom-animation-btn">Random Colors</button>
+            <button id="PulseSyncBtn" class="custom-animation-btn">Pulse Sync</button>
+            <button id="FireworksBurstBtn" class="custom-animation-btn">Fireworks Burst</button>
+            <button id="MeteorShowerNewBtn" class="custom-animation-btn">Meteor Shower</button>
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
         </div>
 
@@ -79,6 +83,7 @@
             <button id="customFireworksBurstBtn">Fireworks Burst</button>
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
 
+
         </div>
         <!-- <div class="container">
         <div class="header">
@@ -106,9 +111,76 @@
             </div>
         </div> -->
 
-       
-
+        
+        <!-- ABOUT BUTTON (placed at end of the page) -->
+        <footer class="site-footer">
+        <button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
+        </footer>
     </div>
+
+        <!-- ABOUT MODAL -->
+        <div id="aboutModal" class="modal-backdrop about-modal" role="dialog" aria-modal="true" aria-hidden="true">
+        <div class="modal-content about-content" role="document" aria-labelledby="aboutTitle">
+            <div class="modal-header about-header">
+            <h2 id="aboutTitle">About</h2>
+            <button id="aboutClose" class="close-btn" aria-label="Close about panel" onclick="closeAbout()">&times;</button>
+            </div>
+            <div class="modal-body about-body">
+            <div class="about-info">
+                <div class="about-container">
+                    <div class="about-header">
+                        <h1>Smart Light Controller</h1>
+                        <p>The easiest way to customize your lighting experience</p>
+                    </div>
+                    
+                    <div class="about-content">
+                        <div class="about-section">
+                            <p>Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.</p>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">✨ What you can do</h3>
+                            <ul class="feature-list">
+                                <li><span class="highlight">Choose colors freely</span>: Pick from a full spectrum of colors to match your mood or event.</li>
+                                <li><span class="highlight">Try dynamic animations</span>: From smooth breathing to fast-moving waves, fireworks, and other cool effects. Each animation can be stopped, started, or changed anytime.</li>
+                                <li><span class="highlight">Adjust brightness</span>: Make the lights subtle for relaxing nights or bright for parties.</li>
+                                <li><span class="highlight">Real-time control</span>: Changes happen instantly as long as your device is on the same Wi-Fi network as the lights. No delay, no lag.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">⚡ Important things to know</h3>
+                            <ul class="feature-list">
+                                <li>The app works only on the same local network. Devices outside your Wi-Fi won't be able to control the lights.</li>
+                                <li>Some light effects may look slightly different depending on your chosen brightness and color combinations.</li>
+                                <li>The lights stay on the last selected animation until you change them. You don't need to keep the app open all the time.</li>
+                                <li><span class="highlight">Privacy and safety</span>: No internet is required. All communication happens locally on your network, so your data stays private.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <h3 class="section-title">💡 Tips for best experience</h3>
+                            <ul class="feature-list">
+                                <li>Experiment with combinations of colors and animations — you'll discover new looks you didn't expect.</li>
+                                <li>Adjust brightness according to the room size and environment to get the most dramatic effects.</li>
+                                <li>Try using multiple devices on the same network — you and your friends can control the lights together in real time.</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="about-section">
+                            <p>This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-note">
+                        <p>Smart Light Controller - Version 1.0</p>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+        </div>
+        </div>
 
     <!-- Modal -->
     <!-- <div id="adminModal" class="modal-backdrop">
@@ -143,11 +215,35 @@
 
 
 
+    <!-- Brightness Control Panel -->
+    <div id="brightnessPanel" class="brightness-panel hidden">
+        <div class="brightness-header">
+            <h3>Set Animation Brightness</h3>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="brightness-content">
+            <p class="brightness-recommendation">Recommended limit: 25%</p>
+            <div class="brightness-slider-container">
+                <input type="range" min="0" max="100" value="25" class="brightness-slider" id="brightnessSlider">
+                <span class="brightness-value" id="brightnessValue">25%</span>
+            </div>
+            <button class="brightness-apply-btn" id="applyBrightness">Apply</button>
+        </div>
+    </div>
+    <!-- إضافة عنصر الـ tooltip -->
+    <div id="animationTooltip" class="animation-tooltip">
+        <div class="tooltip-content">
+            <h3 id="tooltipTitle">Animation Name</h3>
+            <p id="tooltipDescription">Animation description will appear here.</p>
+        </div>
+        <div class="tooltip-arrow"></div>
+    </div>
 
 
     <script src="app.js"></script>
     <script src="about.js"></script>
     <script src="tooltip.js"></script>
+    <script src="BrightnessControl.js"></script>
+    
 </body>
 </html>
-
