@@ -173,27 +173,24 @@ button:hover {
     100% { transform: rotate(360deg); }
 }
 
-.color-picker-wrapper {
-    position: relative;
-    width: 140px;
-    height: 140px;
-    margin: 20px auto;
-}
+
+
 
 #colorPicker {
     width: 100px;
     height: 100px;
-    position: absolute;
-    top: 20px;
-    left: 20px;
+    position: absolute; 
+    top: 10px;
+    left: 10px;
     cursor: pointer;
     border: 3px solid #fff;
     border-radius: 50%;
     transition: all 0.3s ease;
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     z-index: 2;
-}
+    outline: 3px solid #fff;
 
+}
 #colorPicker:hover {
     transform: scale(1.1);
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
@@ -201,9 +198,10 @@ button:hover {
 
 .color-ring {
     position: absolute;
-    width: 140px;
-    height: 140px;
-    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    border-radius: 40%;
+    border: 5px solid;
     background: conic-gradient(
         #ff0000, 
         #ff8000, 
@@ -243,47 +241,22 @@ button:hover {
     margin: 20px auto;
 }
 
-#colorPicker {
-    width: 100px;
-    height: 100px;
-    position: absolute; 
-    top: 10px;
-    left: 10px;
-    cursor: pointer;
-    border: 3px solid #fff;
-    border-radius: 50%;
-    transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    z-index: 2;
-}
-
-#colorPicker:hover {
-    transform: scale(1.1);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-}
-.color-ring {
-    position: absolute;
-    width: 120px;
-    height: 120px;
-    border-radius: 50%;
-    border: 5px solid;
-    border-color: #ff0000;
-    animation: rotateHue 8s linear infinite;
-    box-sizing: border-box;
-    z-index: 1;
-}
-
-/* تصميم البطاقة والمظهر العام */
 .card {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    position: relative;
+    width: 90vw;
+    max-width: 800px;
+    padding: 40px;
+    border-radius: 24px;
+    background: rgba(20, 30, 50, var(--alpha-med));
+    backdrop-filter: blur(20px) brightness(1.2);
+    z-index: 10;
+    animation: card-pulse var(--anim-speed-medium) infinite alternate;
     margin-top: 20px;
-    transition: all 0.3s ease;
     max-height: 100vh;
     overflow-y: auto;
     scroll-behavior: smooth;
+    transition: all 0.5s ease;
+
 }
 
 .card::-webkit-scrollbar{
@@ -301,20 +274,58 @@ button:hover {
   border-radius: 4px;
 
 }
+
 .color-display {
-    width: 150px;
-    height: 150px;
-    margin: 20px auto;
-    border-radius: 50%;
-    background: #ff0000;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-    transition: all 0.5s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
     text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+    transition: background-color 0.5s ease;
+    position: relative;
+    width: 180px;
+    height: 180px;
+    margin: 0 auto 30px auto;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(255,255,255,0.2);
+    overflow: hidden;
+}
+
+.color-display::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 0deg,
+    var(--accent-color-1),
+    var(--accent-color-2),
+    var(--accent-color-3),
+    var(--accent-color-4),
+    var(--accent-color-1)
+  );
+  animation: color-ring-spin var(--anim-speed-slow) infinite linear;
+  opacity: 0.6;
+  filter: blur(20px);
+  z-index: -1;
+}
+
+.color-display span {
+  position: relative;
+  font-size: 1.5rem;
+  letter-spacing: 2px;
+  color: #FFF;
+  text-shadow: var(--shadow-glow-small) var(--accent-color-1);
+  animation: display-text-glow var(--anim-speed-medium) infinite alternate;
+}
+
+.button-container button.active {
+    animation: pulse 1.5s infinite;
+    position: relative;
+    z-index: 1;
 }
 
 @keyframes lightOneByOne {
@@ -333,13 +344,6 @@ button:hover {
     100% {
         box-shadow: 0 0 5px rgba(255, 0, 0, 0.8);
     }
-}
-
-
-.button-container button.active {
-    animation: pulse 1.5s infinite;
-    position: relative;
-    z-index: 1;
 }
 
 @keyframes pulse {
@@ -439,9 +443,6 @@ button:hover {
 }
 
 
-
-
-
 @keyframes pulse {
     0% {
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
@@ -518,7 +519,6 @@ button:hover {
     }
 }
 
-/* إضافة هذه الأنماط في نهاية الملف */
 
 #WaveEffectBtn.active {
     background: linear-gradient(135deg, #ff0000, #ff2a00);
@@ -538,8 +538,6 @@ button:hover {
         box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
     }
 }
-
-
 
 @keyframes pulse {
     0% {
@@ -954,6 +952,110 @@ button:hover {
 }
 
 
+
+#RandomColorsBtn {
+    background: linear-gradient(135deg, #ff0000, #ff8c00);
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+#RandomColorsBtn::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        to bottom right,
+        rgba(255,255,255,0.3),
+        rgba(255,255,255,0)
+    );
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+#RandomColorsBtn:hover::before {
+    animation: shine 1.5s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -50%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+
+#RandomColorsBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    animation: none;
+}
+
+#RandomColorsBtn.active::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    animation: ripple 1.5s infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+
+
+#RandomColorsBtn.active {
+    background: linear-gradient(135deg, #ff0000, #ff2a00);
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 0, 0, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 0, 0, 0);
+    }
+}
+
+
+
+
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+    }
+}
+
+
+
 #BreathingEffectBtn {
     background: linear-gradient(135deg, #ff0000, #ff8c00);
     color: white;
@@ -1351,48 +1453,37 @@ button:hover {
         box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
     }
 }
-/*==================================================================
-  1. متغيرات عامة (CSS Variables) للـ Aura
-==================================================================*/
 :root {
-  /* تدرّجات الألوان الأساسية للوهج */
   --aura-color-1: rgba(255, 50, 150, 0.80);
   --aura-color-2: rgba(50, 200, 255, 0.80);
   --aura-color-3: rgba(150, 255, 50, 0.80);
   --aura-color-4: rgba(255, 255, 50, 0.80);
 
-  /* ألوان ثانوية وكهرمانية */
   --accent-color-1: #FF0077;
   --accent-color-2: #00CCFF;
   --accent-color-3: #AAFF33;
   --accent-color-4: #FFD700;
 
-  /* سرعات الرسوم */
   --anim-speed-fast: 1s;
   --anim-speed-medium: 3s;
   --anim-speed-slow: 6s;
   --anim-speed-ultra: 12s;
 
-  /* أحجام الظلال */
   --shadow-glow-small: 0 0 20px;
   --shadow-glow-medium: 0 0 40px;
   --shadow-glow-large: 0 0 80px;
   --shadow-glow-xlarge: 0 0 160px;
 
-  /* شفافية عامة */
   --alpha-low: 0.15;
   --alpha-med: 0.30;
   --alpha-high: 0.60;
   --alpha-max: 1.00;
 
-  /* تدرّج خلفية رئيسي */
   --background-gradient: linear-gradient(135deg, #0A0F1A 0%, #1A2433 100%);
 }
 
 
-/*==================================================================
-  2. إعداد الهيكل العام للصفحة
-==================================================================*/
+  /* 2. إعداد الهيكل العام للصفحة */
 *,
 *:before,
 *:after {
@@ -1410,27 +1501,13 @@ html, body {
   color: #EEE;
 }
 
-/* الحاوية الرئيسية */
 body {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-/* بطاقة المحتوى */
-.card {
-  position: relative;
-  width: 90vw;
-  max-width: 800px;
-  padding: 40px;
-  border-radius: 24px;
-  background: rgba(20, 30, 50, var(--alpha-med));
-  box-shadow: var(--shadow-glow-large) var(--aura-color-1);
-  backdrop-filter: blur(20px) brightness(1.2);
-  z-index: 10;
-  /* overflow: hidden; */
-  animation: card-pulse var(--anim-speed-medium) infinite alternate;
-}
+
 
 /* تذبذب خفيف للبطاقة */
 @keyframes card-pulse {
@@ -1445,107 +1522,6 @@ body {
   }
 }
 
-/*==================================================================
-  3. تأثيرات الجداول والخطوط العائمة في الخلفية (Background Overlays)
-==================================================================*/
-
-/* طبقة خطوط هندسية متقاطعة */
-.background-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 200%;
-  height: 200%;
-  background-image:
-    linear-gradient(45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
-    linear-gradient(-45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
-    linear-gradient(45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px),
-    linear-gradient(-45deg, rgba(255,255,255,var(--alpha-low)) 1px, transparent 1px);
-  background-size: 40px 40px;
-  animation: bg-move-lines var(--anim-speed-slow) infinite linear;
-  pointer-events: none;
-  z-index: 1;
-}
-
-@keyframes bg-move-lines {
-  0%   { transform: translate(0, 0) rotate(0deg); }
-  100% { transform: translate(-80px, -80px) rotate(360deg); }
-}
-
-/* طبقة هالة نورانية متحركة */
-.background-aura {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at center,
-      var(--aura-color-1) 0%,
-      var(--aura-color-2) 30%,
-      var(--aura-color-3) 60%,
-      var(--aura-color-4) 100%
-    );
-  opacity: var(--alpha-low);
-  filter: blur(100px);
-  animation: bg-pulse-aura var(--anim-speed-ultra) infinite alternate;
-  pointer-events: none;
-  z-index: 0;
-}
-
-@keyframes bg-pulse-aura {
-  0% {
-    opacity: var(--alpha-low);
-    transform: scale(1);
-  }
-  50% {
-    opacity: var(--alpha-med);
-    transform: scale(1.1);
-  }
-  100% {
-    opacity: var(--alpha-low);
-    transform: scale(1);
-  }
-}
-
-/* طبقة نقاط متفرقة (Particles) متحركة */
-.background-particles {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.background-particles .particle {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  background: rgba(255, 255, 255, var(--alpha-low));
-  border-radius: 50%;
-  animation: particle-float var(--anim-speed-ultra) infinite ease-in-out;
-}
-
-/* توليد 50 جسيم عشوائي */
-@for $i from 1 through 50 {
-  .background-particles .particle:nth-child(#{$i}) {
-    top: random(100) + '%';
-    left: random(100) + '%';
-    animation-duration: calc(var(--anim-speed-ultra) * (random(5) / 5 + 0.5));
-    animation-delay: calc(var(--anim-speed-ultra) * (random(5) / 5 * -1));
-  }
-}
-
-@keyframes particle-float {
-  0%   { transform: translate(0, 0) scale(1); opacity: 0.2; }
-  50%  { transform: translate(5px, -5px) scale(1.3); opacity: 0.6; }
-  100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
-}
-
-/*==================================================================
-  4. تأثير الهالة المتوهجة حول النص والعناوين
-==================================================================*/
 .led-title, .button-title {
   position: relative;
   display: inline-block;
@@ -1575,9 +1551,6 @@ body {
 }
 
 
-/*==================================================================
-  6. تصميم الأزرار (Buttons) مع تأثير الهالة والألوان الديناميكية
-==================================================================*/
 button {
   position: relative;
   padding: 14px 28px;
@@ -1669,9 +1642,6 @@ button:hover::before {
 }
 
 
-/*==================================================================
-  8. تأثيرات انتقالية للروابط والصور (Link & Image Transitions)
-==================================================================*/
 /* الروابط داخل البطاقة */
 .card a {
   color: var(--accent-color-2);
@@ -1716,59 +1686,12 @@ button:hover::before {
   transform: scale(1.03);
 }
 
-
-/*==================================================================
-  9. تأثيرات لونية متغيرة على عناصر محددة (Color Wave Effects)
-==================================================================*/
-/* عداد دائري متحرك حول لون العرض */
-.color-display {
-  position: relative;
-  width: 180px;
-  height: 180px;
-  margin: 0 auto 30px auto;
-  border-radius: 50%;
-  background: #000; /* القيمة الأولية نفسها، ستتغير بواسطة JS */
-  box-shadow: 0 0 30px rgba(255,255,255,0.2);
-  overflow: hidden;
-  transition: background 0.5s ease, box-shadow 0.5s ease;
-}
-
-.color-display::before {
-  content: "";
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: conic-gradient(
-    from 0deg,
-    var(--accent-color-1),
-    var(--accent-color-2),
-    var(--accent-color-3),
-    var(--accent-color-4),
-    var(--accent-color-1)
-  );
-  animation: color-ring-spin var(--anim-speed-slow) infinite linear;
-  opacity: 0.6;
-  filter: blur(20px);
-  z-index: -1;
-}
-
 @keyframes color-ring-spin {
   0% { transform: rotate(0deg)   scale(1); }
   50%{ transform: rotate(180deg) scale(1.2); }
   100%{ transform: rotate(360deg) scale(1); }
 }
 
-/* النص داخل الدائرة يتوهج عند تغيير اللون */
-.color-display span {
-  position: relative;
-  font-size: 1.5rem;
-  letter-spacing: 2px;
-  color: #FFF;
-  text-shadow: var(--shadow-glow-small) var(--accent-color-1);
-  animation: display-text-glow var(--anim-speed-medium) infinite alternate;
-}
 
 @keyframes display-text-glow {
   0% {
@@ -1789,8 +1712,7 @@ button:hover::before {
 .card-vertical { width: 300px; height: 600px; margin: 50px auto; background: rgba(255,255,255,0.05); border: 2px solid #0f0; position: relative; }
 .card-vertical::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border: 2px solid transparent; border-image: linear-gradient(45deg, #0f0, #000, #0f0, #000); border-image-slice: 1; animation: border-rotate 5s linear infinite; }
 @keyframes border-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-/* Color picker changed to green by user request */
-#colorPicker { outline: 3px solid #0f0; }
+
 /* Wave background stripes */
 .wave-1 { background: linear-gradient(10deg, rgba(1,2,3,0.1) 0%, transparent 50%); height: 5px; }
 .wave-2 { background: linear-gradient(20deg, rgba(2,4,6,0.1) 0%, transparent 50%); height: 5px; }
@@ -1814,17 +1736,16 @@ button:hover::before {
     height: 100vh;
     overflow: hidden;
 }
+
 /* ─── إضافة لمعان النجمة ─── */
 .star {
     position: absolute;
-    font-size: 20px;          /* حجم النجمة كما كان */
-    color: #fff;              /* نغيّر اللون لأبيض ليظهر الهُج بوضوح */
-    /* نضيف وهجاً حول النجمة بنص الظِل */
+    font-size: 20px;          
+    color: #fff;             
     text-shadow: 
         0 0 5px  rgba(255,255,255,0.8),
         0 0 10px rgba(255,255,255,0.6),
         0 0 20px rgba(255,255,255,0.4);
-    /* نركّب على الأنيميشن الأصلي twinkle أنيميشن جديد لـ “star-glow” */
     animation: 
         twinkle     3s infinite alternate,
         star-glow   3s infinite alternate;
@@ -1856,10 +1777,6 @@ button:hover::before {
             0 0 20px rgba(255,255,255,0.4);
     }
 }
-
-
-
-/* 1) الشكل الأساسي للزر (خلفية متدرجة + لون نص أبيض) */
 
 
 #MeteorShowerNewBtn {
@@ -1964,9 +1881,6 @@ button:hover::before {
 
 
 
-/*==================================================================
-  5. تصميم الدوائر المتحركة (Floating Orbs) داخل البطاقة
-==================================================================*/
 .orb {
   position: absolute;
   border-radius: 50%;
@@ -2048,36 +1962,6 @@ button:hover::before {
 }
 
 
-
-
-
-.stars-container {
-    position: fixed;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-}
-/* ─── إضافة لمعان النجمة ─── */
-.star {
-    position: absolute;
-    font-size: 20px;          /* حجم النجمة كما كان */
-    color: #fff;              /* نغيّر اللون لأبيض ليظهر الهُج بوضوح */
-    /* نضيف وهجاً حول النجمة بنص الظِل */
-    text-shadow: 
-        0 0 5px  rgba(255,255,255,0.8),
-        0 0 10px rgba(255,255,255,0.6),
-        0 0 20px rgba(255,255,255,0.4);
-    /* نركّب على الأنيميشن الأصلي twinkle أنيميشن جديد لـ “star-glow” */
-    animation: 
-        twinkle     3s infinite alternate,
-        star-glow   3s infinite alternate;
-}
-
-@keyframes twinkle {
-    0%   { opacity: 0.2; transform: scale(0.8); }
-    50%  { opacity: 1;   transform: scale(1.2); }
-    100% { opacity: 0;   transform: scale(0.8); }
-}
 /* تعريف Keyframes لأنيميشن “star-glow” ليزيد ويقلل الهُج تدريجياً */
 @keyframes star-glow {
     0% {
@@ -2100,15 +1984,6 @@ button:hover::before {
     }
 }
 
-
-
-
-
-/* إضافة تأثيرات الانتقال */
-.card {
-    transition: all 0.5s ease;
-}
-
 .card-overlay {
     animation: colorPulse 0.5s ease;
 }
@@ -2125,10 +2000,7 @@ button:hover::before {
     }
 }
 
-/* تأثير fade-in للعرض اللوني */
-.color-display {
-    transition: background-color 0.5s ease;
-}
+
 
 /* تأثيرات للأزرار عند النشاط */
 button.active {
@@ -2376,273 +2248,4 @@ button.active {
     .modal-content {
         width: 95%;
     }
-}
-/* Brightness Panel Styles */
-.brightness-panel {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: rgba(25, 25, 35, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 15px;
-    padding: 20px;
-    width: 300px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.brightness-panel.hidden {
-    display: none;
-}
-
-.brightness-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding-bottom: 10px;
-}
-
-.brightness-header h3 {
-    margin: 0;
-    color: #fff;
-    font-size: 18px;
-}
-
-.close-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-size: 24px;
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background 0.2s;
-}
-
-.close-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.brightness-content {
-    color: #fff;
-}
-
-.brightness-recommendation {
-    margin: 0 0 15px 0;
-    font-size: 14px;
-    color: #a0a0b0;
-}
-
-.brightness-slider-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.brightness-slider {
-    flex: 1;
-    height: 5px;
-    -webkit-appearance: none;
-    appearance: none;
-    background: rgba(255, 255, 255, 0.2);
-    outline: none;
-    border-radius: 5px;
-    margin-right: 15px;
-}
-
-.brightness-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #4e44ce;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(78, 68, 206, 0.5);
-}
-
-.brightness-slider::-moz-range-thumb {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #4e44ce;
-    cursor: pointer;
-    box-shadow: 0 0 10px rgba(78, 68, 206, 0.5);
-    border: none;
-}
-
-.brightness-value {
-    min-width: 40px;
-    text-align: center;
-    font-weight: bold;
-}
-
-.brightness-apply-btn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #6b5ce7, #4e44ce);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.2s;
-}
-
-.brightness-apply-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(78, 68, 206, 0.4);
-}
-
-/* Overlay for when panel is visible */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(5px);
-    z-index: 999;
-    display: none;
-}
-
-.overlay.active {
-    display: block;
-}
-
-
-.random-color-1 { background-color: #FF6B6B; color: white; }
-.random-color-2 { background-color: #4ECDC4; color: white; }
-.random-color-3 { background-color: #FFE66D; color: #333; }
-.random-color-4 { background-color: #6A0572; color: white; }
-.random-color-5 { background-color: #1A535C; color: white; }
-.random-color-6 { background-color: #FF9F1C; color: white; }
-.random-color-7 { background-color: #E71D36; color: white; }
-.random-color-8 { background-color: #2EC4B6; color: white; }
-.random-color-9 { background-color: #F46036; color: white; }
-.random-color-10 { background-color: #5B6C5D; color: white; }
-
-/* أنماط الـ Tooltip مع أطراف عشوائية */
-.animation-tooltip {
-    position: fixed;
-    background: rgba(30, 30, 40, 0.95);
-    backdrop-filter: blur(10px);
-    border-radius: 12px;
-    padding: 15px;
-    max-width: 300px;
-    box-shadow: 
-        0 5px 25px rgba(0, 0, 0, 0.3),
-        0 0 0 2px var(--random-color-1, rgba(100, 100, 255, 0.5)),
-        0 0 10px 2px var(--random-color-2, rgba(255, 100, 100, 0.5)),
-        0 0 20px 2px var(--random-color-3, rgba(100, 255, 100, 0.5));
-    z-index: 10000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    transform: translateY(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    animation: borderGlow 3s infinite alternate;
-}
-
-.animation-tooltip.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.tooltip-content h3 {
-    margin: 0 0 8px 0;
-    color: var(--random-color-1, #4e44ce);
-    font-size: 1.2rem;
-    font-weight: bold;
-    text-shadow: 0 0 5px var(--random-color-1, rgba(78, 68, 206, 0.5));
-}
-
-.tooltip-content p {
-    margin: 0;
-    color: #e0e0e0;
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-
-.tooltip-arrow {
-    position: absolute;
-    width: 12px;
-    height: 12px;
-    background: rgba(30, 30, 40, 0.95);
-    transform: rotate(45deg);
-    bottom: -6px;
-    left: 50%;
-    margin-left: -6px;
-    border-right: 2px solid var(--random-color-1, rgba(255, 255, 255, 0.1));
-    border-bottom: 2px solid var(--random-color-2, rgba(255, 255, 255, 0.1));
-    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
-}
-
-@keyframes borderGlow {
-    0% {
-        box-shadow: 
-            0 5px 25px rgba(0, 0, 0, 0.3),
-            0 0 0 2px var(--random-color-1),
-            0 0 10px 2px var(--random-color-2),
-            0 0 20px 2px var(--random-color-3);
-    }
-    33% {
-        box-shadow: 
-            0 5px 25px rgba(0, 0, 0, 0.3),
-            0 0 0 2px var(--random-color-2),
-            0 0 10px 2px var(--random-color-3),
-            0 0 20px 2px var(--random-color-1);
-    }
-    66% {
-        box-shadow: 
-            0 5px 25px rgba(0, 0, 0, 0.3),
-            0 0 0 2px var(--random-color-3),
-            0 0 10px 2px var(--random-color-1),
-            0 0 20px 2px var(--random-color-2);
-    }
-    100% {
-        box-shadow: 
-            0 5px 25px rgba(0, 0, 0, 0.3),
-            0 0 0 2px var(--random-color-1),
-            0 0 10px 2px var(--random-color-3),
-            0 0 20px 2px var(--random-color-2);
-    }
-}
-
-/* تأثيرات إضافية للزر عند التمرير */
-button:hover::after {
-    content: '';
-    position: absolute;
-    bottom: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80%;
-    height: 2px;
-    background: linear-gradient(90deg, 
-        var(--random-color-1, #4e44ce), 
-        var(--random-color-2, #ff5e5e), 
-        var(--random-color-3, #5eff5e));
-    border-radius: 2px;
-    animation: buttonUnderline 0.3s ease;
-}
-
-@keyframes buttonUnderline {
-    from { width: 0; opacity: 0; }
-    to { width: 80%; opacity: 1; }
-}
-.color-button:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 7px 14px rgba(0,0,0,0.3);
-    filter: brightness(1.2);
 }
