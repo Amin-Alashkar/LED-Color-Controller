@@ -120,20 +120,27 @@ function typeWriter(element, text, speed = 50) {
     });
 }
 
-// Animate elements on scroll
+// Animate elements on scroll - UPDATED VERSION
 function setupScrollAnimations() {
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                entry.target.style.animationPlayState = 'running';
-                observer.unobserve(entry.target);
+                // إضافة كلاس للأنيميشن بدلاً من التحكم المباشر
+                entry.target.classList.add('animate-in');
+                // إزالة العنصر من المراقبة بعد تنفيذ الأنيميشن
+                setTimeout(() => {
+                    observer.unobserve(entry.target);
+                }, 600);
             }
         });
-    }, { threshold: 0.1 });
+    }, { 
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px' // تبدأ الأنيميشن عندما يدخل العنصر بنسبة 10% من الشاشة
+    });
 
-    document.querySelectorAll('.about-section').forEach((section, index) => {
-        section.style.animationDelay = `${index * 0.1}s`;
-        observer.observe(section);
+    // مراقبة جميع الأقسام والعناصر التي نريد إضافة أنيميشن لها
+    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach((element) => {
+        observer.observe(element);
     });
 }
 
@@ -168,8 +175,13 @@ async function openAbout() {
         await typeWriter(title, 'Smart Light Controller', 60);
     }
     
-    // Setup scroll animations
-    setupScrollAnimations();
+    // إزالة أي أنيميشن سابقة وإعادة تعيين الحالة
+    resetAnimations();
+    
+    // Setup scroll animations بعد انتهاء الكتابة مباشرة
+    setTimeout(() => {
+        setupScrollAnimations();
+    }, 100);
     
     // Restore button state
     aboutBtn.classList.remove('loading');
@@ -179,10 +191,25 @@ async function openAbout() {
     aboutClose.focus();
     
     // Add subtle vibration to modal on open
-    aboutModal.querySelector('.about-content').style.animation = 'modalVibrate 0.3s ease-out';
-    setTimeout(() => {
-        aboutModal.querySelector('.about-content').style.animation = '';
-    }, 300);
+    const aboutContent = aboutModal.querySelector('.about-content');
+    if (aboutContent) {
+        aboutContent.style.animation = 'modalVibrate 0.3s ease-out';
+        setTimeout(() => {
+            aboutContent.style.animation = '';
+        }, 300);
+    }
+}
+
+// دالة جديدة لإعادة تعيين الأنيميشنات
+function resetAnimations() {
+    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach(element => {
+        element.classList.remove('animate-in');
+        // إعادة تعيين الأنيميشن CSS
+        element.style.animation = 'none';
+        setTimeout(() => {
+            element.style.animation = '';
+        }, 10);
+    });
 }
 
 function closeAbout() {
@@ -197,6 +224,9 @@ function closeAbout() {
         aboutModal.style.animation = '';
         document.body.classList.remove('modal-open');
         aboutBtn.focus();
+        
+        // إعادة تعيين الأنيميشنات عند الإغلاق
+        resetAnimations();
     }, 250);
 }
 
@@ -313,21 +343,43 @@ style.textContent = `
         pointer-events: none;
     }
     
+    /* الأنيميشنات الجديدة */
     .about-section {
-        animation: slideInUp 0.6s ease-out both;
-        animation-play-state: paused;
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease-out;
     }
     
-    @keyframes slideInUp {
-        from {
-            opacity: 0;
-            transform: translateY(30px) rotateX(10deg);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) rotateX(0);
-        }
+    .about-section.animate-in {
+        opacity: 1;
+        transform: translateY(0);
     }
+    
+    .feature-item, .tech-stack-item {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.5s ease-out;
+    }
+    
+    .feature-item.animate-in, .tech-stack-item.animate-in {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    /* تأخيرات متدرجة للعناصر */
+    .about-section:nth-child(1) { transition-delay: 0.1s; }
+    .about-section:nth-child(2) { transition-delay: 0.2s; }
+    .about-section:nth-child(3) { transition-delay: 0.3s; }
+    .about-section:nth-child(4) { transition-delay: 0.4s; }
+    
+    .feature-item:nth-child(1) { transition-delay: 0.1s; }
+    .feature-item:nth-child(2) { transition-delay: 0.2s; }
+    .feature-item:nth-child(3) { transition-delay: 0.3s; }
+    .feature-item:nth-child(4) { transition-delay: 0.4s; }
+    
+    .tech-stack-item:nth-child(1) { transition-delay: 0.1s; }
+    .tech-stack-item:nth-child(2) { transition-delay: 0.2s; }
+    .tech-stack-item:nth-child(3) { transition-delay: 0.3s; }
     
     /* Enhanced feature list items */
     .feature-list li {
