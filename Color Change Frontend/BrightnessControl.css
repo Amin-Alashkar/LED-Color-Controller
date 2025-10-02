@@ -1,0 +1,143 @@
+/* BrightnessControl.css */
+
+.brightness-panel {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(25, 25, 35, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 20px;
+    width: 300px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.brightness-panel.hidden {
+    display: none;
+}
+
+.brightness-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+.brightness-header h3 {
+    margin: 0;
+    color: #fff;
+    font-size: 18px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.2s;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.brightness-content {
+    color: #fff;
+}
+
+.brightness-recommendation {
+    margin: 0 0 15px 0;
+    font-size: 14px;
+    color: #a0a0b0;
+}
+
+.brightness-slider-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.brightness-slider {
+    flex: 1;
+    height: 5px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(255, 255, 255, 0.2);
+    outline: none;
+    border-radius: 5px;
+    margin-right: 15px;
+}
+
+.brightness-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4e44ce;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(78, 68, 206, 0.5);
+}
+
+.brightness-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #4e44ce;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(78, 68, 206, 0.5);
+    border: none;
+}
+
+.brightness-value {
+    min-width: 40px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.brightness-apply-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #6b5ce7, #4e44ce);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.brightness-apply-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(78, 68, 206, 0.4);
+}
+
+/* Overlay for when panel is visible */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    z-index: 999;
+    display: none;
+}
+
+.overlay.active {
+    display: block;
+}
