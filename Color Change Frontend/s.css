@@ -1756,7 +1756,7 @@ button:hover::before {
     50%  { opacity: 1;   transform: scale(1.2); }
     100% { opacity: 0;   transform: scale(0.8); }
 }
-/* تعريف Keyframes لأنيميشن “star-glow” ليزيد ويقلل الهُج تدريجياً */
+
 @keyframes star-glow {
     0% {
         text-shadow: 
