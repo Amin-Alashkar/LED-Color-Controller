@@ -1,87 +1,197 @@
-# Admin credentials
-ADMIN_USERNAME = "adminpanel"
-ADMIN_PASSWORD = "RoomB107"
+        /* VIP Button Styles */
+        .vip-container {
+            text-align: center;
+            margin-top: 20px;
+            position: relative;
+            z-index: 10;
+        }
 
-# Admin session management
-app.add_middleware(SessionMiddleware, secret_key="your-very-secret-key-here")
+        .vip-Btn {
+            padding: 18px 45px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #FFD700, #FFA500, #FFCC00);
+            color: #0a0a2a;
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 0 20px 8px rgba(255, 215, 0, 0.6);
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-# Admin login attempts tracking
-login_attempts = {}
-lockout_times = {}
-login_lock = threading.Lock()
+        .vip-Btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 30px 12px rgba(255, 215, 0, 0.8);
+        }
 
-# Admin routes
-@app.post("/admin/login")
-async def admin_login(request: Request, 
-                     username: str = Form(...), 
-                     password: str = Form(...)):
-    ip = request.client.host
-    current_time = time.time()
-    
-    with login_lock:
-        # Check if IP is currently locked out
-        if ip in lockout_times and lockout_times[ip] > current_time:
-            remaining = int(lockout_times[ip] - current_time)
-            raise HTTPException(
-                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                detail=f"Too many failed attempts. Please try again in {remaining} seconds."
-            )
-        
-        # Check credentials
-        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
-            # Reset failed attempts on successful login
-            if ip in login_attempts:
-                del login_attempts[ip]
-            if ip in lockout_times:
-                del lockout_times[ip]
-                
-            request.session["is_admin"] = True
-            return {"status": "success"}
-        else:
-            # Increment failed attempt count
-            login_attempts[ip] = login_attempts.get(ip, 0) + 1
-            attempt_count = login_attempts[ip]
-            
-            # Calculate lockout parameters
-            lockout_level = (attempt_count - 1) // 3
-            lockout_duration = (2 ** lockout_level) * 60  # in seconds
-            
-            # If reached a multiple of 3, set lockout
-            if attempt_count % 3 == 0:
-                lockout_times[ip] = current_time + lockout_duration
-                raise HTTPException(
-                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
-                    detail=f"Too many failed attempts. Account locked for {lockout_duration} seconds."
-                )
-            else:
-                raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED,
-                    detail="Incorrect username or password"
-                )
+        /* Modal Styles */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s ease forwards;
+        }
 
-@app.get("/admin/status")
-async def admin_status(request: Request):
-    return {"is_admin": request.session.get("is_admin", False)}
+        .modal-content {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            width: 90%;
+            max-width: 450px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            position: relative;
+            animation: slideIn 0.5s ease forwards;
+        }
 
-@app.post("/admin/reset")
-async def admin_reset(request: Request):
-    if not request.session.get("is_admin"):
-        raise HTTPException(status_code=403, detail="Forbidden")
-    return {"message": "System reset complete"}
+        .modal-backdrop.closing {
+            animation: fadeOut 0.5s ease forwards !important;
+        }
 
-@app.post("/admin/reboot")
-async def admin_reboot(request: Request):
-    if not request.session.get("is_admin"):
-        raise HTTPException(status_code=403, detail="Forbidden")
-    return {"message": "System rebooting..."}
+        .modal-backdrop.closing .modal-content {
+            animation: vaporize 0.6s ease forwards !important;
+        }
 
-@app.post("/admin/shutdown")
-async def admin_shutdown(request: Request):
-    if not request.session.get("is_admin"):
-        raise HTTPException(status_code=403, detail="Forbidden")
-    return {"message": "System shutdown initiated"}
+        .modal-header {
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
 
-@app.post("/admin/logout")
-async def admin_logout(request: Request):
-    request.session.clear()
-    return {"status": "success"}
+        .modal-header h2 {
+            color: #0a0a2a;
+            font-size: 1.8rem;
+            font-weight: 700;
+            text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+            letter-spacing: 1px;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 1.8rem;
+            color: #0a0a2a;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(0, 0, 0, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #FFD700;
+            font-weight: 500;
+        }
+
+        .password-input {
+            width: 100%;
+            padding: 15px 20px;
+            font-size: 1rem;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            background: rgba(10, 10, 42, 0.5);
+            color: #fff;
+            outline: none;
+            transition: all 0.3s ease;
+            direction: ltr;
+        }
+
+        .password-input:focus {
+            border-color: #FFD700;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .password-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #0a0a2a;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 165, 0, 0.6);
+        }
+
+        .footer-note {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+        }
+
+        /* Admin Controls */
+        #adminFeatures {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+        }
+
+        #resetSystemBtn {
+            background: linear-gradient(135deg, #ff0000, #ff2a00);
+            color: white;
+        }
+
+        #rebootDeviceBtn {
+            background: linear-gradient(135deg, #ff8c00, #ff2a00);
+            color: white;
+        }
+
+        #shutdownSystemBtn {
+            background: linear-gradient(135deg, #8B0000, #ff0000);
+            color: white;
+        }
+
+        #adminLogoutBtn {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: #FFD700;
+            border: 1px solid #FFD700;
+        }
