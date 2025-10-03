@@ -1,11 +1,10 @@
-
-// Admin variables and functions
-let is_admin = false;
-
-// Get modal elements
-const modal = document.getElementById('adminModal');
+// DOM Elements for Admin
 const vipBtn = document.getElementById('vipBtn');
+const modal = document.getElementById('adminModal');
 const closeBtn = document.querySelector('.close-btn');
+const adminFeatures = document.getElementById('adminFeatures');
+
+let is_admin = false;
 
 // Show modal when VIP button is clicked
 vipBtn.addEventListener('click', function() {
@@ -14,7 +13,7 @@ vipBtn.addEventListener('click', function() {
     modal.classList.remove('closing');
 });
 
-// Function to close modal with animation
+// Close modal function
 function closeModal() {
     modal.classList.add('closing');
     setTimeout(() => {
@@ -23,10 +22,8 @@ function closeModal() {
     }, 600);
 }
 
-// Hide modal when close button is clicked
+// Close modal events
 closeBtn.addEventListener('click', closeModal);
-
-// Hide modal when clicking outside the modal content
 modal.addEventListener('click', function(e) {
     if (e.target === modal) {
         closeModal();
@@ -88,7 +85,6 @@ async function adminLogin() {
 
 // Update UI for admin
 function updateUIForAdmin() {
-    const adminFeatures = document.getElementById('adminFeatures');
     if (is_admin) {
         adminFeatures.style.display = 'block';
         adminFeatures.innerHTML = `
