@@ -1,103 +1,44 @@
+<!-- VIP Admin Button -->
+<div class="vip-container">
+    <button id="vipBtn" class="vip-Btn">
+        <i class="fas fa-crown"></i>
+        <span class="vip-text">VIP Admin Panel</span>
+    </button>
+</div>
 
+<!-- Admin Features Section -->
+<div id="adminFeatures" style="display: none;">
+    <h2 class="button-title">Admin Controls</h2>
+    <div class="button-container">
+        <button id="resetSystemBtn">Reset System</button>
+        <button id="rebootDeviceBtn">Reboot Device</button>
+        <button id="shutdownSystemBtn">Shutdown</button>
+    </div>
+</div>
 
-/* === Helper: hex -> "r,g,b" === */
-function hexToRgbString(hex) {
-  if (!hex) return '0,0,0';
-  hex = hex.replace('#','').trim();
-  if (hex.length === 3) {
-    hex = hex.split('').map(ch => ch + ch).join('');
-  }
-  const int = parseInt(hex, 16);
-  const r = (int >> 16) & 255;
-  const g = (int >> 8) & 255;
-  const b = int & 255;
-  return `${r},${g},${b}`;
-}
-
-
-function setUIColor(hexOrRgb) {
-  let rgb;
-  if (!hexOrRgb) {
-    rgb = '0,0,0';
-    document.documentElement.style.setProperty('--ui-color', '#000000');
-  } else if (hexOrRgb.startsWith('rgb')) {
-    const nums = hexOrRgb.replace(/rgba?$begin:math:text$|$end:math:text$|\s/g,'').split(',').slice(0,3);
-    rgb = nums.join(',');
-    document.documentElement.style.setProperty('--ui-color', `rgb(${rgb})`);
-  } else if (hexOrRgb.indexOf(',') !== -1) {
-    rgb = hexOrRgb;
-    document.documentElement.style.setProperty('--ui-color', `rgb(${rgb})`);
-  } else {
-    rgb = hexToRgbString(hexOrRgb);
-    document.documentElement.style.setProperty('--ui-color', hexOrRgb);
-  }
-  document.documentElement.style.setProperty('--ui-rgb', rgb);
-}
-
-
-function getCurrentColor() {
-  const cp = document.getElementById('colorPicker');
-  if (cp && cp.value) return cp.value;
-  const display = document.getElementById('colorDisplay');
-  if (display) {
-    const style = window.getComputedStyle(display).backgroundColor;
-    if (style) return style;
-  }
-  return '#00ff00';
-}
-
-function playCardOverlay() {
-  const card = document.querySelector('.card');
-  if (!card) return;
-  // نضبط اللون الحالي
-  setUIColor(getCurrentColor());
-  // نضيف الكلاس اللي يشغل overlay
-  card.classList.add('card-overlay');
-    // إزالة الكلاس بعد انتهاء الانتقال
-    setTimeout(() => {
-        card.classList.remove('card-overlay');
-    }, 500);
-  // نشيل الكلاس بعد ما يخلص الانيميشن عشان يقدر يعيد التشغيل بالـreload
-  card.addEventListener('animationend', () => {
-    card.classList.remove('card-overlay');
-  }, { once: true });
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  //  overlay بنفس اللون الحالي
-  setUIColor(getCurrentColor());
-
-  const overlay = document.getElementById('page-overlay');
-  if (overlay) {
-    // شغل الانيميشن فوراt
-    overlay.classList.add('fade-out');
-    // بعد الانيميشن نشيل العنصر من الـDOM
-    overlay.addEventListener('animationend', () => {
-      overlay.remove();
-    });
-  }
-});
-
-
-function updateUI(color) {
-    if (color) {
-        document.body.style.background = color;
-        document.body.style.boxShadow  = `0 0 80px ${ (color.startsWith('rgb') ? color.replace('rgb','rgba').replace(')', ',0.5)') : color + '80' ) } inset`;
-        colorDisplay.style.background  = color;
-        colorDisplay.textContent       = color.toUpperCase();
-        colorPicker.value              = (color.startsWith('#') ? color : colorPicker.value);
-    } else {
-        document.body.style.background = '#000000';
-        document.body.style.boxShadow  = `0 0 80px rgba(0,0,0,0.5) inset`;
-        colorDisplay.style.background  = '#000000';
-        colorDisplay.textContent       = 'OFF';
-        colorPicker.value              = '#000000';
-    }
-
-    // هنا السطر اللي يربط overlay بالكارد
-    const overlay = document.getElementById('page-overlay');
-    if (overlay) {
-        overlay.style.background = color || '#000000';
-    }
-}
-
+<!-- Admin Login Modal -->
+<div id="adminModal" class="modal-backdrop">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2>Admin Panel</h2>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="input-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" class="password-input" placeholder="Enter admin username">
+            </div>
+            
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" class="password-input" placeholder="Enter your password">
+            </div>
+            
+            <button class="submit-btn">Access Dashboard</button>
+            
+            <div class="footer-note">
+                <p>Restricted access. Unauthorized use is prohibited.</p>
+            </div>
+        </div>
+    </div>
+</div>
