@@ -1,44 +1,87 @@
-<!-- VIP Admin Button -->
-<div class="vip-container">
-    <button id="vipBtn" class="vip-Btn">
-        <i class="fas fa-crown"></i>
-        <span class="vip-text">VIP Admin Panel</span>
-    </button>
-</div>
+# Admin credentials
+ADMIN_USERNAME = "adminpanel"
+ADMIN_PASSWORD = "RoomB107"
 
-<!-- Admin Features Section -->
-<div id="adminFeatures" style="display: none;">
-    <h2 class="button-title">Admin Controls</h2>
-    <div class="button-container">
-        <button id="resetSystemBtn">Reset System</button>
-        <button id="rebootDeviceBtn">Reboot Device</button>
-        <button id="shutdownSystemBtn">Shutdown</button>
-    </div>
-</div>
+# Admin session management
+app.add_middleware(SessionMiddleware, secret_key="your-very-secret-key-here")
 
-<!-- Admin Login Modal -->
-<div id="adminModal" class="modal-backdrop">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h2>Admin Panel</h2>
-            <button class="close-btn">&times;</button>
-        </div>
-        <div class="modal-body">
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" class="password-input" placeholder="Enter admin username">
-            </div>
+# Admin login attempts tracking
+login_attempts = {}
+lockout_times = {}
+login_lock = threading.Lock()
+
+# Admin routes
+@app.post("/admin/login")
+async def admin_login(request: Request, 
+                     username: str = Form(...), 
+                     password: str = Form(...)):
+    ip = request.client.host
+    current_time = time.time()
+    
+    with login_lock:
+        # Check if IP is currently locked out
+        if ip in lockout_times and lockout_times[ip] > current_time:
+            remaining = int(lockout_times[ip] - current_time)
+            raise HTTPException(
+                status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                detail=f"Too many failed attempts. Please try again in {remaining} seconds."
+            )
+        
+        # Check credentials
+        if username == ADMIN_USERNAME and password == ADMIN_PASSWORD:
+            # Reset failed attempts on successful login
+            if ip in login_attempts:
+                del login_attempts[ip]
+            if ip in lockout_times:
+                del lockout_times[ip]
+                
+            request.session["is_admin"] = True
+            return {"status": "success"}
+        else:
+            # Increment failed attempt count
+            login_attempts[ip] = login_attempts.get(ip, 0) + 1
+            attempt_count = login_attempts[ip]
             
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" class="password-input" placeholder="Enter your password">
-            </div>
+            # Calculate lockout parameters
+            lockout_level = (attempt_count - 1) // 3
+            lockout_duration = (2 ** lockout_level) * 60  # in seconds
             
-            <button class="submit-btn">Access Dashboard</button>
-            
-            <div class="footer-note">
-                <p>Restricted access. Unauthorized use is prohibited.</p>
-            </div>
-        </div>
-    </div>
-</div>
+            # If reached a multiple of 3, set lockout
+            if attempt_count % 3 == 0:
+                lockout_times[ip] = current_time + lockout_duration
+                raise HTTPException(
+                    status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+                    detail=f"Too many failed attempts. Account locked for {lockout_duration} seconds."
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_401_UNAUTHORIZED,
+                    detail="Incorrect username or password"
+                )
+
+@app.get("/admin/status")
+async def admin_status(request: Request):
+    return {"is_admin": request.session.get("is_admin", False)}
+
+@app.post("/admin/reset")
+async def admin_reset(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "System reset complete"}
+
+@app.post("/admin/reboot")
+async def admin_reboot(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "System rebooting..."}
+
+@app.post("/admin/shutdown")
+async def admin_shutdown(request: Request):
+    if not request.session.get("is_admin"):
+        raise HTTPException(status_code=403, detail="Forbidden")
+    return {"message": "System shutdown initiated"}
+
+@app.post("/admin/logout")
+async def admin_logout(request: Request):
+    request.session.clear()
+    return {"status": "success"}
