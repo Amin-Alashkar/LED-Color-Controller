@@ -1,5 +1,5 @@
 // about.js
-// -------- About modal logic with advanced effects --------
+// -------- About modal logic with smooth appearance only --------
 
 const aboutBtn = document.getElementById('aboutBtn');
 const aboutModal = document.getElementById('aboutModal');
@@ -159,7 +159,7 @@ async function openAbout() {
     
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    // Show modal with ENHANCED animation
+    // Show modal with SMOOTH animation only
     aboutModal.classList.add('show');
     aboutModal.setAttribute('aria-hidden', 'false');
     document.body.classList.add('modal-open');
@@ -190,13 +190,13 @@ async function openAbout() {
     // Focus management
     aboutClose.focus();
     
-    // ENHANCED subtle vibration to modal on open
+    // SMOOTH APPEARANCE ONLY - no vibration
     const aboutContent = aboutModal.querySelector('.about-content');
     if (aboutContent) {
-        aboutContent.style.animation = 'enhancedModalAppear 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) both';
+        aboutContent.style.animation = 'smoothAppear 0.5s ease-out both';
         setTimeout(() => {
             aboutContent.style.animation = '';
-        }, 600);
+        }, 500);
     }
 }
 
@@ -317,33 +317,14 @@ style.textContent = `
         }
     }
     
-    /* ENHANCED MODAL APPEAR ANIMATION */
-    @keyframes enhancedModalAppear {
+    /* SMOOTH APPEARANCE ANIMATION ONLY */
+    @keyframes smoothAppear {
         0% { 
-            transform: translateY(50px) scale(0.8) rotateX(10deg); 
+            transform: translateY(20px) scale(0.95); 
             opacity: 0; 
-            filter: blur(10px);
-        }
-        20% { 
-            transform: translateY(-10px) scale(1.02) rotateX(-2deg); 
-            opacity: 0.8; 
-            filter: blur(2px);
-        }
-        40% { 
-            transform: translateY(5px) scale(0.98) rotateX(1deg); 
-            opacity: 0.9;
-            filter: blur(0px);
-        }
-        60% { 
-            transform: translateY(-2px) scale(1.01); 
-            opacity: 0.95;
-        }
-        80% { 
-            transform: translateY(1px) scale(0.995); 
-            opacity: 0.98;
         }
         100% { 
-            transform: translateY(0) scale(1) rotateX(0); 
+            transform: translateY(0) scale(1); 
             opacity: 1; 
         }
     }
