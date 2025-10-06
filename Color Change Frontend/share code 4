@@ -1,168 +1,434 @@
-/* about.css */
+// about.js
+// -------- About modal logic with typing effect and persistent display --------
 
-.site-footer {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 28px 0 60px;
-  z-index: 15;
+const aboutBtn = document.getElementById('aboutBtn');
+const aboutModal = document.getElementById('aboutModal');
+const aboutClose = document.getElementById('aboutClose');
+
+class ParticleSystem {
+    constructor(container) {
+        this.container = container;
+        this.canvas = document.createElement('canvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.mouse = { x: 0, y: 0, radius: 100 };
+        this.init();
+    }
+
+    init() {
+        this.canvas.className = 'particles-canvas';
+        this.container.appendChild(this.canvas);
+        this.resize();
+        this.createParticles();
+        this.animate();
+        
+        // Mouse tracking
+        this.container.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.mouse.x = e.clientX - rect.left;
+            this.mouse.y = e.clientY - rect.top;
+        });
+
+        window.addEventListener('resize', () => this.resize());
+    }
+
+    resize() {
+        this.canvas.width = this.container.offsetWidth;
+        this.canvas.height = this.container.offsetHeight;
+    }
+
+    createParticles() {
+        const particleCount = Math.min(80, Math.floor(window.innerWidth / 15));
+        this.particles = [];
+        
+        for (let i = 0; i < particleCount; i++) {
+            this.particles.push({
+                x: Math.random() * this.canvas.width,
+                y: Math.random() * this.canvas.height,
+                size: Math.random() * 2 + 0.5,
+                speedX: (Math.random() - 0.5) * 0.5,
+                speedY: (Math.random() - 0.5) * 0.5,
+                color: `rgba(${106 + Math.random() * 150}, ${92 + Math.random() * 100}, ${255}, ${0.3 + Math.random() * 0.4})`
+            });
+        }
+    }
+
+    animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        // Draw connections and particles
+        for (let i = 0; i < this.particles.length; i++) {
+            const p = this.particles[i];
+            
+            // Update position
+            p.x += p.speedX;
+            p.y += p.speedY;
+            
+            // Bounce off walls
+            if (p.x <= 0 || p.x >= this.canvas.width) p.speedX *= -1;
+            if (p.y <= 0 || p.y >= this.canvas.height) p.speedY *= -1;
+            
+            // Draw particle
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            this.ctx.fillStyle = p.color;
+            this.ctx.fill();
+            
+            // Draw connections to nearby particles
+            for (let j = i + 1; j < this.particles.length; j++) {
+                const p2 = this.particles[j];
+                const distance = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2);
+                
+                if (distance < 100) {
+                    this.ctx.beginPath();
+                    this.ctx.strokeStyle = `rgba(106, 92, 255, ${0.2 * (1 - distance/100)})`;
+                    this.ctx.lineWidth = 0.5;
+                    this.ctx.moveTo(p.x, p.y);
+                    this.ctx.lineTo(p2.x, p2.y);
+                    this.ctx.stroke();
+                }
+            }
+            
+            // Interaction with mouse
+            const distanceToMouse = Math.sqrt((p.x - this.mouse.x) ** 2 + (p.y - this.mouse.y) ** 2);
+            if (distanceToMouse < this.mouse.radius) {
+                p.x += (p.x - this.mouse.x) * 0.02;
+                p.y += (p.y - this.mouse.y) * 0.02;
+            }
+        }
+        
+        requestAnimationFrame(() => this.animate());
+    }
 }
 
-.about-btn {
-  padding: 16px 150px;
-  font-size: 1.05rem;
-  font-weight: 800;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
-  color: #0b0710;
-  background: linear-gradient(
-    90deg,
-    #FF8A00 0%,
-    #FF3D7F 25%,
-    #6A5CFF 50%,
-    #00D4FF 75%,
-    #FF8A00 100%
-  );
-  background-size: 400% 100%;
-  animation: gradientWave 8s ease infinite, rainbowFlow 12s linear infinite;
-  position: relative;
-  z-index: 10005;
-  transition: all 0.3s ease;
+// Typing effect for title
+function typeWriter(element, text, speed = 50) {
+    return new Promise((resolve) => {
+        let i = 0;
+        element.innerHTML = '';
+        
+        function type() {
+            if (i < text.length) {
+                element.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(type, speed);
+            } else {
+                resolve();
+            }
+        }
+        type();
+    });
 }
 
-/* تأثير الموجة - مشابه لـ wave_effect_loop */
-@keyframes gradientWave {
-  0%, 100% {
-    background-position: 0% 50%;
-    filter: hue-rotate(0deg);
-  }
-  25% {
-    background-position: 50% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-    filter: hue-rotate(90deg);
-  }
-  75% {
-    background-position: 50% 50%;
-  }
+// Animate elements on scroll
+function setupScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-in');
+                setTimeout(() => {
+                    observer.unobserve(entry.target);
+                }, 600);
+            }
+        });
+    }, { 
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach((element) => {
+        observer.observe(element);
+    });
 }
 
-/* تأثير تدفق قوس قزح - مشابه لـ rainbow_flow_loop */
-@keyframes rainbowFlow {
-  0% {
-    filter: hue-rotate(0deg) saturate(1.2);
-  }
-  25% {
-    filter: hue-rotate(90deg) saturate(1.3);
-  }
-  50% {
-    filter: hue-rotate(180deg) saturate(1.4);
-  }
-  75% {
-    filter: hue-rotate(270deg) saturate(1.3);
-  }
-  100% {
-    filter: hue-rotate(360deg) saturate(1.2);
-  }
+// Enhanced modal functions
+let particleSystem = null;
+
+async function openAbout() {
+    if (!aboutModal) return;
+    
+    // Prevent multiple openings
+    if (aboutModal.classList.contains('show')) return;
+    
+    // Add loading state to button
+    aboutBtn.classList.add('loading');
+    aboutBtn.innerHTML = 'Loading...';
+    
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    // Show modal with animation
+    aboutModal.classList.add('show');
+    aboutModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    
+    // Initialize particle system
+    if (!particleSystem) {
+        particleSystem = new ParticleSystem(aboutModal);
+    }
+    
+    // Typing effect for title - التعديل الرئيسي هنا
+    const title = document.querySelector('.about-header h1');
+    if (title) {
+        await typeWriter(title, 'Smart Light Controller', 60);
+        // تم إزالة الإغلاق التلقائي هنا - النافذة تبقى مفتوحة
+    }
+    
+    // إزالة أي أنيميشن سابقة وإعادة تعيين الحالة
+    resetAnimations();
+    
+    // Setup scroll animations بعد انتهاء الكتابة مباشرة
+    setTimeout(() => {
+        setupScrollAnimations();
+    }, 100);
+    
+    // Restore button state
+    aboutBtn.classList.remove('loading');
+    aboutBtn.innerHTML = 'About';
+    
+    // Focus management
+    aboutClose.focus();
+    
+    // Add subtle vibration to modal on open
+    const aboutContent = aboutModal.querySelector('.about-content');
+    if (aboutContent) {
+        aboutContent.style.animation = 'modalVibrate 0.3s ease-out';
+        setTimeout(() => {
+            aboutContent.style.animation = '';
+        }, 300);
+    }
 }
 
-.about-btn::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(
-    45deg,
-    #FF8A00,
-    #FF3D7F,
-    #6A5CFF,
-    #00D4FF,
-    #39FF14,
-    #FF8A00
-  );
-  background-size: 400% 400%;
-  border-radius: 999px;
-  z-index: -1;
-  animation: borderGlow 6s ease infinite;
-  filter: blur(8px);
-  opacity: 0.7;
+// دالة لإعادة تعيين الأنيميشنات
+function resetAnimations() {
+    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach(element => {
+        element.classList.remove('animate-in');
+        element.style.animation = 'none';
+        setTimeout(() => {
+            element.style.animation = '';
+        }, 10);
+    });
 }
 
-@keyframes borderGlow {
-  0%, 100% {
-    background-position: 0% 50%;
-    opacity: 0.7;
-  }
-  50% {
-    background-position: 100% 50%;
-    opacity: 0.9;
-  }
+function closeAbout() {
+    if (!aboutModal) return;
+    
+    // Add closing animation
+    aboutModal.style.animation = 'aboutFadeOut 0.25s ease-in both';
+    
+    setTimeout(() => {
+        aboutModal.classList.remove('show');
+        aboutModal.setAttribute('aria-hidden', 'true');
+        aboutModal.style.animation = '';
+        document.body.classList.remove('modal-open');
+        aboutBtn.focus();
+        
+        // إعادة تعيين الأنيميشنات عند الإغلاق
+        resetAnimations();
+    }, 250);
 }
 
-.about-btn::after {
-  content: "";
-  position: absolute;
-  left: -20%;
-  top: -40%;
-  width: 140%;
-  height: 140%;
-  background: radial-gradient(
-    circle at 30% 30%,
-    rgba(255, 138, 0, 0.4),
-    rgba(255, 61, 127, 0.3),
-    rgba(106, 92, 255, 0.2),
-    transparent 70%
-  );
-  transform: rotate(-18deg);
-  pointer-events: none;
-  filter: blur(12px);
-  animation: lightSweep 4s ease-in-out infinite;
+// Enhanced event listeners
+if (aboutBtn) {
+    aboutBtn.addEventListener('click', async (e) => {
+        e.preventDefault();
+        await openAbout();
+    });
+    
+    // Add ripple effect to button
+    aboutBtn.addEventListener('click', function(e) {
+        const ripple = document.createElement('span');
+        const rect = this.getBoundingClientRect();
+        const size = Math.max(rect.width, rect.height);
+        const x = e.clientX - rect.left - size / 2;
+        const y = e.clientY - rect.top - size / 2;
+        
+        ripple.style.cssText = `
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple 0.6s linear;
+            width: ${size}px;
+            height: ${size}px;
+            left: ${x}px;
+            top: ${y}px;
+            pointer-events: none;
+        `;
+        
+        this.appendChild(ripple);
+        
+        setTimeout(() => {
+            ripple.remove();
+        }, 600);
+    });
 }
 
-@keyframes lightSweep {
-  0%, 100% {
-    transform: rotate(-18deg) translateX(-10%);
-    opacity: 0.6;
-  }
-  50% {
-    transform: rotate(-18deg) translateX(10%);
-    opacity: 0.8;
-  }
+if (aboutClose) {
+    aboutClose.addEventListener('click', (e) => {
+        e.preventDefault();
+        closeAbout();
+    });
 }
 
-.about-btn:hover {
-  transform: translateY(-6px) scale(1.02);
-  animation-duration: 4s, 6s; /* تسريع الانيميشن عند hover */
-  box-shadow:
-    0 20px 48px rgba(106, 92, 255, 0.4),
-    0 8px 24px rgba(255, 61, 127, 0.3),
-    0 4px 12px rgba(255, 138, 0, 0.2);
-}
+// Enhanced backdrop click
+aboutModal.addEventListener('click', (e) => {
+    if (e.target === aboutModal) {
+        closeAbout();
+    }
+});
 
-.about-btn:active {
-  transform: translateY(-2px) scale(1.01);
-  animation-duration: 2s, 3s; /* تسريع أكثر عند الضغط */
-}
+// Enhanced keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && aboutModal.classList.contains('show')) {
+        closeAbout();
+    }
+    
+    // Tab key trapping inside modal
+    if (e.key === 'Tab' && aboutModal.classList.contains('show')) {
+        const focusableElements = aboutModal.querySelectorAll(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+        
+        if (e.shiftKey) {
+            if (document.activeElement === firstElement) {
+                lastElement.focus();
+                e.preventDefault();
+            }
+        } else {
+            if (document.activeElement === lastElement) {
+                firstElement.focus();
+                e.preventDefault();
+            }
+        }
+    }
+});
 
-.about-btn:focus {
-  outline: none;
-  box-shadow:
-    0 20px 60px rgba(106, 92, 255, 0.5),
-    0 0 0 4px rgba(255, 255, 255, 0.1),
-    0 0 0 6px rgba(106, 92, 255, 0.3);
-}
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+    
+    @keyframes modalVibrate {
+        0% { transform: translateY(-10px) scale(0.95); opacity: 0; }
+        70% { transform: translateY(2px) scale(1.01); }
+        100% { transform: translateY(0) scale(1); opacity: 1; }
+    }
+    
+    @keyframes aboutFadeOut {
+        from { opacity: 1; transform: scale(1); }
+        to { opacity: 0; transform: scale(0.95); }
+    }
+    
+    .about-btn.loading {
+        opacity: 0.7;
+        pointer-events: none;
+    }
+    
+    .particles-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        pointer-events: none;
+    }
+    
+    /* الأنيميشنات */
+    .about-section {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.6s ease-out;
+    }
+    
+    .about-section.animate-in {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .feature-item, .tech-stack-item {
+        opacity: 0;
+        transform: translateX(-20px);
+        transition: all 0.5s ease-out;
+    }
+    
+    .feature-item.animate-in, .tech-stack-item.animate-in {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    /* تأخيرات متدرجة للعناصر */
+    .about-section:nth-child(1) { transition-delay: 0.1s; }
+    .about-section:nth-child(2) { transition-delay: 0.2s; }
+    .about-section:nth-child(3) { transition-delay: 0.3s; }
+    .about-section:nth-child(4) { transition-delay: 0.4s; }
+    
+    .feature-item:nth-child(1) { transition-delay: 0.1s; }
+    .feature-item:nth-child(2) { transition-delay: 0.2s; }
+    .feature-item:nth-child(3) { transition-delay: 0.3s; }
+    .feature-item:nth-child(4) { transition-delay: 0.4s; }
+    
+    .tech-stack-item:nth-child(1) { transition-delay: 0.1s; }
+    .tech-stack-item:nth-child(2) { transition-delay: 0.2s; }
+    .tech-stack-item:nth-child(3) { transition-delay: 0.3s; }
+    
+    /* Enhanced feature list items */
+    .feature-list li {
+        transition: all 0.3s ease;
+        cursor: default;
+    }
+    
+    .feature-list li:hover {
+        transform: translateX(8px);
+        background: rgba(106, 92, 255, 0.05);
+        border-radius: 8px;
+        padding: 8px 12px;
+        margin-left: -12px;
+    }
+    
+    .feature-list li::before {
+        transition: all 0.3s ease;
+    }
+    
+    .feature-list li:hover::before {
+        color: #FF8A00;
+        transform: scale(1.5);
+    }
+`;
 
-/* بقية الكود يبقى كما هو */
-.about-modal {
-  /* ... الكود الحالي ... */
-}
+document.head.appendChild(style);
 
-.about-content {
-  /* ... الكود الحالي ... */
-}
+// Initialize hover effects for feature list
+document.addEventListener('DOMContentLoaded', () => {
+    const features = document.querySelectorAll('.feature-list li');
+    features.forEach(feature => {
+        feature.addEventListener('mouseenter', function() {
+            this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        });
+    });
+});
 
-/* ... باقي الكود بدون تغيير ... */
+// Performance optimization
+let resizeTimeout;
+window.addEventListener('resize', () => {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(() => {
+        if (particleSystem) {
+            particleSystem.resize();
+            particleSystem.createParticles();
+        }
+    }, 250);
+});
+
+// Export for global access
+window.AboutModal = {
+    open: openAbout,
+    close: closeAbout,
+    particleSystem
+};
