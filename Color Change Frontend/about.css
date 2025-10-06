@@ -10,7 +10,7 @@
 }
 
 .about-btn {
-  padding: 16px 40px;
+  padding: 16px 150px;
   font-size: 1.05rem;
   font-weight: 800;
   border-radius: 999px;
@@ -18,16 +18,10 @@
   cursor: pointer;
   color: #0b0710;
   background: linear-gradient(90deg, #FF8A00 0%, #FF3D7F 40%, #6A5CFF 100%);
-  box-shadow:
-    0 8px 30px rgba(106, 92, 255, 0.18),
-    0 2px 8px rgba(0,0,0,0.25);
-  transition: transform .22s cubic-bezier(.2,.9,.3,1), box-shadow .22s;
   position: relative;
-  overflow: visible;
   z-index: 10005;
 }
 
-/* subtle glossy sheen */
 .about-btn::after {
   content: "";
   position: absolute;
@@ -35,7 +29,7 @@
   top: -40%;
   width: 140%;
   height: 140%;
-  background: radial-gradient(circle at 10% 10%, rgba(255,255,255,0.25), rgba(255,255,255,0) 25%);
+  background: radial-gradient(circle at 10% 10%, rgba(0, 0, 0, 0.25), rgba(255,255,255,0) 25%);
   transform: rotate(-18deg);
   pointer-events: none;
   filter: blur(8px);
