@@ -101,24 +101,7 @@ class ParticleSystem {
     }
 }
 
-// Typing effect for title
-function typeWriter(element, text, speed = 50) {
-    return new Promise((resolve) => {
-        let i = 0;
-        element.innerHTML = '';
-        
-        function type() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            } else {
-                resolve();
-            }
-        }
-        type();
-    });
-}
+// REMOVED: Typing effect function
 
 // Animate elements on scroll - UPDATED VERSION
 function setupScrollAnimations() {
@@ -188,16 +171,17 @@ async function openAbout() {
         particleSystem = new ParticleSystem(aboutModal);
     }
     
-    // Typing effect for title
+    // REMOVED: Typing effect for title
+    // Set title directly without typing animation
     const title = document.querySelector('.about-header h1');
     if (title) {
-        await typeWriter(title, 'Smart Light Controller', 60);
+        title.textContent = 'Smart Light Controller';
     }
     
     // إزالة أي أنيميشن سابقة وإعادة تعيين الحالة
     resetAnimations();
     
-    // Setup scroll animations بعد انتهاء الكتابة مباشرة
+    // Setup scroll animations مباشرة
     setTimeout(() => {
         setupScrollAnimations();
     }, 100);
