@@ -1,5 +1,5 @@
 // about.js
-// -------- About modal logic with random entrance animations --------
+// -------- About modal logic with random entrance animations only --------
 
 const aboutBtn = document.getElementById('aboutBtn');
 const aboutModal = document.getElementById('aboutModal');
@@ -101,31 +101,7 @@ class ParticleSystem {
     }
 }
 
-// REMOVED: Typing effect function
-
-// Animate elements on scroll - UPDATED VERSION
-function setupScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                // إضافة كلاس للأنيميشن بدلاً من التحكم المباشر
-                entry.target.classList.add('animate-in');
-                // إزالة العنصر من المراقبة بعد تنفيذ الأنيميشن
-                setTimeout(() => {
-                    observer.unobserve(entry.target);
-                }, 600);
-            }
-        });
-    }, { 
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px' // تبدأ الأنيميشن عندما يدخل العنصر بنسبة 10% من الشاشة
-    });
-
-    // مراقبة جميع الأقسام والعناصر التي نريد إضافة أنيميشن لها
-    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach((element) => {
-        observer.observe(element);
-    });
-}
+// REMOVED: All scroll animation functions
 
 // Enhanced modal functions
 let particleSystem = null;
@@ -171,20 +147,13 @@ async function openAbout() {
         particleSystem = new ParticleSystem(aboutModal);
     }
     
-    // REMOVED: Typing effect for title
     // Set title directly without typing animation
     const title = document.querySelector('.about-header h1');
     if (title) {
         title.textContent = 'Smart Light Controller';
     }
     
-    // إزالة أي أنيميشن سابقة وإعادة تعيين الحالة
-    resetAnimations();
-    
-    // Setup scroll animations مباشرة
-    setTimeout(() => {
-        setupScrollAnimations();
-    }, 100);
+    // REMOVED: resetAnimations and setupScrollAnimations calls
     
     // Restore button state
     aboutBtn.classList.remove('loading');
@@ -193,7 +162,7 @@ async function openAbout() {
     // Focus management
     aboutClose.focus();
     
-    // RANDOM ENTRANCE ANIMATION
+    // RANDOM ENTRANCE ANIMATION ONLY
     const aboutContent = aboutModal.querySelector('.about-content');
     if (aboutContent) {
         const randomAnimation = getRandomAnimation();
@@ -204,17 +173,7 @@ async function openAbout() {
     }
 }
 
-// دالة جديدة لإعادة تعيين الأنيميشنات
-function resetAnimations() {
-    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach(element => {
-        element.classList.remove('animate-in');
-        // إعادة تعيين الأنيميشن CSS
-        element.style.animation = 'none';
-        setTimeout(() => {
-            element.style.animation = '';
-        }, 10);
-    });
-}
+// REMOVED: resetAnimations function
 
 function closeAbout() {
     if (!aboutModal) return;
@@ -228,9 +187,6 @@ function closeAbout() {
         aboutModal.style.animation = '';
         document.body.classList.remove('modal-open');
         aboutBtn.focus();
-        
-        // إعادة تعيين الأنيميشنات عند الإغلاق
-        resetAnimations();
     }, 250);
 }
 
@@ -321,7 +277,7 @@ style.textContent = `
         }
     }
     
-    /* 10 RANDOM ENTRANCE ANIMATIONS */
+    /* 10 RANDOM ENTRANCE ANIMATIONS ONLY */
     @keyframes slideInFromBottom {
         0% { transform: translateY(100px); opacity: 0; }
         100% { transform: translateY(0); opacity: 1; }
@@ -394,79 +350,12 @@ style.textContent = `
         pointer-events: none;
     }
     
-    /* الأنيميشنات الجديدة */
-    .about-section {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.6s ease-out;
-    }
-    
-    .about-section.animate-in {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    
-    .feature-item, .tech-stack-item {
-        opacity: 0;
-        transform: translateX(-20px);
-        transition: all 0.5s ease-out;
-    }
-    
-    .feature-item.animate-in, .tech-stack-item.animate-in {
-        opacity: 1;
-        transform: translateX(0);
-    }
-    
-    /* تأخيرات متدرجة للعناصر */
-    .about-section:nth-child(1) { transition-delay: 0.1s; }
-    .about-section:nth-child(2) { transition-delay: 0.2s; }
-    .about-section:nth-child(3) { transition-delay: 0.3s; }
-    .about-section:nth-child(4) { transition-delay: 0.4s; }
-    
-    .feature-item:nth-child(1) { transition-delay: 0.1s; }
-    .feature-item:nth-child(2) { transition-delay: 0.2s; }
-    .feature-item:nth-child(3) { transition-delay: 0.3s; }
-    .feature-item:nth-child(4) { transition-delay: 0.4s; }
-    
-    .tech-stack-item:nth-child(1) { transition-delay: 0.1s; }
-    .tech-stack-item:nth-child(2) { transition-delay: 0.2s; }
-    .tech-stack-item:nth-child(3) { transition-delay: 0.3s; }
-    
-    /* Enhanced feature list items */
-    .feature-list li {
-        transition: all 0.3s ease;
-        cursor: default;
-    }
-    
-    .feature-list li:hover {
-        transform: translateX(8px);
-        background: rgba(106, 92, 255, 0.05);
-        border-radius: 8px;
-        padding: 8px 12px;
-        margin-left: -12px;
-    }
-    
-    .feature-list li::before {
-        transition: all 0.3s ease;
-    }
-    
-    .feature-list li:hover::before {
-        color: #FF8A00;
-        transform: scale(1.5);
-    }
+    /* REMOVED: All internal element animations */
 `;
 
 document.head.appendChild(style);
 
-// Initialize hover effects for feature list
-document.addEventListener('DOMContentLoaded', () => {
-    const features = document.querySelectorAll('.feature-list li');
-    features.forEach(feature => {
-        feature.addEventListener('mouseenter', function() {
-            this.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
-        });
-    });
-});
+// REMOVED: Initialize hover effects for feature list
 
 // Performance optimization
 let resizeTimeout;
