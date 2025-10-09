@@ -1,377 +1,222 @@
-// about.js
-// -------- About modal logic with random entrance animations only --------
 
-const aboutBtn = document.getElementById('aboutBtn');
-const aboutModal = document.getElementById('aboutModal');
-const aboutClose = document.getElementById('aboutClose');
 
-class ParticleSystem {
-    constructor(container) {
-        this.container = container;
-        this.canvas = document.createElement('canvas');
-        this.ctx = this.canvas.getContext('2d');
-        this.particles = [];
-        this.mouse = { x: 0, y: 0, radius: 100 };
-        this.init();
-    }
+# Safe removal with verification
+[System.Security.Principal.WindowsIdentity]::GetCurrent().Name
 
-    init() {
-        this.canvas.className = 'particles-canvas';
-        this.container.appendChild(this.canvas);
-        this.resize();
-        this.createParticles();
-        this.animate();
-        
-        // Mouse tracking
-        this.container.addEventListener('mousemove', (e) => {
-            const rect = this.canvas.getBoundingClientRect();
-            this.mouse.x = e.clientX - rect.left;
-            this.mouse.y = e.clientY - rect.top;
-        });
+if (Get-LocalUser -Name $UserName -ErrorAction SilentlyContinue) {
+    Remove-LocalUser -Name $UserName
+    Write-Host " User '$UserName' has been removed successfully!" -ForegroundColor Green
+} else {
+    Write-Host " User '$UserName' was not found or already removed." -ForegroundColor Yellow
+}
 
-        window.addEventListener('resize', () => this.resize());
-    }
+# Safe removal with verification
+$UserName = "tolfdir"
 
-    resize() {
-        this.canvas.width = this.container.offsetWidth;
-        this.canvas.height = this.container.offsetHeight;
-    }
+if (Get-LocalUser -Name $UserName -ErrorAction SilentlyContinue) {
+    Remove-LocalUser -Name $UserName
+    Write-Host " User '$UserName' has been removed successfully!" -ForegroundColor Green
+} else {
+    Write-Host " User '$UserName' was not found or already removed." -ForegroundColor Yellow
+}
 
-    createParticles() {
-        const particleCount = Math.min(80, Math.floor(window.innerWidth / 15));
-        this.particles = [];
-        
-        for (let i = 0; i < particleCount; i++) {
-            this.particles.push({
-                x: Math.random() * this.canvas.width,
-                y: Math.random() * this.canvas.height,
-                size: Math.random() * 2 + 0.5,
-                speedX: (Math.random() - 0.5) * 0.5,
-                speedY: (Math.random() - 0.5) * 0.5,
-                color: `rgba(${106 + Math.random() * 150}, ${92 + Math.random() * 100}, ${255}, ${0.3 + Math.random() * 0.4})`
-            });
+
+# Run as Administrator
+
+
+Write-Host "`n=== APPLYING CRITICAL FIXES ===" -ForegroundColor Magenta
+
+Write-Host "`n[1] CONFIGURING FIREWALL..." -ForegroundColor Yellow
+try {
+    # Completely reset and enable firewall
+    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled True
+    Start-Service -Name "MpsSvc" -ErrorAction SilentlyContinue  # Windows Defender Firewall service
+    Set-Service -Name "MpsSvc" -StartupType Automatic -ErrorAction SilentlyContinue
+    Write-Host "✅ FIREWALL COMPLETELY ENABLED" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Firewall configuration issue" -ForegroundColor Red
+}
+
+# 2. FIX PASSWORD POLICIES MANUALLY
+Write-Host "`n[2] ENFORCING PASSWORD POLICIES..." -ForegroundColor Yellow
+try {
+    # Method 1: Using secedit with proper parameters
+    $SecEditConfig = @"
+[Unicode]
+Unicode=yes
+[Version]
+signature=`"`$CHICAGO`$`
+Revision=1
+[System Access]
+MinimumPasswordAge = 1
+MaximumPasswordAge = 90
+MinimumPasswordLength = 8
+PasswordHistorySize = 5
+LockoutBadCount = 10
+ResetLockoutCount = 30
+LockoutDuration = 30
+[Registry Values]
+MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\LimitBlankPasswordUse=4,1
+MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\RestrictAnonymous=4,1
+"@
+    
+    $SecEditConfig | Out-File "C:\secpol.cfg" -Encoding ASCII
+    secedit /configure /db C:\Windows\security\local.sdb /cfg "C:\secpol.cfg" /areas SECURITYPOLICY /quiet
+    Remove-Item "C:\secpol.cfg" -Force -ErrorAction SilentlyContinue
+    Write-Host "✅ PASSWORD POLICIES ENFORCED" -ForegroundColor Green
+} catch {
+    Write-Host "⚠️  Password policies may need manual setup" -ForegroundColor Yellow
+}
+
+# 3. FIX SECURITY OPTIONS IN REGISTRY
+Write-Host "`n[3] APPLYING SECURITY OPTIONS..." -ForegroundColor Yellow
+$SecuritySettings = @(
+    @{Path="HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System"; Name="EnableLUA"; Value=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters"; Name="restrictnullsessaccess"; Value=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"; Name="LimitBlankPasswordUse"; Value=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"; Name="RestrictAnonymous"; Value=1},
+    @{Path="HKLM:\SYSTEM\CurrentControlSet\Control\Lsa"; Name="restrictanonymoussam"; Value=1}
+)
+
+foreach ($Setting in $SecuritySettings) {
+    try {
+        if (-not (Test-Path $Setting.Path)) { 
+            New-Item -Path $Setting.Path -Force | Out-Null 
         }
-    }
-
-    animate() {
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        
-        // Draw connections and particles
-        for (let i = 0; i < this.particles.length; i++) {
-            const p = this.particles[i];
-            
-            // Update position
-            p.x += p.speedX;
-            p.y += p.speedY;
-            
-            // Bounce off walls
-            if (p.x <= 0 || p.x >= this.canvas.width) p.speedX *= -1;
-            if (p.y <= 0 || p.y >= this.canvas.height) p.speedY *= -1;
-            
-            // Draw particle
-            this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-            this.ctx.fillStyle = p.color;
-            this.ctx.fill();
-            
-            // Draw connections to nearby particles
-            for (let j = i + 1; j < this.particles.length; j++) {
-                const p2 = this.particles[j];
-                const distance = Math.sqrt((p.x - p2.x) ** 2 + (p.y - p2.y) ** 2);
-                
-                if (distance < 100) {
-                    this.ctx.beginPath();
-                    this.ctx.strokeStyle = `rgba(106, 92, 255, ${0.2 * (1 - distance/100)})`;
-                    this.ctx.lineWidth = 0.5;
-                    this.ctx.moveTo(p.x, p.y);
-                    this.ctx.lineTo(p2.x, p2.y);
-                    this.ctx.stroke();
-                }
-            }
-            
-            // Interaction with mouse
-            const distanceToMouse = Math.sqrt((p.x - this.mouse.x) ** 2 + (p.y - this.mouse.y) ** 2);
-            if (distanceToMouse < this.mouse.radius) {
-                p.x += (p.x - this.mouse.x) * 0.02;
-                p.y += (p.y - this.mouse.y) * 0.02;
-            }
-        }
-        
-        requestAnimationFrame(() => this.animate());
+        Set-ItemProperty -Path $Setting.Path -Name $Setting.Name -Value $Setting.Value -ErrorAction SilentlyContinue
+        Write-Host "✅ SECURITY: $($Setting.Name)" -ForegroundColor Green
+    } catch {
+        Write-Host "⚠️  Failed: $($Setting.Name)" -ForegroundColor Yellow
     }
 }
 
-// REMOVED: All scroll animation functions
+# 4. COMPREHENSIVE SOFTWARE REMOVAL
+Write-Host "`n[4] DEEP SOFTWARE CLEANUP..." -ForegroundColor Yellow
 
-// Enhanced modal functions
-let particleSystem = null;
+# Remove all torrent and hacking tools completely
+$UnwantedPatterns = @(
+    "*torrent*", "*bittorrent*", "*wire shark*", "*wireshark*", "*brutus*", 
+    "*hack*", "*crack*", "*keygen*", "*password*"
+)
 
-// Random entrance animations
-const entranceAnimations = [
-    'slideInFromBottom',
-    'slideInFromTop', 
-    'slideInFromLeft',
-    'slideInFromRight',
-    'zoomIn',
-    'fadeInScale',
-    'flipIn',
-    'bounceIn',
-    'rotateIn',
-    'swingIn'
-];
+# Search and destroy in common locations
+$SearchPaths = @(
+    "$env:PROGRAMFILES",
+    "$env:PROGRAMFILES(X86)", 
+    "$env:USERPROFILE\Desktop",
+    "$env:USERPROFILE\Downloads",
+    "C:\Users\Public\Desktop",
+    "C:\Users\Public\Downloads"
+)
 
-function getRandomAnimation() {
-    const randomIndex = Math.floor(Math.random() * entranceAnimations.length);
-    return entranceAnimations[randomIndex];
-}
-
-async function openAbout() {
-    if (!aboutModal) return;
-    
-    // Prevent multiple openings
-    if (aboutModal.classList.contains('show')) return;
-    
-    // Add loading state to button
-    aboutBtn.classList.add('loading');
-    aboutBtn.innerHTML = 'Loading...';
-    
-    await new Promise(resolve => setTimeout(resolve, 300));
-    
-    // Show modal with animation
-    aboutModal.classList.add('show');
-    aboutModal.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
-    
-    // Initialize particle system
-    if (!particleSystem) {
-        particleSystem = new ParticleSystem(aboutModal);
-    }
-    
-    // Set title directly without typing animation
-    const title = document.querySelector('.about-header h1');
-    if (title) {
-        title.textContent = 'Smart Light Controller';
-    }
-    
-    // REMOVED: resetAnimations and setupScrollAnimations calls
-    
-    // Restore button state
-    aboutBtn.classList.remove('loading');
-    aboutBtn.innerHTML = 'About';
-    
-    // Focus management
-    aboutClose.focus();
-    
-    // RANDOM ENTRANCE ANIMATION ONLY
-    const aboutContent = aboutModal.querySelector('.about-content');
-    if (aboutContent) {
-        const randomAnimation = getRandomAnimation();
-        aboutContent.style.animation = `${randomAnimation} 0.6s ease-out both`;
-        setTimeout(() => {
-            aboutContent.style.animation = '';
-        }, 600);
-    }
-}
-
-// REMOVED: resetAnimations function
-
-function closeAbout() {
-    if (!aboutModal) return;
-    
-    // Add closing animation
-    aboutModal.style.animation = 'aboutFadeOut 0.25s ease-in both';
-    
-    setTimeout(() => {
-        aboutModal.classList.remove('show');
-        aboutModal.setAttribute('aria-hidden', 'true');
-        aboutModal.style.animation = '';
-        document.body.classList.remove('modal-open');
-        aboutBtn.focus();
-    }, 250);
-}
-
-// Enhanced event listeners
-if (aboutBtn) {
-    aboutBtn.addEventListener('click', async (e) => {
-        e.preventDefault();
-        await openAbout();
-    });
-    
-    // Add ripple effect to button
-    aboutBtn.addEventListener('click', function(e) {
-        const ripple = document.createElement('span');
-        const rect = this.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const x = e.clientX - rect.left - size / 2;
-        const y = e.clientY - rect.top - size / 2;
-        
-        ripple.style.cssText = `
-            position: absolute;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.6);
-            transform: scale(0);
-            animation: ripple 0.6s linear;
-            width: ${size}px;
-            height: ${size}px;
-            left: ${x}px;
-            top: ${y}px;
-            pointer-events: none;
-        `;
-        
-        this.appendChild(ripple);
-        
-        setTimeout(() => {
-            ripple.remove();
-        }, 600);
-    });
-}
-
-if (aboutClose) {
-    aboutClose.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeAbout();
-    });
-}
-
-// Enhanced backdrop click
-aboutModal.addEventListener('click', (e) => {
-    if (e.target === aboutModal) {
-        closeAbout();
-    }
-});
-
-// Enhanced keyboard navigation
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && aboutModal.classList.contains('show')) {
-        closeAbout();
-    }
-    
-    // Tab key trapping inside modal
-    if (e.key === 'Tab' && aboutModal.classList.contains('show')) {
-        const focusableElements = aboutModal.querySelectorAll(
-            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        );
-        const firstElement = focusableElements[0];
-        const lastElement = focusableElements[focusableElements.length - 1];
-        
-        if (e.shiftKey) {
-            if (document.activeElement === firstElement) {
-                lastElement.focus();
-                e.preventDefault();
-            }
-        } else {
-            if (document.activeElement === lastElement) {
-                firstElement.focus();
-                e.preventDefault();
+foreach ($Path in $SearchPaths) {
+    foreach ($Pattern in $UnwantedPatterns) {
+        Get-ChildItem -Path $Path -Recurse -Include "*$Pattern*" -ErrorAction SilentlyContinue | ForEach-Object {
+            try {
+                Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue
+                Write-Host "✅ REMOVED: $($_.Name)" -ForegroundColor Green
+            } catch {
+                # Try alternate method
+                try {
+                    cmd /c "del /f /q `"$($_.FullName)`"" 2>$null
+                } catch { }
             }
         }
     }
-});
+}
 
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple {
-        to {
-            transform: scale(4);
-            opacity: 0;
-        }
-    }
-    
-    /* 10 RANDOM ENTRANCE ANIMATIONS ONLY */
-    @keyframes slideInFromBottom {
-        0% { transform: translateY(100px); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-    }
-    
-    @keyframes slideInFromTop {
-        0% { transform: translateY(-100px); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-    }
-    
-    @keyframes slideInFromLeft {
-        0% { transform: translateX(-100px); opacity: 0; }
-        100% { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes slideInFromRight {
-        0% { transform: translateX(100px); opacity: 0; }
-        100% { transform: translateX(0); opacity: 1; }
-    }
-    
-    @keyframes zoomIn {
-        0% { transform: scale(0.5); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-    
-    @keyframes fadeInScale {
-        0% { transform: scale(0.8) rotate(-5deg); opacity: 0; }
-        100% { transform: scale(1) rotate(0); opacity: 1; }
-    }
-    
-    @keyframes flipIn {
-        0% { transform: perspective(400px) rotateY(90deg); opacity: 0; }
-        100% { transform: perspective(400px) rotateY(0); opacity: 1; }
-    }
-    
-    @keyframes bounceIn {
-        0% { transform: scale(0.3); opacity: 0; }
-        50% { transform: scale(1.05); opacity: 0.8; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-    
-    @keyframes rotateIn {
-        0% { transform: rotate(-180deg) scale(0.5); opacity: 0; }
-        100% { transform: rotate(0) scale(1); opacity: 1; }
-    }
-    
-    @keyframes swingIn {
-        0% { transform: rotate(-15deg) scale(0.8); opacity: 0; }
-        60% { transform: rotate(10deg) scale(1.05); opacity: 0.8; }
-        100% { transform: rotate(0) scale(1); opacity: 1; }
-    }
-    
-    @keyframes aboutFadeOut {
-        from { opacity: 1; transform: scale(1); }
-        to { opacity: 0; transform: scale(0.95); }
-    }
-    
-    .about-btn.loading {
-        opacity: 0.7;
-        pointer-events: none;
-    }
-    
-    .particles-canvas {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: -1;
-        pointer-events: none;
-    }
-    
-    /* REMOVED: All internal element animations */
-`;
+# 5. VERIFY AND FIX SERVICES
+Write-Host "`n[5] VERIFYING SERVICES..." -ForegroundColor Yellow
 
-document.head.appendChild(style);
+# Ensure RDP is running (prevents -5 penalty)
+$RequiredServices = @(
+    @{Name="TermService"; DisplayName="Remote Desktop Services"; ShouldRun=$true},
+    @{Name="UmRdpService"; DisplayName="Remote Desktop Services UserMode Port Redirector"; ShouldRun=$true}
+)
 
-// REMOVED: Initialize hover effects for feature list
+$BadServices = @(
+    @{Name="SMTPSVC"; DisplayName="SMTP"; ShouldRun=$false},
+    @{Name="FTPSVC"; DisplayName="FTP"; ShouldRun=$false}
+)
 
-// Performance optimization
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        if (particleSystem) {
-            particleSystem.resize();
-            particleSystem.createParticles();
-        }
-    }, 250);
-});
+foreach ($Service in $RequiredServices) {
+    try {
+        Set-Service -Name $Service.Name -StartupType Automatic -ErrorAction SilentlyContinue
+        Start-Service -Name $Service.Name -ErrorAction SilentlyContinue
+        Write-Host "✅ ENABLED: $($Service.DisplayName)" -ForegroundColor Green
+    } catch {
+        Write-Host "⚠️  Could not enable: $($Service.DisplayName)" -ForegroundColor Yellow
+    }
+}
 
-// Export for global access
-window.AboutModal = {
-    open: openAbout,
-    close: closeAbout,
-    particleSystem
-};
+foreach ($Service in $BadServices) {
+    try {
+        Stop-Service -Name $Service.Name -Force -ErrorAction SilentlyContinue
+        Set-Service -Name $Service.Name -StartupType Disabled -ErrorAction SilentlyContinue
+        Write-Host "✅ DISABLED: $($Service.DisplayName)" -ForegroundColor Green
+    } catch {
+        Write-Host "✅ CONFIRMED: $($Service.DisplayName) already disabled" -ForegroundColor Green
+    }
+}
+
+# 6. MANUAL CONFIGURATION CHECKLIST
+Write-Host "   Open 'Local Security Policy' and verify:" -ForegroundColor Yellow
+Write-Host "   • Password Policy → Maximum password age = 90" -ForegroundColor White
+Write-Host "   • Account Lockout Policy → Threshold = 10" -ForegroundColor White
+Write-Host "   • Security Options → Blank password limit = Enabled" -ForegroundColor White
+Write-Host "   • Security Options → Anonymous enumeration = Disabled" -ForegroundColor White
+
+Write-Host "`n🌐 FIREWALL (WF.msc):" -ForegroundColor White
+Write-Host "   Open 'Windows Defender Firewall' and verify:" -ForegroundColor Yellow
+Write-Host "   • Domain Profile = ON" -ForegroundColor White
+Write-Host "   • Private Profile = ON" -ForegroundColor White
+Write-Host "   • Public Profile = ON" -ForegroundColor White
+
+Write-Host "`n🦊 FIREFOX UPDATE:" -ForegroundColor White
+Write-Host "   • Open Firefox → ☰ Menu → Help → About Firefox" -ForegroundColor Yellow
+Write-Host "   • Click UPDATE and RESTART" -ForegroundColor Yellow
+
+Write-Host "`n📁 FILE SHARES (fsmgmt.msc):" -ForegroundColor White
+Write-Host "   • Open 'Shared Folders' → Verify 'greybeard' is gone" -ForegroundColor Yellow
+
+function Test-ScoringItem {
+    param($Name, $Test, $Points)
+    
+    if (& $Test) {
+        Write-Host "✅ $Name - $Points points" -ForegroundColor Green
+        return $Points
+    } else {
+        Write-Host "❌ $Name - 0 points" -ForegroundColor Red
+        return 0
+    }
+}
+
+$TotalScore = 0
+
+Write-Host "`nSCORING BREAKDOWN:" -ForegroundColor Yellow
+
+# Test each scoring category
+$TotalScore += Test-ScoringItem "Unauthorized Users Removed" { 
+    @("ancano", "tolfdir") | ForEach-Object { Get-LocalUser -Name $_ -ErrorAction SilentlyContinue } | Where-Object { $_ } | Measure-Object | Select-Object -ExpandProperty Count -eq 0
+} 8
+
+$TotalScore += Test-ScoringItem "Regular Users Not Admins" {
+    $AuthorizedUsers = @("borri", "einarth", "wulfgar", "ulfric", "tullius", "ralof", "hadvar", "balgruuf", "farengar", "irileth", "lydia")
+    ($AuthorizedUsers | ForEach-Object { 
+        Get-LocalGroupMember -Group "Administrators" | Where-Object {$_.Name -like "*$_*" }
+    } | Measure-Object).Count -eq 0
+} 5
+
+$TotalScore += Test-ScoringItem "Firewall Enabled" {
+    (Get-NetFirewallProfile | Where-Object { $_.Enabled -eq $true }).Count -eq 3
+} 5
+
+$TotalScore += Test-ScoringItem "Unauthorized Share Removed" {
+    -not (Get-SmbShare -Name "greybeard" -ErrorAction SilentlyContinue)
+} 6
+
+$TotalScore += Test-ScoringItem "Services Disabled" {
+    (@("SMTPSVC", "FTPSVC") | ForEach-Object { 
+        (Get-Service -Name $_ -ErrorAction SilentlyContinue).StartType -eq 'Disabled'
+    } | Where-Object { $_ } | Measure-Object).Count -eq 2
+} 10
