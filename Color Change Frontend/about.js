@@ -1,5 +1,5 @@
 // about.js
-// -------- About modal logic with advanced effects --------
+
 
 const aboutBtn = document.getElementById('aboutBtn');
 const aboutModal = document.getElementById('aboutModal');
@@ -101,49 +101,6 @@ class ParticleSystem {
     }
 }
 
-// Typing effect for title
-function typeWriter(element, text, speed = 50) {
-    return new Promise((resolve) => {
-        let i = 0;
-        element.innerHTML = '';
-        
-        function type() {
-            if (i < text.length) {
-                element.innerHTML += text.charAt(i);
-                i++;
-                setTimeout(type, speed);
-            } else {
-                resolve();
-            }
-        }
-        type();
-    });
-}
-
-// Animate elements on scroll - UPDATED VERSION
-function setupScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                // إضافة كلاس للأنيميشن بدلاً من التحكم المباشر
-                entry.target.classList.add('animate-in');
-                // إزالة العنصر من المراقبة بعد تنفيذ الأنيميشن
-                setTimeout(() => {
-                    observer.unobserve(entry.target);
-                }, 600);
-            }
-        });
-    }, { 
-        threshold: 0.1,
-        rootMargin: '0px 0px -50px 0px' // تبدأ الأنيميشن عندما يدخل العنصر بنسبة 10% من الشاشة
-    });
-
-    // مراقبة جميع الأقسام والعناصر التي نريد إضافة أنيميشن لها
-    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach((element) => {
-        observer.observe(element);
-    });
-}
-
 // Enhanced modal functions
 let particleSystem = null;
 
@@ -169,20 +126,12 @@ async function openAbout() {
         particleSystem = new ParticleSystem(aboutModal);
     }
     
-    // Typing effect for title
+
     const title = document.querySelector('.about-header h1');
     if (title) {
-        await typeWriter(title, 'Smart Light Controller', 60);
+        title.textContent = 'Smart Light Controller';
     }
-    
-    // إزالة أي أنيميشن سابقة وإعادة تعيين الحالة
-    resetAnimations();
-    
-    // Setup scroll animations بعد انتهاء الكتابة مباشرة
-    setTimeout(() => {
-        setupScrollAnimations();
-    }, 100);
-    
+
     // Restore button state
     aboutBtn.classList.remove('loading');
     aboutBtn.innerHTML = 'About';
@@ -190,26 +139,7 @@ async function openAbout() {
     // Focus management
     aboutClose.focus();
     
-    // Add subtle vibration to modal on open
-    const aboutContent = aboutModal.querySelector('.about-content');
-    if (aboutContent) {
-        aboutContent.style.animation = 'modalVibrate 0.3s ease-out';
-        setTimeout(() => {
-            aboutContent.style.animation = '';
-        }, 300);
-    }
-}
-
-// دالة جديدة لإعادة تعيين الأنيميشنات
-function resetAnimations() {
-    document.querySelectorAll('.about-section, .feature-item, .tech-stack-item').forEach(element => {
-        element.classList.remove('animate-in');
-        // إعادة تعيين الأنيميشن CSS
-        element.style.animation = 'none';
-        setTimeout(() => {
-            element.style.animation = '';
-        }, 10);
-    });
+    // Remove vibration effect on open
 }
 
 function closeAbout() {
@@ -224,9 +154,6 @@ function closeAbout() {
         aboutModal.style.animation = '';
         document.body.classList.remove('modal-open');
         aboutBtn.focus();
-        
-        // إعادة تعيين الأنيميشنات عند الإغلاق
-        resetAnimations();
     }, 250);
 }
 
@@ -317,12 +244,6 @@ style.textContent = `
         }
     }
     
-    @keyframes modalVibrate {
-        0% { transform: translateY(-10px) scale(0.95); opacity: 0; }
-        70% { transform: translateY(2px) scale(1.01); }
-        100% { transform: translateY(0) scale(1); opacity: 1; }
-    }
-    
     @keyframes aboutFadeOut {
         from { opacity: 1; transform: scale(1); }
         to { opacity: 0; transform: scale(0.95); }
@@ -343,43 +264,16 @@ style.textContent = `
         pointer-events: none;
     }
     
-    /* الأنيميشنات الجديدة */
+    /* إزالة الأنيميشنات للعناصر الداخلية */
     .about-section {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: all 0.6s ease-out;
-    }
-    
-    .about-section.animate-in {
         opacity: 1;
-        transform: translateY(0);
+        transform: none;
     }
     
     .feature-item, .tech-stack-item {
-        opacity: 0;
-        transform: translateX(-20px);
-        transition: all 0.5s ease-out;
-    }
-    
-    .feature-item.animate-in, .tech-stack-item.animate-in {
         opacity: 1;
-        transform: translateX(0);
+        transform: none;
     }
-    
-    /* تأخيرات متدرجة للعناصر */
-    .about-section:nth-child(1) { transition-delay: 0.1s; }
-    .about-section:nth-child(2) { transition-delay: 0.2s; }
-    .about-section:nth-child(3) { transition-delay: 0.3s; }
-    .about-section:nth-child(4) { transition-delay: 0.4s; }
-    
-    .feature-item:nth-child(1) { transition-delay: 0.1s; }
-    .feature-item:nth-child(2) { transition-delay: 0.2s; }
-    .feature-item:nth-child(3) { transition-delay: 0.3s; }
-    .feature-item:nth-child(4) { transition-delay: 0.4s; }
-    
-    .tech-stack-item:nth-child(1) { transition-delay: 0.1s; }
-    .tech-stack-item:nth-child(2) { transition-delay: 0.2s; }
-    .tech-stack-item:nth-child(3) { transition-delay: 0.3s; }
     
     /* Enhanced feature list items */
     .feature-list li {
