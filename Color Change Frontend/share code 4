@@ -1,52 +1,15 @@
-// ... existing code ...
+async def animation_worker():
+    global stop_requested, current_anim
+    while True:
+        if animation_queue:
+            with animation_lock:
+                req = animation_queue.popleft()
+            stop_requested = False
+            current_anim = req.animation_type
 
-// In the function startRandomColors, change the animation_type to "random_colors"
-async function startRandomColors() {
-    if (isAnimationRunning && currentAnim !== "random_colors") {
-        await stopAnimation();
-    }
-    if (isAnimationRunning && currentAnim === "random_colors") {
-        await stopAnimation();
-        return;
-    }
-    isAnimationRunning = true;
-    currentAnim = "random_colors";
-    randomColorsBtn.classList.add('active');
-    randomColorsBtn.textContent = 'Random Colors (Running)';
-    cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Random Colors";
-    await sendRequest("/animate", { animation_type: "random_colors" });
-}
+            # ... your existing conditions ...
 
-// ... existing code ...
+            elif req.animation_type == "random_colors":
+                await random_colors_loop()
 
-// In fetchAndApplyState, change the condition for random colors
-        // ----------- Random Colors ----------
-        if (animation === "random_colors") {
-            isAnimationRunning = true;
-            currentAnim = "random_colors";
-            randomColorsBtn.classList.add('active');
-            randomColorsBtn.textContent = 'Random Colors (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Random Colors";
-        } else {
-            randomColorsBtn.classList.remove('active');
-            randomColorsBtn.textContent = 'Random Colors';
-        }
-
-// ... existing code ...
-
-// In the SSE onmessage, change the condition for random colors
-        if (animation === "random_colors") {
-            isAnimationRunning = true;
-            currentAnim = "random_colors";
-            randomColorsBtn.classList.add('active');
-            randomColorsBtn.textContent = 'Random Colors (Running)';
-            cardElement.style.background = "#000000";
-            colorDisplay.textContent = "Random Colors";
-        } else {
-            randomColorsBtn.classList.remove('active');
-            randomColorsBtn.textContent = 'Random Colors';
-        }
-
-// ... existing code ...
+            # ... rest of your conditions ...
