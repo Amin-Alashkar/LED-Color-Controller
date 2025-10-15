@@ -838,20 +838,20 @@ async function startSingleSnake() {
 }
 
 async function startRandomColors() {
-    if (isAnimationRunning && currentAnim !== "Random Colors") {
+    if (isAnimationRunning && currentAnim !== "random_colors") {
         await stopAnimation();
     }
-    if (isAnimationRunning && currentAnim === "Random Colors") {
+    if (isAnimationRunning && currentAnim === "random_colors") {
         await stopAnimation();
         return;
     }
     isAnimationRunning = true;
-    currentAnim = "Random Colors";
+    currentAnim = "random_colors";
     randomColorsBtn.classList.add('active');
     randomColorsBtn.textContent = 'Random Colors (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Random Colors";
-    await sendRequest("/animate", { animation_type: "Random Colors" });
+    await sendRequest("/animate", { animation_type: "random_colors" });
 }
 
 // Fireworks Burst
@@ -1570,7 +1570,6 @@ evtSource.onmessage = e => {
             cardElement.style.background = "";
         }
 
-        // ثم نفس المنطق السابق في fetchAndApplyState()
         if (animation === "fade_colors") {
             isAnimationRunning = true;
             currentAnim = "fade_colors";
