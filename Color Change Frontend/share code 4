@@ -1,25 +1,28 @@
-async def meteor_shower_loop(delay_per_step: float = 0.08):
+import asyncio
+import random
+
+async def meteor_shower_loop(delay_per_step: float = 0.7):
     """
-    إصلاحات:
-    - ضمان مسافة بين رؤوس الأفاعي: عشوائي بين 5 و15 LED (فعلياً مقاسة عند وقت الولادة)
-    - الرأس يظهر أولاً عند index NUM_LEDS-1 ويتجه لليسار
-    - الرأس أكثر سطوعاً، والذيل يتدرج تدريجياً للأغمق
-    - سرعة مبدئية أخففتها (0.08s per step)
-    متطلبات خارجية: NUM_LEDS, BRIGHTNESS_SCALE, neo, stop_requested
+    أفاعي تتحرك من اليمين لليسار:
+    - طول كل أفعى عشوائي حقيقي بين 5 و 15 (random.randint(5,15))
+    - المسافة بين رؤوس الأفاعي عند الولادة عشوائية بين 5 و 15 (مضمونة)
+    - الرأس أفتح، الذيل أغمق تدريجيًا (خطّي من 1.0 إلى 0.2)
+    - سرعة افتراضية = 0.7s per frame (أبطأ كما طلبت)
+    يعتمد على: NUM_LEDS, BRIGHTNESS_SCALE, neo, stop_requested
     """
     global stop_requested
 
     SNAKE_COLORS = [
-        (255,   0,   0),   # أحمر
-        (  0,   0, 255),   # أزرق
-        (  0, 255,   0),   # أخضر
-        (255, 255,   0),   # أصفر
-        (255,   0, 255),   # أرجواني
-        (  0, 255, 255),   # سماوي
-        (255, 165,   0),   # برتقالي
-        (255, 192, 203),   # وردي
-        (138,  43, 226),   # بنفسجي
-        ( 50, 205,  50)    # أخضر ليموني
+        (255,   0,   0),
+        (  0,   0, 255),
+        (  0, 255,   0),
+        (255, 255,   0),
+        (255,   0, 255),
+        (  0, 255, 255),
+        (255, 165,   0),
+        (255, 192, 203),
+        (138,  43, 226),
+        ( 50, 205,  50)
     ]
 
     max_simultaneous_snakes = 50
@@ -29,43 +32,30 @@ async def meteor_shower_loop(delay_per_step: float = 0.08):
     snake_counter = 0
 
     def current_head_positions():
-        """ترجع قائمة بمواقع رؤوس الأفاعي الحالية (قد تكون سلبية إذا خرجت)"""
-        positions = []
-        for s in active_snakes:
-            pos = NUM_LEDS - 1 - s["progress"]
-            positions.append(pos)
-        return positions
+        """ترجع مواقع رؤوس الأفاعي الحالية (قد تكون سالبة إذا خرجت)."""
+        return [NUM_LEDS - 1 - s["progress"] for s in active_snakes]
 
     while not stop_requested:
-        # احسب إذا يمكن إطلاق أفعى جديدة الآن مع ضمان المسافة المطلوبة
+        # محاولة إطلاق أفعى جديدة إذا وصلنا للوقت المناسب
         if global_frame >= next_spawn_frame and len(active_snakes) < max_simultaneous_snakes:
-            # طول الأفعى ولونها
+            # طول الأفعى عشوائي ومضمون بين 5 و15
             snake_length = random.randint(5, 15)
             color_base = random.choice(SNAKE_COLORS)
-            # المسافة المطلوبة بين رؤوس الأفاعي (بالـ LEDs) - عشوائية بين 5 و15
-            required_gap = random.randint(5, 15)
-            # موقع الرأس الجديد عند الإطلاق سيكون NUM_LEDS-1
+            required_gap = random.randint(5, 15)  # المسافة المطلوبة بين الرؤوس
             new_head_pos = NUM_LEDS - 1
 
-            # إذا في رؤوس حالية، احسب أقرب رأس موجود إلى الحافة اليمنى
             heads = current_head_positions()
             if heads:
-                # أقرب رأس إلى الحافة اليمنى يعني أعلى قيمة لأن الحافة اليمنى هي NUM_LEDS-1
-                nearest_head = max(heads)
-                # المسافة الحالية بين الرأس الجديد و أقرب رأس موجود
+                nearest_head = max(heads)  # أقرب رأس للحافة اليمنى
                 current_gap = new_head_pos - nearest_head
                 if current_gap >= required_gap:
-                    # نطلق الآن
                     spawn_now = True
                 else:
-                    # نحسب كم إطار نحتاج لننتظر حتى تكون المسافة كافية
-                    # الرأس الحالي يتحرك 1 LED لكل إطار (progress++)
-                    # نحتاج أن يبتعد الرأس الحالي عن الحافة اليمنى بمقدار (required_gap - current_gap)
                     frames_needed = required_gap - current_gap
+                    # نظهر الأفعى بعد frames_needed إطار (كل إطار الرأس الحالي يتحرك لليسار بمقدار 1)
                     next_spawn_frame = global_frame + frames_needed
                     spawn_now = False
             else:
-                # لا أفاعي حالية => نطلق فوراً
                 spawn_now = True
 
             if spawn_now:
@@ -76,41 +66,39 @@ async def meteor_shower_loop(delay_per_step: float = 0.08):
                     "color": color_base
                 })
                 snake_counter += 1
-                # تحضير حد زمني احتياطي للإطلاق التالي — لكن الفاصل الحقيقي يتم حسابه أعلاه
-                next_spawn_frame = global_frame + 1
+                next_spawn_frame = global_frame + 1  # فاصل احتياطي
 
-        # رسم
+        # رسم الحالة الحالية
         neo.clear_strip()
 
         for snake in active_snakes[:]:
             prog = snake["progress"]
             length = snake["length"]
             color_base = snake["color"]
-            # الرأس يبدأ عند NUM_LEDS-1 عندما progress == 0
+
+            # حساب موقع الرأس (progress=0 -> رأس عند NUM_LEDS-1)
             head_pos = NUM_LEDS - 1 - prog
 
-            # رسم الذيل: من الرأس (t=0) إلى الذيل (t=length-1)
+            # رسم الذيل: t=0 => الرأس (الأكثر سطوعاً)
             for t in range(length):
                 pos = head_pos - t
                 if 0 <= pos < NUM_LEDS:
-                    # عامل التدرج: الرأس (t=0) = 1.0 (أكثر سطوعاً)
+                    # عامل التدرج: الرأس => factor = 1.0 ; الذيل الأخير => factor = 0.0
                     if length > 1:
-                        factor = (length - 1 - t) / (length - 1)
+                        factor = (length - 1 - t) / (length - 1)  # في [0..1]
                     else:
                         factor = 1.0
-                    # نحتاج الرأس أن يكون الأكثر سطوعاً، لذلك نحسب brightness = 0.3 + 0.7*factor
-                    # (اختياري) لكن هنا نستخدم factor مباشرة لتناقص خطي حتى الصِغَر جداً عند الذيل
-                    r = int(color_base[0] * (factor if factor>0 else 0) * BRIGHTNESS_SCALE)
-                    g = int(color_base[1] * (factor if factor>0 else 0) * BRIGHTNESS_SCALE)
-                    b = int(color_base[2] * (factor if factor>0 else 0) * BRIGHTNESS_SCALE)
-                    # إذا تريد الرأس أقوى نسبياً مقارنة بالذيل، يمكن استخدام:
-                    # head_boost = 1.0 if t==0 else 1.0
+                    # نحول factor إلى مستوى سطوع فعلي بين 0.2 و 1.0
+                    brightness = 0.2 + 0.8 * factor  # رأس = 1.0 ، ذيل = 0.2
+                    r = int(color_base[0] * brightness * BRIGHTNESS_SCALE)
+                    g = int(color_base[1] * brightness * BRIGHTNESS_SCALE)
+                    b = int(color_base[2] * brightness * BRIGHTNESS_SCALE)
                     neo.set_led_color(pos, r, g, b)
 
-            # تحريك الأفعى خطوة لليسار
+            # حرك الأفعى خطوة واحدة لليسار
             snake["progress"] += 1
 
-            # إزالة الأفعى إذا خرجت بالكامل (الرأس والذيل خارج الشريط)
+            # إزالة الأفعى إذا خرجت بالكامل عن الشريط
             tail_pos = head_pos - (length - 1)
             if head_pos < 0 and tail_pos < 0:
                 try:
@@ -122,5 +110,6 @@ async def meteor_shower_loop(delay_per_step: float = 0.08):
         await asyncio.sleep(delay_per_step)
         global_frame += 1
 
+    # عند الإيقاف ننظف الشريط
     neo.clear_strip()
     neo.update_strip()
