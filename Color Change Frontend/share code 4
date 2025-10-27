@@ -1,6 +1,20 @@
-async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 15):
-    global stop_requested
+import asyncio
+import random
 
+async def meteor_shower_loop(delay_per_step: float = 0.05):
+    """
+    إنشاء أفاعي لا نهائية تتحرك من اليمين إلى اليسار.
+    - كل أفعى: لون عشوائي من SNAKE_COLORS
+    - طول عشوائي: min 5, max 15 (ذيل مكون من هذا الطول)
+    - المسافة بين رؤوس الأفاعي: عشوائية بين 5 و15 وحدات (LEDs)
+    - ذيل بتدرج سطوع تدريجي (رأس فاتح وذيل أغمق)
+    يعتمد الكود على المتغيرات التالية الموجودة خارجيًا:
+    - NUM_LEDS: عدد الـ LEDs في الشريط
+    - BRIGHTNESS_SCALE: معامل سطوع عام (0..1)
+    - neo: كائن يتحكم بالـ LED (يجب أن يتوفر به الدوال clear_strip, set_led_color, update_strip)
+    - stop_requested: علامة إيقاف خارجية
+    """
+    global stop_requested
 
     SNAKE_COLORS = [
         (255,   0,   0),   # أحمر
@@ -15,74 +29,83 @@ async def meteor_shower_loop(delay_per_step: float = 0.05, trail_length: int = 1
         ( 50, 205,  50)    # أخضر ليموني
     ]
 
-    total_snakes = len(SNAKE_COLORS)
-    # مدة حركة الأفعى الواحدة بالخطوات:
-    frames_per_snake = NUM_LEDS + trail_length  # الرأس يبدأ عند 19 وينتهي عند -trail_length
+    # إذا أردت تقييد عدد الأفاعي العام في الهواء في نفس الوقت، عدّل هذا الرقم
+    max_simultaneous_snakes = 50
 
-    # ضبط الفاصل الزمني لإطلاق الأفعى بحيث يبقى بين كل رأس وآخر 5 أضواء سوداء
-    spawn_interval = trail_length + 30  # 12 + 5 = 17
+    # إطار عالمي (يتزايد كل خطوة زمنية)
+    global_frame = 0
+
+    # وقت الإطلاق التالي (بإطار)
+    next_spawn_frame = 0
+
+    # قائمة الأفاعي النشطة. كل أفعى: dict {progress, length, color, id}
+    active_snakes = []
+    snake_counter = 0
+
+    # helper لإزالة الأفعى إذا خرجت بالكامل
+    def snake_is_off_left(head_pos, length):
+        # إذا كان موقع الذيل (head_pos - (length-1)) أقل من 0 بالكامل، فهي خارج
+        tail_pos = head_pos - (length - 1)
+        return tail_pos < 0 and head_pos < 0
 
     while not stop_requested:
-        # قائمة تمثل الأفعى النشطة حاليًّا
-        active_snakes = []
-        global_frame = 0
-        snake_index = 0
+        # spawn logic: إذا حان وقت الإطلاق و لم نتجاوزه للمسموح
+        if global_frame >= next_spawn_frame and len(active_snakes) < max_simultaneous_snakes:
+            # إعداد الأفعى الجديدة
+            snake_length = random.randint(5, 15)  # طول الأفعى (tail length)
+            color_base = random.choice(SNAKE_COLORS)
+            # كل أفعى لها مسافة عشوائية تليها قبل إطلاق الأفعى التالية (5..15)
+            gap_between_heads = random.randint(5, 15)
+            # نضيف الأفعى بقيمة progress=0 (ستظهر عند progress=1 رأس عند آخر LED)
+            active_snakes.append({
+                "id": snake_counter,
+                "progress": 0,
+                "length": snake_length,
+                "color": color_base
+            })
+            snake_counter += 1
+            # نحدّد متى نطلق الأفعى التالية (بإطارات — لأن كل إطار يتحرك الرأس بمقدار 1 LED تقريباً)
+            next_spawn_frame = global_frame + gap_between_heads
 
-        # طلق الأفعى الواحدة تلو الأخرى بانتظام
-        while not stop_requested:
-            # إذا حان وقت إطلاق أفعى جديدة
-            if snake_index < total_snakes and global_frame >= snake_index * spawn_interval:
-                #  الأفعى إلى القائمة (مع حالة التقدّم بدايةً 0)
-                active_snakes.append({
-                    'id': snake_index,
-                    'progress': 0  # رقم الإطار داخل الأفعى
-                })
-                snake_index += 1
+        # مسح الشريط قبل الرسم
+        neo.clear_strip()
 
-            if snake_index >= total_snakes and not active_snakes:
-                break
+        # نحدّث كل أفعى: نرسم ذيلها بتدرج سطوع
+        for snake in active_snakes[:]:
+            prog = snake["progress"]
+            length = snake["length"]
+            color_base = snake["color"]
+            # رأس الأفعى يبدأ بالظهور عندما progress == 1 عند آخر LED (index NUM_LEDS-1)
+            head_pos = NUM_LEDS - prog  # عند progress=1 => head_pos == NUM_LEDS-1
+            # رسم الذيل: من الرأس إلى الذيل (head_pos down to head_pos - (length-1))
+            for t in range(length):
+                pos = head_pos - t  # نخفض لأن الأفعى تتحرك لليسار
+                if 0 <= pos < NUM_LEDS:
+                    # تدرج: الرأس (t=0) أكثر سطوعًا، الذيل أسوأ تدريجيًا
+                    factor = (length - t) / length  # 1.0 عند الرأس -> أقل عند الذيل
+                    r = int(color_base[0] * factor * BRIGHTNESS_SCALE)
+                    g = int(color_base[1] * factor * BRIGHTNESS_SCALE)
+                    b = int(color_base[2] * factor * BRIGHTNESS_SCALE)
+                    neo.set_led_color(pos, r, g, b)
 
-            # مسح الشريط
-            neo.clear_strip()
+            # نزح الأفعى خطوة (تزداد progress)
+            snake["progress"] += 1
 
-            # حدّث كل أفعىt
-            for snake in active_snakes[:]:
-                sid = snake['id']
-                color_base = SNAKE_COLORS[sid]
-                prog = snake['progress']
-                head_pos = NUM_LEDS - prog
-
-                # نرسم ذيل الأفعى بطول trail_length
-                for t in range(trail_length):
-                    pos = head_pos + t
-                    if 0 <= pos < NUM_LEDS:
-                        # حساب التدريج (فاتح في الرأس، داكن في الذيل)
-                        factor = (trail_length - t) / trail_length
-                        r = int(color_base[0] * factor)
-                        g = int(color_base[1] * factor)
-                        b = int(color_base[2] * factor)
-                        neo.set_led_color(
-                        pos,
-                        int(r* BRIGHTNESS_SCALE),
-                        int(g* BRIGHTNESS_SCALE),
-                        int(b* BRIGHTNESS_SCALE)
-                    )
-
-                # نزيح الأفعى خطوة لاحقًا
-                snake['progress'] += 1
-                # إذا تجاوزت الأفعى المسار كاملاً
-                if snake['progress'] > frames_per_snake:
+            # شرط إزالة: إذا خرجت الأفعى بالكامل على اليسار، نزيلها
+            # head_pos بعد الزيادة في التالي يساوي NUM_LEDS - prog
+            # تحقق وضعها الحالي (قبل الزيادة التالية)
+            if head_pos < 0 and (head_pos - (length - 1)) < 0:
+                try:
                     active_snakes.remove(snake)
+                except ValueError:
+                    pass
 
-            # نطبّق التحديث على الشريط
-            neo.update_strip()
-            await asyncio.sleep(delay_per_step)
+        # تطبيق التحديث و الانتظار خطوة
+        neo.update_strip()
+        await asyncio.sleep(delay_per_step)
 
-            global_frame += 1
-            # إذا انتهى جميع الإطارات لكل الأفعى وأفرغت القائمة
-            if snake_index >= total_snakes and not active_snakes:
-                break
+        global_frame += 1
 
-        # بعد إنتهاء عشر أفعى، نعيد الدورة تلقائيًّا
+    # عند طلب الإيقاف، نظف الشريط
     neo.clear_strip()
     neo.update_strip()
