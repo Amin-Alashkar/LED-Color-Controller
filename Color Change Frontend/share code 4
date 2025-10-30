@@ -1,4 +1,4 @@
-sudo nano /etc/avahi/avahi-daemon.conf
+sudo apt-get install avahi-daemon 
 host-name=LED-Color-Controller
 domain-name=local
 sudo systemctl restart avahi-daemon
