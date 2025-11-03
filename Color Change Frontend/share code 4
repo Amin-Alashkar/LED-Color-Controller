@@ -4,3 +4,6 @@ domain-name=local
 sudo systemctl restart avahi-daemon
 LED-Color-Controller.local
 ping LED-Color-Controller.local
+
+
+sudo nano /etc/gdm3/custom.conf
