@@ -124,4 +124,22 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 fi
 
 
-#Notes: NOT the best way to do auto-active for frontend and backend. 
+# Notes:
+# - This method launches both backend (uvicorn) and frontend (http-server) 
+#   automatically when logging in to tty1.
+# - Problems with this approach:
+#     * Only runs when tty1 is active; won't run on boot if no one logs in.
+#     * Hard to manage, restart, or log errors.
+#     * Background processes might die silently, no auto-restart.
+# - Better approach: use systemd services:
+#     1) Create led-backend.service for uvicorn.
+#     2) Create led-frontend.service for http-server.
+#     3) Enable services with `sudo systemctl enable --now <service>`.
+# - Advantages of systemd:
+#     * Starts on boot automatically.
+#     * Auto-restarts if crashes.
+#     * Centralized logs via `journalctl`.
+#     * Can run without any user login, unlike .bashrc.
+# - Folder structure used for services:
+#     * Backend working dir: /home/student/pixel_project
+#     * Frontend working dir: /home/student/pixel_project/LED-Color-Controller/Color Change Frontend
