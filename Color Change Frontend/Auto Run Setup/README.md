@@ -33,6 +33,14 @@ fi
 
 ```
 
+Note:
+
+Replace username and folder names (project_folder, frontend_folder) with your actual paths.
+
+You can find your correct home directory with `echo $HOME`
+
+
+Use quotes around folder names that contain spaces.
 Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
 Now, whenever someone logs in on `tty1`, the backend and frontend processes will be started.
 
