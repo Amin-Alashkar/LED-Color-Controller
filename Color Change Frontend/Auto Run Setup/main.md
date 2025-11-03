@@ -1,4 +1,4 @@
-# Auto Run Setup using systemd
+# Auto Run Setup 
 
 This folder explains how to automatically start both the backend (FastAPI) and frontend (HTTP Server) on Raspberry Pi using `systemd` services.
 
