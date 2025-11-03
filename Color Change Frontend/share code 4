@@ -7,3 +7,7 @@ ping LED-Color-Controller.local
 
 
 sudo nano /etc/gdm3/custom.conf
+
+
+
+WaylandEnable=false
