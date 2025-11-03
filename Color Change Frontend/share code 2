@@ -108,18 +108,20 @@ Requirement already satisfied: websockets==15.0.1 in ./.venv/lib/python3.11/site
 if [ "$(tty)" = "/dev/tty1" ]; then
   export PYTHONIOENCODING=utf-8
 
-  # تفعيل البيئة الافتراضية
+
   cd /home/student/pixel_project
   source .venv/bin/activate
 
-  # تشغيل السيرفر من مكان وجود server.py
+
   uvicorn server:app --host 0.0.0.0 --port 8000 &
 
   sleep 2
 
-  # تشغيل الواجهة الأمامية
   cd "LED-Color-Controller/Color Change Frontend"
 
-  # تأكد أنك مثبت http-server عبر npm
+
   http-server -c-1 -p 5501 &
 fi
+
+
+#Notes: NOT the best way to do auto-active for frontend and backend. 
