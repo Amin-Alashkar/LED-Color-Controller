@@ -164,61 +164,13 @@ sudo journalctl -u led-backend.service -f
 
 | Action                        | Command                                                                                       |
 | ----------------------------- | --------------------------------------------------------------------------------------------- |
-| **Start**                     | `sudo systemctl start led-backend.service`<br>`sudo systemctl start led-frontend.service`     |
+| **Start**                     | bash ```sudo systemctl start led-backend.service`<br>`sudo systemctl start led-frontend.service```     |
 | **Stop**                      | `sudo systemctl stop led-backend.service`<br>`sudo systemctl stop led-frontend.service`       |
 | **Restart**                   | `sudo systemctl restart led-backend.service`<br>`sudo systemctl restart led-frontend.service` |
 | **Status**                    | `sudo systemctl status led-backend.service`<br>`sudo systemctl status led-frontend.service`   |
 | **Disable (stop auto-start)** | `sudo systemctl disable --now led-backend.service led-frontend.service`                       |
 
 ---
-
-###  Managing the Services
-
-Once both the **backend** and **frontend** services are installed with `systemd`, you can control them using the following commands:
-
-####  Start the services
-
-**backend** 
-```bash
-sudo systemctl start backend.service
-```
-**frontend**
-```
-sudo systemctl start frontend.service
-```
-
-####  Stop the services
-
-**backend**
-```bash
-sudo systemctl stop backend.service
-```
-**frontend**
-```
-sudo systemctl stop frontend.service
-```
-
-####  Restart the services
-
-**backend**
-```bash
-sudo systemctl restart backend.service
-```
-**frontend**
-```
-sudo systemctl restart frontend.service
-```
-
-####  Check their status
-
-**backend**
-```bash
-sudo systemctl status backend.service
-```
-**frontend**
-```
-sudo systemctl status frontend.service
-```
 
 ## Notes
 
