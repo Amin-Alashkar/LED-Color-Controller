@@ -175,10 +175,11 @@ sudo journalctl -u led-backend.service -f
 
 
 
---------------------------------------------------------------------------|------------------------------------------------
+
 ###▶️ Start
+
 ```
-sudo systemctl start led-backend.service                                 |    #
+sudo systemctl start led-backend.service
 ```
 ```
 sudo systemctl start led-frontend.service
