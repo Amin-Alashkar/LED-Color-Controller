@@ -204,31 +204,45 @@ Once both the **backend** and **frontend** services are installed with `systemd`
 
 ####  Start the services
 
+**backend** 
 ```bash
 sudo systemctl start backend.service
 ```
+**frontend**
 ```
 sudo systemctl start frontend.service
 ```
 
 ####  Stop the services
 
+**backend**
 ```bash
 sudo systemctl stop backend.service
+```
+**frontend**
+```
 sudo systemctl stop frontend.service
 ```
 
 ####  Restart the services
 
+**backend**
 ```bash
 sudo systemctl restart backend.service
+```
+**frontend**
+```
 sudo systemctl restart frontend.service
 ```
 
 ####  Check their status
 
+**backend**
 ```bash
 sudo systemctl status backend.service
+```
+**frontend**
+```
 sudo systemctl status frontend.service
 ```
 
