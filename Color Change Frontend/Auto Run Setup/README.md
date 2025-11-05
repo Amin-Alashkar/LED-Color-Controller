@@ -167,14 +167,33 @@ sudo journalctl -u led-backend.service -f
 
 | Action                           | Command                                                                                             |
 | -------------------------------- | --------------------------------------------------------------------------------------------------- |
-| ▶️ **Start**                     | ```bash
-sudo systemctl start led-backend.service<br>sudo systemctl start led-frontend.service```     |
-| ⏹️ **Stop**                      | `bash<br>sudo systemctl stop led-backend.service<br>sudo systemctl stop led-frontend.service`       |
-| 🔁 **Restart**                   | `bash<br>sudo systemctl restart led-backend.service<br>sudo systemctl restart led-frontend.service` |
-| 🧾 **Status**                    | `bash<br>sudo systemctl status led-backend.service<br>sudo systemctl status led-frontend.service`   |
-| 🚫 **Disable (Stop auto-start)** | `bash<br>sudo systemctl disable --now led-backend.service led-frontend.service`                     |
+| ▶️ **Start**                     | bash sudo systemctl start led-backend.service<br>sudo systemctl start led-frontend.service```     |
+| ⏹️ **Stop**                      | `bash<br>`       |
+| 🔁 **Restart**                   | `bash<br>` |
+| 🧾 **Status**                    | `bash<br>`   |
+| 🚫 **Disable (Stop auto-start)** | `bash<br>`                     |
 
 
+Command
+```bash
+sudo systemctl start led-backend.service
+```
+```
+sudo systemctl start led-frontend.service
+```
+```
+```bash
+sudo systemctl stop led-backend.service<br>sudo systemctl stop led-frontend.service
+```
+```bash
+sudo systemctl restart led-backend.service<br>sudo systemctl restart led-frontend.service
+```
+```bash
+sudo sudo systemctl status led-backend.service<br>sudo systemctl status led-frontend.service
+```
+```bash
+sudo systemctl disable --now led-backend.service led-frontend.service
+```
 
 ---
 
