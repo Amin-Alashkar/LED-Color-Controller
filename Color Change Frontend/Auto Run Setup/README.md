@@ -41,8 +41,9 @@ You can find your correct home directory with `echo $HOME`
 
 
 Use quotes around folder names that contain spaces.
+
 Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
-Now, whenever someone logs in on `tty1`, the backend and frontend processes will be started.
+Now, every time the Raspberry Pi starts, both the backend server and the frontend website will automatically run without any manual login or commands.
 
 ### What to add / notes for `.bashrc`
 
@@ -51,8 +52,8 @@ Now, whenever someone logs in on `tty1`, the backend and frontend processes will
 * Add logging redirection if you want to capture stdout/stderr:
 
   ```bash
-  /home/student/pixel_project/.venv/bin/python -m uvicorn server:app --host 0.0.0.0 --port 8000 > /home/student/uvicorn.log 2>&1 &
-  /usr/local/bin/http-server -c-1 -p 5501 > /home/student/http-server.log 2>&1 &
+  /home/username/project_folder/.venv/bin/python -m uvicorn server:app --host 0.0.0.0 --port 8000 > /home/username/uvicorn.log 2>&1 &
+  /usr/local/bin/http-server -c-1 -p 5501 > /home/username/http-server.log 2>&1 &
   ```
 * If your folder names contain spaces, either escape them (`Color\ Change\ Frontend`) or wrap the path in quotes as shown.
 * This method is OK for quick testing or experiments, but it is not recommended for a reliable production-like setup.
@@ -197,8 +198,47 @@ sudo journalctl -u led-backend.service -f
 
 ---
 
-## Summary (what I changed / why)
+###  Managing the Services
 
+Once both the **backend** and **frontend** services are installed with `systemd`, you can control them using the following commands:
+
+####  Start the services
+
+```bash
+sudo systemctl start backend.service
+```
+```
+sudo systemctl start frontend.service
+```
+
+####  Stop the services
+
+```bash
+sudo systemctl stop backend.service
+sudo systemctl stop frontend.service
+```
+
+####  Restart the services
+
+```bash
+sudo systemctl restart backend.service
+sudo systemctl restart frontend.service
+```
+
+####  Check their status
+
+```bash
+sudo systemctl status backend.service
+sudo systemctl status frontend.service
+```
+
+Every time your Raspberry Pi boots up, both the **server** and **website** will automatically run, no need to log in or start them manually.
+
+
+
+---
+
+## Summary 
 * Temporary `.bashrc` auto-start was used initially for quick testing.
 * Replaced with proper `systemd` services to:
 
@@ -206,5 +246,3 @@ sudo journalctl -u led-backend.service -f
   * auto-restart on failure
   * centralize logs via `journalctl`
   * manage service lifecycle with `systemctl` commands
-
-Put this README.md inside your `Auto Run Setup (systemd)/` folder so other developers can quickly understand how the auto-start works and how to manage the services.
