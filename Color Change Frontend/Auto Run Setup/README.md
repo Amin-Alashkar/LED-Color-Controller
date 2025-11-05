@@ -174,25 +174,40 @@ sudo journalctl -u led-backend.service -f
 | 🚫 **Disable (Stop auto-start)** | `bash<br>`                     |
 
 
-Command
-```bash
-sudo systemctl start led-backend.service
+Command                                                                  |    Action
+-------------------------------------------------------------------------|----------------------------------------------
+```
+sudo systemctl start led-backend.service                                 |    #▶️ Start
 ```
 ```
 sudo systemctl start led-frontend.service
 ```
 ```
-```bash
-sudo systemctl stop led-backend.service<br>sudo systemctl stop led-frontend.service
+sudo systemctl stop led-backend.service
 ```
-```bash
-sudo systemctl restart led-backend.service<br>sudo systemctl restart led-frontend.service
 ```
-```bash
-sudo sudo systemctl status led-backend.service<br>sudo systemctl status led-frontend.service
+sudo systemctl stop led-frontend.service
 ```
-```bash
+```
+sudo systemctl restart led-backend.service
+```
+```
+sudo systemctl restart led-frontend.service
+```
+```
+sudo sudo systemctl status led-backend.service
+```
+```
+sudo systemctl status led-frontend.service
+```
+```
 sudo systemctl disable --now led-backend.service led-frontend.service
+```
+```
+sudo systemctl disable --now led-backend.service
+```
+```
+sudo systemctl disable --now led-frontend.service
 ```
 
 ---
