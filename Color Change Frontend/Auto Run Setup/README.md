@@ -1,10 +1,10 @@
-# Auto Run Setup
+# ⚙️ Auto Run Setup
 
-This folder explains how to automatically start both the **backend (FastAPI + Uvicorn)** and **frontend (static files served via `http-server`)** on your Raspberry Pi.
+This folder explains how to automatically start both the **backend (FastAPI + Uvicorn)** and the **frontend (served via `http-server`)** on your Raspberry Pi.
 
 ---
 
-## `.bashrc` Method (Quick & Temporary)
+## ⚡ `.bashrc` Method (Quick & Temporary)
 
 To quickly auto-start the project when logging into `tty1`, edit your `~/.bashrc`:
 
@@ -31,43 +31,43 @@ if [ "$(tty)" = "/dev/tty1" ]; then
 fi
 ```
 
-**Notes**
+> **Notes**
+>
+> * Replace `username` and folder names with your actual paths.
+> * Use quotes if the folder name contains spaces.
+> * Get your home path with:
+>
+>   ```bash
+>   echo $HOME
+>   ```
+> * Redirect logs if needed:
+>
+>   ```bash
+>   ... --port 8000 > /home/username/uvicorn.log 2>&1 &
+>   ```
 
-* Replace `username` and folder names with your actual paths.
-* Use quotes if the folder name contains spaces.
-* Get your home path with:
+> **Limitations**
+>
+> * Runs only on interactive login (`tty1`), not at boot.
+> * No process supervision or auto-restart.
+> * Not ideal for long-term setups.
 
-  ```bash
-  echo $HOME
-  ```
-* Logs can be redirected, e.g.:
-
-  ```bash
-  ... --port 8000 > /home/username/uvicorn.log 2>&1 &
-  ```
-
-**Limitations**
-
-* Runs only on interactive login (`tty1`), not at boot.
-* No supervision or automatic restarts.
-* Not suitable for long-term or production use.
-
-For a stable setup, use `systemd`.
+For a clean, reliable startup, use **systemd** instead.
 
 ---
 
-## `systemd` Method (Recommended)
+## 🛠️ `systemd` Method (Recommended)
 
-`systemd` automatically runs your services at boot, restarts them if they fail, and provides full control via `systemctl`.
+`systemd` starts your services automatically at boot, restarts them on failure, and provides full control through `systemctl`.
 
-You’ll create two units:
+You’ll create two service units:
 
 * **led-backend.service** — runs the FastAPI backend
-* **led-frontend.service** — serves the frontend
+* **led-frontend.service** — serves the static frontend
 
 ---
 
-### Frontend Service
+### 🌐 Frontend Service
 
 Create the file:
 
@@ -104,7 +104,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now led-frontend.service
 ```
 
-Check status:
+Check status and logs:
 
 ```bash
 sudo systemctl status led-frontend.service
@@ -113,9 +113,9 @@ sudo journalctl -u led-frontend.service -f
 
 ---
 
-### Backend Service
+### 🧠 Backend Service
 
-Create:
+Create the file:
 
 ```bash
 sudo nano /etc/systemd/system/led-backend.service
@@ -151,36 +151,42 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now led-backend.service
 ```
 
-Check status:
+Check status and logs:
 
 ```bash
 sudo systemctl status led-backend.service
 sudo journalctl -u led-backend.service -f
 ```
 
----
 
-## Service Management Commands
-
-| Action                        | Command                                                                                       |
-| ----------------------------- | --------------------------------------------------------------------------------------------- |
-| **Start**                     | ```bash sudo systemctl start led-backend.service`<br>`sudo systemctl start led-frontend.service```     |
-| **Stop**                      | `sudo systemctl stop led-backend.service`<br>`sudo systemctl stop led-frontend.service`       |
-| **Restart**                   | `sudo systemctl restart led-backend.service`<br>`sudo systemctl restart led-frontend.service` |
-| **Status**                    | `sudo systemctl status led-backend.service`<br>`sudo systemctl status led-frontend.service`   |
-| **Disable (stop auto-start)** | `sudo systemctl disable --now led-backend.service led-frontend.service`                       |
+> ⚠️ **Remember:** Replace `User=student` and folder names with your actual paths before saving the unit files.
 
 ---
 
-## Notes
+## ⚙️ Service Management Commands
 
-* Both services will run automatically at every boot — no manual login needed.
-* Use `journalctl -u <service>` for logs.
-* If a service fails to start, check the `WorkingDirectory` and `ExecStart` paths.
-* For production, keep the frontend on port `5501` and use a reverse proxy (e.g. Nginx or Caddy) to map it to port `80`.
+Use these to control both services:
+
+| Action                           | Copy Command                                                                                            |
+| :------------------------------- | :------------------------------------------------------------------------------------------------------ |
+| ▶️ **Start**                     | `bash<br>sudo systemctl start led-backend.service<br>sudo systemctl start led-frontend.service<br>`     |
+| ⏹️ **Stop**                      | `bash<br>sudo systemctl stop led-backend.service<br>sudo systemctl stop led-frontend.service<br>`       |
+| 🔁 **Restart**                   | `bash<br>sudo systemctl restart led-backend.service<br>sudo systemctl restart led-frontend.service<br>` |
+| 🧾 **Status**                    | `bash<br>sudo systemctl status led-backend.service<br>sudo systemctl status led-frontend.service<br>`   |
+| 🚫 **Disable (Stop auto-start)** | `bash<br>sudo systemctl disable --now led-backend.service led-frontend.service<br>`                     |
+
 
 ---
 
+## 📝 Summary
 
+* `.bashrc` is fine for testing — **not reliable** for boot-level startup.
+* `systemd` is the proper way to:
 
+  * Auto-run at boot
+  * Auto-restart on failure
+  * Manage via `systemctl`
+  * View logs with `journalctl`
+* Once configured, your **backend** and **frontend** will both launch automatically every time your Raspberry Pi starts, no manual steps needed.
 
+---
