@@ -1,11 +1,36 @@
-sudo apt-get install avahi-daemon 
-host-name=LED-Color-Controller
-domain-name=local
-sudo systemctl restart avahi-daemon
-LED-Color-Controller.local
-ping LED-Color-Controller.local
+My Project: Smart LED Control via Local Network
 
+I created a smart and interactive project that connects both programming and hardware. It’s a full web-based system that lets anyone on the same Wi-Fi network control an LED strip connected to my device.
 
+💡 What does it do?
 
-sudo apt update
-sudo apt install rustdesk    
+The website I built lets users open a page and fully control the LED strip. It includes:
+	•	🎨 A color picker to choose any custom color.
+	•	🟦🟥🟩 Pre-set color buttons for quick access.
+	•	🌈 Ready-made animations like rainbow effects, waves, or strobes.
+	•	🔧 Custom animations where the user selects their own colors and the lights animate between them.
+
+All of this works from any phone or computer browser on the same network — no app needed!
+
+⸻
+
+👨‍🏫 How did I do it?
+
+To be honest, this project was not easy — especially since I’m just 16 years old and still learning.
+But I had the passion to figure things out by myself.
+
+And guess what?
+My teacher let me borrow equipment and a laptop from the school, even though it’s not normally allowed.
+Not because he’s a “nice guy” — but because he trusted me, saw I’m responsible, and believed in my potential.
+
+He even gave me some books to study programming on my own.
+When he saw the finished project working, he was surprised and told me:
+
+“I can’t believe you built something like this all by yourself at 16!”
+
+⸻
+
+So yeah, this project wasn’t just about lights —
+It was about learning, earning trust, and proving what I can do when someone believes in me.
+
+You can try the system yourself and change the LED lights from your own device if you’re on the same network! 
