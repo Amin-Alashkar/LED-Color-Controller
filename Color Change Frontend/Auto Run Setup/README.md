@@ -1,99 +1,81 @@
 # Auto Run Setup
 
-This folder explains how to automatically start both the backend (FastAPI + Uvicorn) and the frontend (static files served with `http-server`) for this project.
+This folder explains how to automatically start both the **backend (FastAPI + Uvicorn)** and **frontend (static files served via `http-server`)** on your Raspberry Pi.
 
 ---
 
-## .bashrc (quick / temporary method)
+## `.bashrc` Method (Quick & Temporary)
 
-You can use `~/.bashrc` to auto-start processes when you log in to the Pi on `tty1`.
-Open the file in a terminal:
+To quickly auto-start the project when logging into `tty1`, edit your `~/.bashrc`:
 
 ```bash
 nano ~/.bashrc
 ```
 
-Scroll to the end and add the block below (example):
+Add this block at the end:
 
 ```bash
 if [ "$(tty)" = "/dev/tty1" ]; then
   export PYTHONIOENCODING=utf-8
 
-  # backend: activate venv and start uvicorn
+  # backend
   cd /home/username/project_folder
   source .venv/bin/activate
   /home/username/project_folder/.venv/bin/python -m uvicorn server:app --host 0.0.0.0 --port 8000 &
 
   sleep 2
 
-  # frontend: change to frontend folder and start http-server
+  # frontend
   cd "/home/username/project_folder/frontend_folder"
   /usr/local/bin/http-server -c-1 -p 5501 &
 fi
-
 ```
 
-Note:
+**Notes**
 
-Replace username and folder names (project_folder, frontend_folder) with your actual paths.
-
-You can find your correct home directory with `echo $HOME`
-
-
-Use quotes around folder names that contain spaces.
-
-Save and exit (`Ctrl+O`, `Enter`, `Ctrl+X`).
-Now, every time the Raspberry Pi starts, both the backend server and the frontend website will automatically run without any manual login or commands.
-
-### What to add / notes for `.bashrc`
-
-* Use absolute paths for everything (no relative paths). That prevents surprises when running from different locations.
-* Prefer calling the venv `python` directly (as shown) instead of `source` + calling bare `uvicorn`, because `systemd` will not run `.bashrc`. Still the example above uses `source` to show intent.
-* Add logging redirection if you want to capture stdout/stderr:
+* Replace `username` and folder names with your actual paths.
+* Use quotes if the folder name contains spaces.
+* Get your home path with:
 
   ```bash
-  /home/username/project_folder/.venv/bin/python -m uvicorn server:app --host 0.0.0.0 --port 8000 > /home/username/uvicorn.log 2>&1 &
-  /usr/local/bin/http-server -c-1 -p 5501 > /home/username/http-server.log 2>&1 &
+  echo $HOME
   ```
-* If your folder names contain spaces, either escape them (`Color\ Change\ Frontend`) or wrap the path in quotes as shown.
-* This method is OK for quick testing or experiments, but it is not recommended for a reliable production-like setup.
+* Logs can be redirected, e.g.:
 
-### Why `.bashrc` is not practical / recommended
+  ```bash
+  ... --port 8000 > /home/username/uvicorn.log 2>&1 &
+  ```
 
-* It only runs when a user logs in interactively (tty1), not automatically at boot.
-* No built-in supervision: if a process crashes it will not be automatically restarted.
-* Hard to manage: no easy `status`/`restart` commands, no centralized logs.
-* Running services from `~/.bashrc` can lead to duplicate processes, orphaned background jobs, and messy troubleshooting.
+**Limitations**
 
-For a stable, maintainable setup use `systemd` (instructions below).
+* Runs only on interactive login (`tty1`), not at boot.
+* No supervision or automatic restarts.
+* Not suitable for long-term or production use.
 
----
-
-## systemd (recommended)
-
-`systemd` is the init/system manager on most Linux distributions. It is the correct tool to run and manage long-lived services because it:
-
-* starts services at boot (before any user logs in),
-* restarts them on failure,
-* provides centralized logs via `journalctl`,
-* lets you `start`, `stop`, `restart`, `enable`, and check `status` for each service.
-
-You will create two service units:
-
-* `led-frontend.service` — serves the frontend
-* `led-backend.service` — runs the backend
+For a stable setup, use `systemd`.
 
 ---
 
-### Frontend service: `led-frontend.service`
+## `systemd` Method (Recommended)
 
-Open a new unit file:
+`systemd` automatically runs your services at boot, restarts them if they fail, and provides full control via `systemctl`.
+
+You’ll create two units:
+
+* **led-backend.service** — runs the FastAPI backend
+* **led-frontend.service** — serves the frontend
+
+---
+
+### Frontend Service
+
+Create the file:
 
 ```bash
 sudo nano /etc/systemd/system/led-frontend.service
 ```
 
-Paste this content (edit the paths if different on your system):
+Paste:
 
 ```ini
 [Unit]
@@ -115,20 +97,14 @@ StandardError=journal
 WantedBy=multi-user.target
 ```
 
-Notes:
-
-* If your path contains spaces you can escape them (`\ `) as shown, or rename the folder to remove spaces.
-* `ExecStart` uses the full path to `http-server`. Confirm with `which http-server` or `ls /usr/local/bin/http-server`.
-* `-c-1` disables caching (useful while developing).
-
-Enable and start the service:
+Then run:
 
 ```bash
 sudo systemctl daemon-reload
 sudo systemctl enable --now led-frontend.service
 ```
 
-Check status and logs:
+Check status:
 
 ```bash
 sudo systemctl status led-frontend.service
@@ -137,15 +113,15 @@ sudo journalctl -u led-frontend.service -f
 
 ---
 
-### Backend service: `led-backend.service`
+### Backend Service
 
-Open a new unit file:
+Create:
 
 ```bash
 sudo nano /etc/systemd/system/led-backend.service
 ```
 
-Paste this content (edit paths as needed):
+Paste:
 
 ```ini
 [Unit]
@@ -175,7 +151,7 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now led-backend.service
 ```
 
-Check status and logs:
+Check status:
 
 ```bash
 sudo systemctl status led-backend.service
@@ -184,17 +160,15 @@ sudo journalctl -u led-backend.service -f
 
 ---
 
-## Extra tips
+## Service Management Commands
 
-* If a unit fails with `CHDIR` or similar, check `WorkingDirectory` path carefully. Use `ls /path/to/dir` to validate.
-* If `http://<pi-ip>:5501/` is unreachable, verify the frontend service is `active (running)` and that no firewall blocks the port (`sudo ufw status`).
-* For production-style setup and to serve the frontend on port 80 (so users don’t need to type a port), keep `http-server` on 5501 and use a reverse proxy like `nginx` or `caddy` to forward `:80` → `127.0.0.1:5501`.
-* To stop auto-start and remove the enabled state:
-
-  ```bash
-  sudo systemctl disable --now led-backend.service led-frontend.service
-  ```
-* To manually test the commands before creating service units, run them in a shell from the correct directories (this helps spot path issues).
+| Action                        | Command                                                                                       |
+| ----------------------------- | --------------------------------------------------------------------------------------------- |
+| **Start**                     | `sudo systemctl start led-backend.service`<br>`sudo systemctl start led-frontend.service`     |
+| **Stop**                      | `sudo systemctl stop led-backend.service`<br>`sudo systemctl stop led-frontend.service`       |
+| **Restart**                   | `sudo systemctl restart led-backend.service`<br>`sudo systemctl restart led-frontend.service` |
+| **Status**                    | `sudo systemctl status led-backend.service`<br>`sudo systemctl status led-frontend.service`   |
+| **Disable (stop auto-start)** | `sudo systemctl disable --now led-backend.service led-frontend.service`                       |
 
 ---
 
@@ -246,17 +220,15 @@ sudo systemctl status backend.service
 sudo systemctl status frontend.service
 ```
 
-Every time your Raspberry Pi boots up, both the **server** and **website** will automatically run, no need to log in or start them manually.
+## Notes
 
-
+* Both services will run automatically at every boot — no manual login needed.
+* Use `journalctl -u <service>` for logs.
+* If a service fails to start, check the `WorkingDirectory` and `ExecStart` paths.
+* For production, keep the frontend on port `5501` and use a reverse proxy (e.g. Nginx or Caddy) to map it to port `80`.
 
 ---
 
-## Summary 
-* Temporary `.bashrc` auto-start was used initially for quick testing.
-* Replaced with proper `systemd` services to:
 
-  * run at boot without interactive login
-  * auto-restart on failure
-  * centralize logs via `journalctl`
-  * manage service lifecycle with `systemctl` commands
+
+
