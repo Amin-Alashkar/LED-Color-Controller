@@ -165,16 +165,6 @@ sudo journalctl -u led-backend.service -f
 
 ## ⚙️ Service Management Commands
 
-| Action                           | Command                                                                                             |
-| -------------------------------- | --------------------------------------------------------------------------------------------------- |
-| ▶️ **Start**                     | bash sudo systemctl start led-backend.service<br>sudo systemctl start led-frontend.service```     |
-| ⏹️ **Stop**                      | `bash<br>`       |
-| 🔁 **Restart**                   | `bash<br>` |
-| 🧾 **Status**                    | `bash<br>`   |
-| 🚫 **Disable (Stop auto-start)** | `bash<br>`                     |
-
-
-
 
 #### ▶️ **Start**
 
