@@ -1550,6 +1550,71 @@ colorPicker.addEventListener("input", e => {
     changeColor(e.target.value);
 });
 
+// === Color picker: local preview + debounced server update ===
+(() => {
+  const DEBOUNCE_MS = 700; // وقت الانتظار بعد آخر حركة قبل الإرسال
+  let colorDebounceTimer = null;
+  let lastSentColor = null;
+
+  // Preview local UI immediately while user drags
+  function previewColor(hex) {
+    // فقط تحديث الواجهة المحلية — لا نرسل للسيرفر هنا
+    updateUI(hex);
+  }
+
+  // Called when we decide user "stopped" — do the real send
+  async function commitColor(hex) {
+    if (!hex) return;
+    // تجنّب الإعادة لو نفس اللون كان مرسل من قبل
+    if (lastSentColor === hex) return;
+    lastSentColor = hex;
+    // changeColor يوقّف الأنيميشن لو شغّال ثم يرسل POST /color
+    await changeColor(hex);
+  }
+
+  // on input: preview + restart debounce
+  colorPicker.addEventListener('input', (e) => {
+    const hex = e.target.value;
+    previewColor(hex);
+
+    if (colorDebounceTimer) clearTimeout(colorDebounceTimer);
+    colorDebounceTimer = setTimeout(() => {
+      commitColor(hex);
+      colorDebounceTimer = null;
+    }, DEBOUNCE_MS);
+  });
+
+  // on change (some browsers fire this at end) -> commit immediately
+  colorPicker.addEventListener('change', (e) => {
+    const hex = e.target.value;
+    if (colorDebounceTimer) {
+      clearTimeout(colorDebounceTimer);
+      colorDebounceTimer = null;
+    }
+    commitColor(hex);
+  });
+
+  // pointerup/touchend for safety (user lifts finger) -> commit
+  colorPicker.addEventListener('pointerup', (e) => {
+    // Some browsers don't fire 'change' reliably for input[type=color]
+    const hex = colorPicker.value;
+    if (colorDebounceTimer) {
+      clearTimeout(colorDebounceTimer);
+      colorDebounceTimer = null;
+    }
+    commitColor(hex);
+  }, { passive: true });
+
+  // optional: if user navigates away, clear timer
+  window.addEventListener('beforeunload', () => {
+    if (colorDebounceTimer) {
+      clearTimeout(colorDebounceTimer);
+      colorDebounceTimer = null;
+    }
+  });
+})();
+
+
 // عند تحميل الصفحة أول مرة
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchAndApplyState();
@@ -1979,7 +2044,7 @@ evtSource.onmessage = e => {
 // تكويد النجوم المتوهجة
 document.addEventListener("DOMContentLoaded", function () {
     const starsContainer = document.querySelector(".stars-container");
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 7; i++) {
         let star = document.createElement("div");
         star.classList.add("star");
         star.innerHTML = "⋆";
