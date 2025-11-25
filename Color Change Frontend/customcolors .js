@@ -2,14 +2,13 @@
 
 // بيانات التلميحات لأزرار الألوان
 const colorTooltipData = {
-    'redBtn': { title: 'Red Color', color: '#ff0000' },
-    'blueBtn': { title: 'Blue Color', color: '#0000ff' },
-    'greenBtn': { title: 'Green Color', color: '#00ff00' },
-    'orangeBtn': { title: 'Orange Color', color: '#FFA500' },
-    'yellowBtn': { title: 'Yellow Color', color: '#FFFF00' },
-    'purpleBtn': { title: 'Purple Color', color: '#A020F0' },
-    'whiteBtn': { title: 'White Color', color: '#FFFFFF' },
-    'offBtn': { title: 'Turn Off', color: '#000000' }
+    'redBtn': { title: 'Red Color'},
+    'blueBtn': { title: 'Blue Color'},
+    'greenBtn': { title: 'Green Color'},
+    'orangeBtn': { title: 'Orange Color'},
+    'yellowBtn': { title: 'Yellow Color'},
+    'purpleBtn': { title: 'Purple Color'},
+    'whiteBtn': { title: 'White Color'}
 };
 
 // متغيرات عالمية
