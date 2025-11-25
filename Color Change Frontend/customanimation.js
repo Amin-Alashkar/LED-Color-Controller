@@ -5,57 +5,68 @@ const animationTooltipData = {
     'lightOneBtn': { 
         title: 'Fade Colors', 
         // description: 'Smooth color transitions between multiple colors',
-        animationType: 'fade_colors'
+        animationType: 'fade_colors',
+        startFunction: 'startFadeAnimation'
     },
     'WaveEffectBtn': { 
         title: 'Wave Effect', 
         // description: 'Color wave moving through the LED strip',
-        animationType: 'wave_effect'
+        animationType: 'wave_effect',
+        startFunction: 'startWaveAnimation'
     },
     'RainbowFlowBtn': { 
         title: 'Rainbow Flow', 
         // description: 'Continuous rainbow color cycling',
-        animationType: 'rainbow_flow'
+        animationType: 'rainbow_flow',
+        startFunction: 'startRainbowAnimation'
     },
     'BlinkingPatternBtn': { 
         title: 'Blinking Pattern', 
         // description: 'Random color blinking pattern',
-        animationType: 'blinking_pattern'
+        animationType: 'blinking_pattern',
+        startFunction: 'startBlinkingPattern'
     },
     'RunningLightsBtn': { 
         title: 'Running Lights', 
         // description: 'Multiple lights running across the strip',
-        animationType: 'running_lights'
+        animationType: 'running_lights',
+        startFunction: 'startRunningLights'
     },
     'BreathingEffectBtn': { 
         title: 'Breathing Effect', 
         // description: 'Gentle breathing effect with color transitions',
-        animationType: 'breathing_effect'
+        animationType: 'breathing_effect',
+        startFunction: 'startBreathingAnimation'
     },
     'MeteorShowerBtn': { 
         title: 'Meteor Shower', 
         // description: 'Multiple colored snakes chasing each other',
-        animationType: 'meteor_shower'
+        animationType: 'meteor_shower',
+        startFunction: 'startSnakesChasing'
     },
     'RandomColorsBtn': { 
         title: 'Random Colors', 
         // description: 'Random color snakes with varying lengths',
-        animationType: 'random_colors'
+        animationType: 'random_colors',
+        startFunction: 'startRandomColors'
     },
     'PulseSyncBtn': { 
         title: 'Pulse Sync', 
         // description: 'Synchronized pulsing with random colors',
-        animationType: 'pulse_sync'
+        animationType: 'pulse_sync',
+        startFunction: 'startPulseSyncAnimation'
     },
     'FireworksBurstBtn': { 
         title: 'Fireworks Burst', 
         // description: 'Fireworks simulation with launch and explosion',
-        animationType: 'fireworks_burst'
+        animationType: 'fireworks_burst',
+        startFunction: 'startFireworksBurst'
     },
     'MeteorShowerNewBtn': { 
         title: 'Meteor Shower (Single)', 
         // description: 'Single meteor shower with smooth movement',
-        animationType: 'single_snake'
+        animationType: 'single_snake',
+        startFunction: 'startSingleSnake'
     }
 };
 
@@ -63,6 +74,7 @@ const animationTooltipData = {
 let currentAnimationTooltip = null;
 let currentAnimationBrightness = 25;
 let currentAnimationButton = null;
+let isApplyingBrightness = false;
 
 // دالة لتحميل سطوع الأنيميشن من localStorage
 function loadAnimationBrightnessFromStorage() {
@@ -114,7 +126,7 @@ function createAnimationTooltip() {
                 <div class="animation-brightness-slider-container">
                     <input type="range" min="1" max="100" value="${currentAnimationBrightness}" class="animation-brightness-slider" id="animationBrightnessSlider">
                 </div>
-                <button class="animation-apply-btn" id="applyAnimationBrightness">Apply & Start</button>
+                <button class="animation-apply-btn" id="applyAnimationBrightness">Apply Brightness</button>
             </div>
         </div>
         <div class="tooltip-arrow"></div>
@@ -179,11 +191,8 @@ function setupAnimationEventListeners() {
                 }
             });
 
-            // click على الزر - التطبيق التلقائي للسطوع والأنيميشن
-            button.addEventListener('click', (e) => {
-                console.log('Animation button clicked:', buttonId);
-                handleAnimationButtonClick(e.target, buttonId);
-            });
+            // click على الزر - نترك السلوك الأصلي يعمل
+            // لا نضيف معالج اضافي هنا لأن app.js already handles the toggle behavior
         }
     });
 
@@ -214,8 +223,9 @@ function showAnimationTooltip(button, buttonId) {
     const animationDescription = document.getElementById('animationDescription');
     const brightnessSlider = document.getElementById('animationBrightnessSlider');
     const brightnessValue = document.getElementById('animationBrightnessValue');
+    const applyBtn = document.getElementById('applyAnimationBrightness');
 
-    if (!tooltipTitle || !animationDescription || !brightnessSlider || !brightnessValue) {
+    if (!tooltipTitle || !animationDescription || !brightnessSlider || !brightnessValue || !applyBtn) {
         console.error('Animation tooltip elements not found');
         return;
     }
@@ -237,12 +247,19 @@ function showAnimationTooltip(button, buttonId) {
 
     // تعيين نوع الأنيميشن الحالي والسطوع
     currentAnimationTooltip.setAttribute('data-animation-type', buttonData.animationType);
+    currentAnimationTooltip.setAttribute('data-start-function', buttonData.startFunction);
     currentAnimationTooltip.setAttribute('data-current-brightness', currentAnimationBrightness);
     currentAnimationButton = buttonId; // حفظ الزر الحالي
 
     // تحديث شريط التمرير وعرض القيمة
     brightnessSlider.value = currentAnimationBrightness;
     brightnessValue.textContent = `${currentAnimationBrightness}%`;
+
+    // تحديث نص الزر بناءً على حالة الأنيميشن الحالية
+    const isCurrentlyRunning = button.classList.contains('active');
+    applyBtn.textContent = isCurrentlyRunning ? 
+        'Update Brightness' : 
+        'Apply Brightness & Start';
 
     // تحديث موضع الـ tooltip
     currentAnimationTooltip.style.left = `${rect.left + (rect.width / 2)}px`;
@@ -303,6 +320,8 @@ function updateAnimationBrightnessDisplay(value) {
 }
 
 async function handleApplyAnimationBrightness(e) {
+    if (isApplyingBrightness) return;
+    
     const applyBtn = e.target;
     const tooltip = document.getElementById('customAnimationTooltip');
     
@@ -312,55 +331,87 @@ async function handleApplyAnimationBrightness(e) {
     }
 
     const animationType = tooltip.getAttribute('data-animation-type');
+    const startFunction = tooltip.getAttribute('data-start-function');
     const brightness = tooltip.getAttribute('data-current-brightness');
     
-    if (!animationType) {
-        console.error('No animation type selected');
+    if (!animationType || !startFunction) {
+        console.error('No animation type or function selected');
         return;
     }
 
     console.log('Applying animation brightness:', brightness + '% to animation:', animationType);
 
-    // تعطيل الزر مؤقتاً وإخفاء الـ tooltip
+    // منع النقر المزدوج
+    isApplyingBrightness = true;
     applyBtn.disabled = true;
+    const originalText = applyBtn.textContent;
+    applyBtn.textContent = 'Applying...';
 
     try {
-        // استخدام الدالة الجديدة التي تجمع بين السطوع والأنيميشن
-        await applyAnimationBrightnessAndStart(animationType, parseInt(brightness));
+        // تحديث السطوع أولاً
+        await updateAnimationBrightness(parseInt(brightness));
+        
+        // التحقق مما إذا كانت الأنيميشن شغالة حالياً
+        const button = document.getElementById(currentAnimationButton);
+        const isCurrentlyRunning = button && button.classList.contains('active');
+        
+        if (!isCurrentlyRunning) {
+            // إذا لم تكن شغالة، نبدأ الأنيميشن
+            console.log('Starting animation since it was not running');
+            await startAnimationFunction(startFunction);
+        } else {
+            console.log('Animation is already running, only brightness updated');
+        }
         
         // إخفاء الـ tooltip بعد التطبيق الناجح
         hideAnimationTooltip();
+        
+        // إظهار تأكيد نجاح
+        applyBtn.textContent = 'Done!';
+        applyBtn.classList.add('done');
+        
     } catch (error) {
         console.error('Error applying animation brightness:', error);
-        // في حالة الخطأ، استخدم دالة الأنيميشن العادية
-        startAnimationDirectly(animationType);
+        applyBtn.textContent = 'Error!';
     }
 
-    // إعادة تمكين الزر بعد 1 ثانية
+    // إعادة تعيين الزر بعد 1 ثانية
     setTimeout(() => {
         applyBtn.disabled = false;
-        console.log('Animation apply button re-enabled');
+        applyBtn.textContent = originalText;
+        applyBtn.classList.remove('done');
+        isApplyingBrightness = false;
+        console.log('Animation apply button reset');
     }, 1000);
 }
 
-// دالة جديدة للتعامل مع النقر على أزرار الأنيميشن
-async function handleAnimationButtonClick(button, buttonId) {
-    console.log('Handling animation button click:', buttonId);
+// دالة لتحديث السطوع فقط
+async function updateAnimationBrightness(brightness) {
+    console.log(`Updating animation brightness to: ${brightness}%`);
     
-    const buttonData = animationTooltipData[buttonId];
-    if (!buttonData) {
-        console.error('No data for animation button:', buttonId);
-        return;
-    }
-
-    // استخدام الدالة الجديدة التي تجمع السطوع والأنيميشن
-    if (currentAnimationBrightness > 0) {
-        console.log(`Applying ${currentAnimationBrightness}% brightness to animation: ${buttonData.animationType}`);
-        await applyAnimationBrightnessAndStart(buttonData.animationType, currentAnimationBrightness);
+    const brightnessResult = await sendAnimationRequest("/set_brightness", { 
+        brightness: brightness / 100 
+    });
+    
+    if (brightnessResult.status === "brightness_updated") {
+        console.log("Animation brightness updated successfully");
+        return true;
     } else {
-        // إذا لم يكن هناك سطوع محدد، نستخدم الوظيفة الأصلية
-        console.log('No brightness set, using default animation behavior');
-        startAnimationDirectly(buttonData.animationType);
+        console.error("Failed to update animation brightness:", brightnessResult);
+        throw new Error("Failed to update brightness");
+    }
+}
+
+// دالة مساعدة لاستدعاء دوال الأنيميشن من app.js
+async function startAnimationFunction(functionName) {
+    console.log("Starting animation function:", functionName);
+    
+    if (typeof window[functionName] === 'function') {
+        await window[functionName]();
+        console.log("Animation function executed successfully");
+    } else {
+        console.error("Animation function not found:", functionName);
+        throw new Error(`Animation function ${functionName} not found`);
     }
 }
 
@@ -375,77 +426,6 @@ function generateRandomAnimationColors() {
         `hsl(${hue2}, 100%, 60%)`,
         `hsl(${hue3}, 100%, 60%)`
     ];
-}
-
-// دالة جديدة تجمع بين تعديل السطوع وتشغيل الأنيميشن
-async function applyAnimationBrightnessAndStart(animationType, brightness) {
-    console.log(`Applying ${brightness}% brightness to animation: ${animationType}`);
-    
-    try {
-        // أولاً تحديث السطوع في الـ backend
-        const brightnessResult = await sendAnimationRequest("/set_brightness", { 
-            brightness: brightness / 100 
-        });
-        
-        if (brightnessResult.status === "brightness_updated") {
-            console.log("Animation brightness updated successfully");
-            // ثم تشغيل الأنيميشن
-            await startAnimationDirectly(animationType);
-        } else {
-            console.error("Failed to update animation brightness:", brightnessResult);
-            // إذا فشل تحديث السطوع، شغل الأنيميشن فقط
-            await startAnimationDirectly(animationType);
-        }
-    } catch (error) {
-        console.error("Animation API Error:", error);
-        // في حالة الخطأ، شغل الأنيميشن فقط
-        await startAnimationDirectly(animationType);
-        throw error;
-    }
-}
-
-// دالة مساعدة لتشغيل الأنيميشن مباشرة
-async function startAnimationDirectly(animationType) {
-    console.log("Starting animation:", animationType);
-    
-    // استدعاء الدوال الموجودة في app.js حسب نوع الأنيميشن
-    switch (animationType) {
-        case 'fade_colors':
-            await startFadeAnimation();
-            break;
-        case 'wave_effect':
-            await startWaveAnimation();
-            break;
-        case 'rainbow_flow':
-            await startRainbowAnimation();
-            break;
-        case 'blinking_pattern':
-            await startBlinkingPattern();
-            break;
-        case 'running_lights':
-            await startRunningLights();
-            break;
-        case 'breathing_effect':
-            await startBreathingAnimation();
-            break;
-        case 'meteor_shower':
-            await startSnakesChasing();
-            break;
-        case 'random_colors':
-            await startRandomColors();
-            break;
-        case 'pulse_sync':
-            await startPulseSyncAnimation();
-            break;
-        case 'fireworks_burst':
-            await startFireworksBurst();
-            break;
-        case 'single_snake':
-            await startSingleSnake();
-            break;
-        default:
-            console.error('Unknown animation type:', animationType);
-    }
 }
 
 // دالة مساعدة لإرسال طلبات الأنيميشن
