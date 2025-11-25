@@ -2,14 +2,13 @@
 
 // بيانات التلميحات لأزرار الألوان
 const colorTooltipData = {
-    'redBtn': { title: 'Red Color'},
-    'blueBtn': { title: 'Blue Color'},
-    'greenBtn': { title: 'Green Color'},
-    'orangeBtn': { title: 'Orange Color'},
-    'yellowBtn': { title: 'Yellow Color'},
-    'purpleBtn': { title: 'Purple Color'},
-    'whiteBtn': { title: 'White Color'}
-
+    'redBtn': { title: 'Red Color', color: '#ff0000' },
+    'blueBtn': { title: 'Blue Color', color: '#0000ff' },
+    'greenBtn': { title: 'Green Color', color: '#00ff00' },
+    'orangeBtn': { title: 'Orange Color', color: '#FFA500' },
+    'yellowBtn': { title: 'Yellow Color', color: '#FFFF00' },
+    'purpleBtn': { title: 'Purple Color', color: '#A020F0' },
+    'whiteBtn': { title: 'White Color', color: '#FFFFFF' }
 };
 
 // متغيرات عالمية
@@ -58,7 +57,6 @@ function createTooltip() {
     tooltip.innerHTML = `
         <div class="tooltip-content">
             <h3 id="customColorTooltipTitle">Color Name</h3>
-            <div class="color-hex" id="customColorHex">#FFFFFF</div>
             <div class="brightness-controls">
                 <div class="brightness-title">Set Brightness:</div>
                 <div class="brightness-display">
@@ -164,11 +162,10 @@ function showTooltip(button, buttonId) {
 
     const rect = button.getBoundingClientRect();
     const tooltipTitle = document.getElementById('customColorTooltipTitle');
-    const tooltipHex = document.getElementById('customColorHex');
     const brightnessSlider = document.getElementById('brightnessSlider');
     const brightnessValue = document.getElementById('brightnessValue');
 
-    if (!tooltipTitle || !tooltipHex || !brightnessSlider || !brightnessValue) {
+    if (!tooltipTitle || !brightnessSlider || !brightnessValue) {
         console.error('Tooltip elements not found');
         return;
     }
@@ -180,7 +177,6 @@ function showTooltip(button, buttonId) {
     }
 
     tooltipTitle.textContent = buttonData.title || '';
-    tooltipHex.textContent = buttonData.color || '';
 
     // توليد ألوان عشوائية جديدة
     const [color1, color2, color3] = generateRandomColors();
@@ -384,70 +380,6 @@ async function sendRequest(endpoint, data) {
             message: e.message,
             endpoint: endpoint
         };
-    }
-}
-
-// استدعاء الدالة عند تحميل الصفحة
-document.addEventListener('DOMContentLoaded', initColorTooltips);
-
-// دالة لتوليد ألوان عشوائية زاهية 
-function generateRandomColors() {
-    const hue1 = Math.floor(Math.random() * 360);
-    const hue2 = (hue1 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
-    const hue3 = (hue2 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
-
-    return [
-        `hsl(${hue1}, 100%, 60%)`,
-        `hsl(${hue2}, 100%, 60%)`,
-        `hsl(${hue3}, 100%, 60%)`
-    ];
-}
-
-// دالة لتطبيق السطوع على اللون (إرسال طلبات API)
-async function applyBrightnessToColor(color, brightness) {
-    console.log(`Applying ${brightness}% brightness to color: ${color}`);
-    
-    try {
-        // أولاً: تحديث السطوع في الـ backend
-        const brightnessResult = await sendRequest("/set_brightness", { 
-            brightness: brightness / 100 
-        });
-        
-        if (brightnessResult.status === "brightness_updated") {
-            console.log("Brightness updated successfully");
-            
-            // ثانياً: تطبيق اللون مع السطوع الجديد
-            const colorResult = await sendRequest("/color", { 
-                hex_color: color 
-            });
-            
-            if (colorResult.status === "color_changed") {
-                console.log("Color applied with new brightness");
-            } else {
-                console.error("Failed to apply color:", colorResult);
-            }
-        } else {
-            console.error("Failed to update brightness:", brightnessResult);
-        }
-    } catch (error) {
-        console.error("API Error:", error);
-        throw error;
-    }
-}
-
-// دالة مساعدة لإرسال الطلبات
-async function sendRequest(endpoint, data) {
-    const API_BASE_URL = `http://${window.location.hostname}:8000`;
-    try {
-        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data)
-        });
-        return await res.json();
-    } catch (e) {
-        console.error("API Error:", e);
-        return { status: "error", message: e.message };
     }
 }
 
