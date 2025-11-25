@@ -9,12 +9,13 @@ const colorTooltipData = {
     'yellowBtn': { title: 'Yellow Color'},
     'purpleBtn': { title: 'Purple Color'},
     'whiteBtn': { title: 'White Color'}
+
 };
 
 // متغيرات عالمية
 let currentTooltip = null;
-let currentBrightness = 25; // القيمة الافتراضية
-let currentColorButton = null; // لتتبع الزر الحالي
+let currentBrightness = 25;
+let currentColorButton = null;
 
 // دالة لتحميل السطوع من localStorage
 function loadBrightnessFromStorage() {
@@ -277,13 +278,15 @@ async function handleApplyBrightness(e) {
     applyBtn.disabled = true;
 
     try {
-        // إرسال طلبات إلى الـ API
-        await applyBrightnessToColor(currentColor, parseInt(brightness));
+        // استخدام الدالة الجديدة التي تجمع بين السطوع واللون
+        await applyBrightnessAndColor(currentColor, parseInt(brightness));
         
         // إخفاء الـ tooltip بعد التطبيق الناجح
         hideTooltip();
     } catch (error) {
         console.error('Error applying brightness:', error);
+        // في حالة الخطأ، استخدم دالة changeColor العادية
+        changeColor(currentColor);
     }
 
     // إعادة تمكين الزر بعد 1 ثانية
@@ -303,22 +306,89 @@ async function handleColorButtonClick(button, buttonId) {
         return;
     }
 
-    // إذا كان هناك سطوع محدد، نطبقه مع اللون
+    // استخدام الدالة الجديدة التي تجمع السطوع واللون
     if (currentBrightness > 0) {
         console.log(`Applying ${currentBrightness}% brightness to color: ${buttonData.color}`);
-        
-        try {
-            await applyBrightnessToColor(buttonData.color, currentBrightness);
-            console.log('Brightness applied automatically');
-        } catch (error) {
-            console.error('Error applying brightness automatically:', error);
-        }
+        await applyBrightnessAndColor(buttonData.color, currentBrightness);
     } else {
         // إذا لم يكن هناك سطوع محدد، نستخدم الوظيفة الأصلية
         console.log('No brightness set, using default behavior');
         changeColor(buttonData.color);
     }
 }
+
+// دالة لتوليد ألوان عشوائية زاهية 
+function generateRandomColors() {
+    const hue1 = Math.floor(Math.random() * 360);
+    const hue2 = (hue1 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
+    const hue3 = (hue2 + 120 + Math.floor(Math.random() * 60) - 30) % 360;
+
+    return [
+        `hsl(${hue1}, 100%, 60%)`,
+        `hsl(${hue2}, 100%, 60%)`,
+        `hsl(${hue3}, 100%, 60%)`
+    ];
+}
+
+// دالة جديدة تجمع بين تعديل السطوع وتطبيق اللون
+async function applyBrightnessAndColor(color, brightness) {
+    console.log(`Applying ${brightness}% brightness to color: ${color}`);
+    
+    try {
+        // أولاً تحديث السطوع في الـ backend
+        const brightnessResult = await sendRequest("/set_brightness", { 
+            brightness: brightness / 100 
+        });
+        
+        if (brightnessResult.status === "brightness_updated") {
+            console.log("Brightness updated successfully");
+            // ثم تطبيق اللون باستخدام الدالة الموجودة في app.js
+            await changeColor(color);
+        } else {
+            console.error("Failed to update brightness:", brightnessResult);
+            // إذا فشل تحديث السطوع، طبق اللون فقط
+            await changeColor(color);
+        }
+    } catch (error) {
+        console.error("API Error:", error);
+        // في حالة الخطأ، طبق اللون فقط
+        await changeColor(color);
+        throw error;
+    }
+}
+
+// دالة مساعدة لإرسال الطلبات مع معالجة CORS
+async function sendRequest(endpoint, data) {
+    const API_BASE_URL = `http://${window.location.hostname}:8000`;
+    try {
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(data),
+            mode: 'cors'
+        });
+        
+        if (!res.ok) {
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        return await res.json();
+    } catch (e) {
+        console.error("API Error:", e);
+        // بدلاً من رمي خطأ، نعيد كائن خطأ
+        return { 
+            status: "error", 
+            message: e.message,
+            endpoint: endpoint
+        };
+    }
+}
+
+// استدعاء الدالة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', initColorTooltips);
 
 // دالة لتوليد ألوان عشوائية زاهية 
 function generateRandomColors() {
