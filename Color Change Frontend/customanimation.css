@@ -44,6 +44,7 @@
     line-height: 1.4;
 }
 
+
 .custom-animation-tooltip .tooltip-arrow {
     position: absolute;
     width: 12px;
@@ -89,7 +90,6 @@
     }
 }
 
-/* أنماط عناصر التحكم في السطوع للأنيميشن */
 .animation-brightness-controls {
     margin: 15px 0;
 }
@@ -101,6 +101,7 @@
     text-align: center;
 }
 
+
 .animation-brightness-display {
     display: flex;
     align-items: center;
@@ -109,6 +110,7 @@
     margin-bottom: 15px;
 }
 
+
 .animation-brightness-value {
     font-size: 1.1rem;
     color: var(--random-color-1, #4e44ce);
@@ -116,6 +118,7 @@
     min-width: 40px;
     text-align: center;
 }
+
 
 .animation-brightness-slider-container {
     width: 100%;
