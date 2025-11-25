@@ -159,7 +159,7 @@
 }
 
 .apply-btn {
-    width: 100%;
+    width: 90%;
     padding: 12px;
     background: var(--random-color-1, #4e44ce);
     color: white;
