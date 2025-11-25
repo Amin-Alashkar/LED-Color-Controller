@@ -14,11 +14,30 @@ const colorTooltipData = {
 
 // متغيرات عالمية
 let currentTooltip = null;
-let currentBrightness = 25;
+let currentBrightness = 25; // القيمة الافتراضية
+let currentColorButton = null; // لتتبع الزر الحالي
+
+// دالة لتحميل السطوع من localStorage
+function loadBrightnessFromStorage() {
+    const savedBrightness = localStorage.getItem('ledBrightness');
+    if (savedBrightness !== null) {
+        currentBrightness = parseInt(savedBrightness);
+        console.log('Loaded brightness from storage:', currentBrightness);
+    }
+}
+
+// دالة لحفظ السطوع في localStorage
+function saveBrightnessToStorage(brightness) {
+    localStorage.setItem('ledBrightness', brightness.toString());
+    console.log('Saved brightness to storage:', brightness);
+}
 
 // تهيئة الـ Tooltip لأزرار الألوان
 function initColorTooltips() {
     console.log('Initializing color tooltips...');
+    
+    // تحميل قيمة السطوع المحفوظة
+    loadBrightnessFromStorage();
     
     // إنشاء عنصر الـ tooltip إذا لم يكن موجوداً
     createTooltip();
@@ -43,10 +62,10 @@ function createTooltip() {
             <div class="brightness-controls">
                 <div class="brightness-title">Set Brightness:</div>
                 <div class="brightness-display">
-                    <span class="brightness-value" id="brightnessValue">25%</span>
+                    <span class="brightness-value" id="brightnessValue">${currentBrightness}%</span>
                 </div>
                 <div class="brightness-slider-container">
-                    <input type="range" min="1" max="100" value="25" class="brightness-slider" id="brightnessSlider">
+                    <input type="range" min="1" max="100" value="${currentBrightness}" class="brightness-slider" id="brightnessSlider">
                 </div>
                 <button class="apply-btn" id="applyBrightness">Apply</button>
             </div>
@@ -55,7 +74,7 @@ function createTooltip() {
     `;
     document.body.appendChild(tooltip);
     currentTooltip = tooltip;
-    console.log('Tooltip created');
+    console.log('Tooltip created with brightness:', currentBrightness);
 }
 
 function setupEventListeners() {
@@ -112,6 +131,12 @@ function setupEventListeners() {
                     hideTooltip();
                 }
             });
+
+            // click على الزر - التطبيق التلقائي للسطوع
+            button.addEventListener('click', (e) => {
+                console.log('Color button clicked:', buttonId);
+                handleColorButtonClick(e.target, buttonId);
+            });
         }
     });
 
@@ -166,6 +191,7 @@ function showTooltip(button, buttonId) {
     // تعيين اللون الحالي والسطوع
     currentTooltip.setAttribute('data-current-color', buttonData.color);
     currentTooltip.setAttribute('data-current-brightness', currentBrightness);
+    currentColorButton = buttonId; // حفظ الزر الحالي
 
     // تحديث شريط التمرير وعرض القيمة
     brightnessSlider.value = currentBrightness;
@@ -177,7 +203,7 @@ function showTooltip(button, buttonId) {
     currentTooltip.style.transform = 'translate(-50%, -100%)';
 
     currentTooltip.classList.add('show');
-    console.log('Tooltip shown');
+    console.log('Tooltip shown with brightness:', currentBrightness);
 }
 
 function hideTooltip() {
@@ -201,6 +227,9 @@ function handleWheelBrightness(e, slider) {
         currentTooltip.setAttribute('data-current-brightness', newValue);
     }
     
+    // حفظ السطوع الجديد في localStorage
+    saveBrightnessToStorage(newValue);
+    
     console.log('Brightness changed to:', newValue + '%');
 }
 
@@ -212,6 +241,9 @@ function handleSliderChange(e) {
     if (currentTooltip) {
         currentTooltip.setAttribute('data-current-brightness', newValue);
     }
+    
+    // حفظ السطوع الجديد في localStorage
+    saveBrightnessToStorage(newValue);
     
     console.log('Brightness slider changed to:', newValue + '%');
 }
@@ -242,28 +274,51 @@ async function handleApplyBrightness(e) {
 
     console.log('Applying brightness:', brightness + '% to color:', currentColor);
 
-    // تغيير نص الزر إلى "Done!" وتغيير اللون
-    const originalText = applyBtn.textContent;
-    applyBtn.textContent = 'Done!';
-    applyBtn.classList.add('done');
-    
-    // تعطيل الزر مؤقتاً
+    // تعطيل الزر مؤقتاً وإخفاء الـ tooltip
     applyBtn.disabled = true;
 
     try {
         // إرسال طلبات إلى الـ API
         await applyBrightnessToColor(currentColor, parseInt(brightness));
+        
+        // إخفاء الـ tooltip بعد التطبيق الناجح
+        hideTooltip();
     } catch (error) {
         console.error('Error applying brightness:', error);
     }
 
-    // إعادة الزر إلى حالته الأصلية بعد 3 ثوان
+    // إعادة تمكين الزر بعد 1 ثانية
     setTimeout(() => {
-        applyBtn.textContent = originalText;
-        applyBtn.classList.remove('done');
         applyBtn.disabled = false;
-        console.log('Apply button reset');
-    }, 3000);
+        console.log('Apply button re-enabled');
+    }, 1000);
+}
+
+// دالة جديدة للتعامل مع النقر على أزرار الألوان
+async function handleColorButtonClick(button, buttonId) {
+    console.log('Handling color button click:', buttonId);
+    
+    const buttonData = colorTooltipData[buttonId];
+    if (!buttonData) {
+        console.error('No data for button:', buttonId);
+        return;
+    }
+
+    // إذا كان هناك سطوع محدد، نطبقه مع اللون
+    if (currentBrightness > 0) {
+        console.log(`Applying ${currentBrightness}% brightness to color: ${buttonData.color}`);
+        
+        try {
+            await applyBrightnessToColor(buttonData.color, currentBrightness);
+            console.log('Brightness applied automatically');
+        } catch (error) {
+            console.error('Error applying brightness automatically:', error);
+        }
+    } else {
+        // إذا لم يكن هناك سطوع محدد، نستخدم الوظيفة الأصلية
+        console.log('No brightness set, using default behavior');
+        changeColor(buttonData.color);
+    }
 }
 
 // دالة لتوليد ألوان عشوائية زاهية 
