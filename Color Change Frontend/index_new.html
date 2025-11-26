@@ -5,15 +5,22 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="image.icon">
+    <link rel="icon" href="icon1.icon">
     <link rel="stylesheet" href="s.css">
     <link rel="stylesheet" href="about.css">
+    <link rel="stylesheet" href="tooltip.css">
+    <!-- <link rel="stylesheet" href="BrightnessControl.css"> -->
+    <link rel="stylesheet" href="admin.css">
+    <link rel="stylesheet" href="cursor.css">
+    <link rel="stylesheet" href="customcolors.css">
+    <link rel="stylesheet" href="customanimation.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>LED Color Controller</title>
 </head>
 <body>
     <div class="card">
+        <div id="page-overlay"></div>
         <h1 class="led-title">LED Color Controller</h1>
         <div class="color-display" id="colorDisplay">Loading…</div>
 
@@ -25,10 +32,7 @@
             <button id="orangeBtn" onclick="changeColor('#FFA500')">Orange</button>
             <button id="yellowBtn" onclick="changeColor('#FFFF00')">Yellow</button>
             <button id="purpleBtn" onclick="changeColor('#A020F0')">Purple</button>
-            <!-- <button id="pinkBtn"   onclick="changeColor('#FFC0CB')">Pink</button> -->
             <button id="whiteBtn"  onclick="changeColor('#FFFFFF')">White</button>
-            <!-- <button id="grayBtn"   onclick="changeColor('#808080')">Gray</button> -->
-            <!-- <button id="brownBtn"  onclick="changeColor('#964B00')">Brown</button> -->
             <br>
             <button id="offBtn" onclick="changeColor('#000000')">Off</button>
         </div>
@@ -80,37 +84,10 @@
             <button id="customRunningLightsBtn">Running Lights</button>
             <button id="customFireworksBurstBtn">Fireworks Burst</button>
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
-
-
         </div>
-        <!-- <div class="container">
-        <div class="header">
-            <h1>Premium Dashboard</h1>
-            <p>Access exclusive content and powerful management tools with your VIP privileges</p>
-        </div>
-        
-        <div class="content-grid">
-            <div class="content-card">
-                <i class="fas fa-chart-line"></i>
-                <h3>Advanced Analytics</h3>
-                <p>Gain insights with real-time data visualization and performance metrics for your business.</p>
-            </div>
-            
-            <div class="content-card">
-                <i class="fas fa-users-cog"></i>
-                <h3>User Management</h3>
-                <p>Control access levels, permissions, and roles for all users in your organization.</p>
-            </div>
-            
-            <div class="content-card">
-                <i class="fas fa-shield-alt"></i>
-                <h3>Security Center</h3>
-                <p>Monitor security events, configure firewalls, and protect your valuable assets.</p>
-            </div>
-        </div> -->
 
         
-        <!-- ABOUT BUTTON (placed at end of the page) -->
+        <!-- ABOUT BUTTON -->
         <footer class="site-footer">
         <button id="aboutBtn" class="about-btn" aria-haspopup="dialog" aria-controls="aboutModal">About</button>
         </footer>
@@ -128,12 +105,12 @@
                 <div class="about-container">
                     <div class="about-header">
                         <h1>Smart Light Controller</h1>
-                        <p>The easiest way to customize your lighting experience</p>
+                        <p>Transform your space with smart, simple lighting. Control colors and effects from any device.</p>
                     </div>
                     
                     <div class="about-content">
                         <div class="about-section">
-                            <p>Welcome to our Smart Light Controller, the easiest way to customize your lights and create the perfect atmosphere — all from your device. This app is built on FastAPI, which makes it fast, responsive, and reliable, so every action you take is reflected almost instantly on your lights.</p>
+                            <p>Welcome to our Smart Light Controller - the easiest way to customize your lights and set the perfect mood. Built on FastAPI for speed and reliability, every tap instantly transforms your lighting.</p>
                         </div>
                         
                         <div class="about-section">
@@ -159,14 +136,20 @@
                         <div class="about-section">
                             <h3 class="section-title">💡 Tips for best experience</h3>
                             <ul class="feature-list">
-                                <li>Experiment with combinations of colors and animations — you'll discover new looks you didn't expect.</li>
+                                <li>Experiment with combinations of colors and animations - you'll discover new looks you didn't expect.</li>
                                 <li>Adjust brightness according to the room size and environment to get the most dramatic effects.</li>
-                                <li>Try using multiple devices on the same network — you and your friends can control the lights together in real time.</li>
+                                <li>Try using multiple devices on the same network - you and your friends can control the lights together in real time.</li>
                             </ul>
                         </div>
                         
                         <div class="about-section">
                             <p>This app makes controlling your lights fun, creative, and safe. Whether you want a relaxing evening, a small gathering, or a full party vibe, everything is in your hands. Just connect, explore, and enjoy.</p>
+                              <p>
+                                Found a bug or issue? 
+                                <a href="https://docs.google.com/forms/d/e/1FAIpQLSeHpMN7wXGUo-dglHQANIjhFPpbLZAKEPM8-iKpvL-0YQKMVQ/viewform?usp=header" target="_blank" style="color: #00bfff; text-decoration: none;">
+                                Report it here.
+                                </a>
+                            </p>
                         </div>
                     </div>
                     
@@ -180,41 +163,10 @@
         </div>
         </div>
 
-    <!-- Modal -->
-    <!-- <div id="adminModal" class="modal-backdrop">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Admin Panel</h2>
-                <button class="close-btn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" class="password-input" placeholder="Enter admin username">
-                </div>
-                
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" class="password-input" placeholder="Enter your password">
-                </div>
-                
-                <button class="submit-btn">Access Dashboard</button>
-                
-                <div class="footer-note">
-                    <p>Restricted access. Unauthorized use is prohibited.</p>
-                </div>
-            </div>
-        </div>
-    </div> -->
-        <div id="page-overlay"></div>
-    <div class="stars-container">
-        
-    </div>
-
-
+    <div class="stars-container"></div>
 
     <!-- Brightness Control Panel -->
-    <div id="brightnessPanel" class="brightness-panel hidden">
+    <!-- <div id="brightnessPanel" class="brightness-panel hidden">
         <div class="brightness-header">
             <h3>Set Animation Brightness</h3>
             <button class="close-btn">&times;</button>
@@ -227,8 +179,8 @@
             </div>
             <button class="brightness-apply-btn" id="applyBrightness">Apply</button>
         </div>
-    </div>
-    <!-- إضافة عنصر الـ tooltip -->
+    </div> -->
+    
     <div id="animationTooltip" class="animation-tooltip">
         <div class="tooltip-content">
             <h3 id="tooltipTitle">Animation Name</h3>
@@ -236,10 +188,18 @@
         </div>
         <div class="tooltip-arrow"></div>
     </div>
-
+        
+    <div id="customCursor"></div>
 
     <script src="app.js"></script>
     <script src="about.js"></script>
-    <script src="tooltip.js"></script>
+    <!-- <script src="tooltip.js"></script> -->
+    <!-- <script src="BrightnessControl.js"></script> -->
+    <script src="admin.js"></script>
+    <script src="curson.js"></script>
+    <script src="customcolors.js"></script>
+    <script src="customanimation.js"></script>
+    <script src="https://unpkg.com/cursor-effects@1.0.17/dist/browser.js"></script>
+
 </body>
 </html>
