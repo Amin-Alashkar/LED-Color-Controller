@@ -49,17 +49,141 @@ const customQuantumFlickerBtn   = document.getElementById('customQuantumFlickerB
 const customRunningLightsBtn2   = document.getElementById('customRunningLightsBtn');
 const customFireworksBurstBtn   = document.getElementById('customFireworksBurstBtn');
 
-
-
-// نداء عام لإرسال طلبات POST
-async function sendRequest(endpoint, data) {
+// دالة مساعدة يمكن استخدامها من الملفات الأخرى
+function sendRequest(endpoint, data) {
+    const API_BASE_URL = `http://${window.location.hostname}:8000`;
     try {
+        console.log('Sending request to:', endpoint, 'with data:', data);
+        
+        return fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(res => {
+            if (!res.ok) {
+                const errorText = res.text();
+                console.error(`HTTP error! status: ${res.status}, response:`, errorText);
+                throw new Error(`HTTP error! status: ${res.status}`);
+            }
+            return res.json();
+        })
+        .then(result => {
+            console.log('Request successful:', result);
+            return result;
+        });
+        
+    } catch (e) {
+        console.error("API Error:", e);
+        return Promise.resolve({ status: "error", message: e.message });
+    }
+}
+
+// جعل الدالة متاحة globally
+window.sendRequest = sendRequest;
+
+// دالة مساعدة للتوافق مع النظام الجديد
+// function getGlobalSendRequest() {
+//     return function(endpoint, data) {
+//         const API_BASE_URL = `http://${window.location.hostname}:8000`;
+//         try {
+//             console.log('Sending request to:', endpoint, 'with data:', data);
+            
+//             return fetch(`${API_BASE_URL}${endpoint}`, {
+//                 method: "POST",
+//                 headers: { 
+//                     "Content-Type": "application/json",
+//                     "Accept": "application/json"
+//                 },
+//                 body: JSON.stringify(data)
+//             })
+//             .then(res => {
+//                 if (!res.ok) {
+//                     const errorText = res.text();
+//                     console.error(`HTTP error! status: ${res.status}, response:`, errorText);
+//                     throw new Error(`HTTP error! status: ${res.status}`);
+//                 }
+//                 return res.json();
+//             })
+//             .then(result => {
+//                 console.log('Request successful:', result);
+//                 return result;
+//             });
+            
+//         } catch (e) {
+//             console.error("API Error:", e);
+//             return Promise.resolve({ status: "error", message: e.message });
+//         }
+//     };
+// }
+
+// // جعل الدالة متاحة globally
+// if (typeof window !== 'undefined') {
+//     window.sendRequest = getGlobalSendRequest();
+// }
+
+
+// دالة مساعدة محسنة لإرسال طلبات الأنيميشن
+async function sendAnimationRequest(endpoint, data) {
+    try {
+        console.log('Sending animation request:', { endpoint, data });
+        
         const res = await fetch(`${API_BASE_URL}${endpoint}`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
             body: JSON.stringify(data)
         });
-        return await res.json();
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error(`HTTP error! status: ${res.status}, response:`, errorText);
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const result = await res.json();
+        console.log('Animation request successful:', result);
+        return result;
+        
+    } catch (e) {
+        console.error("Animation API Error:", e);
+        return { 
+            status: "error", 
+            message: e.message,
+            endpoint: endpoint
+        };
+    }
+}
+
+// دالة محسنة لإرسال طلبات POST
+async function sendRequest(endpoint, data) {
+    try {
+        console.log('Sending request to:', endpoint, 'with data:', data);
+        
+        const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+        
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error(`HTTP error! status: ${res.status}, response:`, errorText);
+            throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const result = await res.json();
+        console.log('Request successful:', result);
+        return result;
+        
     } catch (e) {
         console.error("API Error:", e);
         return { status: "error", message: e.message };
@@ -675,11 +799,10 @@ async function stopAnimation() {
 // ——— الدوال التي تشغل الانيميشنات ———
 
 // Fade Colors
-async function startFadeAnimation() {
+async function startFadeAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "fade_colors") {
         await stopAnimation();
     }
-    // إذا كانت نفس الانيميشن تعمل حاليًا، نوقفها
     if (isAnimationRunning && currentAnim === "fade_colors") {
         await stopAnimation();
         return;
@@ -687,14 +810,18 @@ async function startFadeAnimation() {
     isAnimationRunning = true;
     currentAnim = "fade_colors";
     lightOneBtn.classList.add('active');
-    lightOneBtn.textContent = 'Fade Colors (Running)';
+    lightOneBtn.textContent = 'Fade Colors (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Fade Colors";
-    await sendRequest("/animate", { animation_type: "fade_colors" });
+    colorDisplay.textContent = "Fade Colors";
+    await sendRequest("/animate", { 
+        animation_type: "fade_colors",
+        speed_factor: speed
+    });
 }
 
+
 // Pulse Sync
-async function startPulseSyncAnimation() {
+async function startPulseSyncAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "pulse_sync") {
         await stopAnimation();
     }
@@ -708,11 +835,13 @@ async function startPulseSyncAnimation() {
     pulseSyncBtn.textContent = 'Pulse Sync (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Pulse Sync";
-    await sendRequest("/animate", { animation_type: "pulse_sync" });
+    await sendRequest("/animate", {
+        animation_type: "pulse_sync",
+        speed_factor: speed });
 }
 
 // Wave Effect
-async function startWaveAnimation() {
+async function startWaveAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "wave_effect") {
         await stopAnimation();
     }
@@ -723,14 +852,18 @@ async function startWaveAnimation() {
     isAnimationRunning = true;
     currentAnim = "wave_effect";
     waveEffectBtn.classList.add('active');
-    waveEffectBtn.textContent = 'Wave Effect (Running)';
+    waveEffectBtn.textContent = 'Wave Effect (Running)';
     cardElement.style.background = "#000000";
-    colorDisplay.textContent = "Wave Effect";
-    await sendRequest("/animate", { animation_type: "wave_effect" });
+    colorDisplay.textContent = "Wave Effect";
+    await sendRequest("/animate", { 
+        animation_type: "wave_effect",
+        speed_factor: speed
+    });
 }
 
+
 // Rainbow Flow
-async function startRainbowAnimation() {
+async function startRainbowAnimation(speed = 1 ) {
     if (isAnimationRunning && currentAnim !== "rainbow_flow") {
         await stopAnimation();
     }
@@ -744,11 +877,13 @@ async function startRainbowAnimation() {
     rainbowFlowBtn.textContent = 'Rainbow Flow (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Rainbow Flow";
-    await sendRequest("/animate", { animation_type: "rainbow_flow" });
+    await sendRequest("/animate", { 
+        animation_type: "rainbow_flow",
+        speed_factor: speed });
 }
 
 // Blinking Pattern
-async function startBlinkingPattern() {
+async function startBlinkingPattern(speed = 1) {
     if (isAnimationRunning && currentAnim !== "blinking_pattern") {
         await stopAnimation();
     }
@@ -762,11 +897,13 @@ async function startBlinkingPattern() {
     blinkingPatternBtn.textContent = 'Blinking Pattern (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Blinking Pattern";
-    await sendRequest("/animate", { animation_type: "blinking_pattern" });
+    await sendRequest("/animate", { 
+        animation_type: "blinking_pattern",
+        speed_factor: speed });
 }
 
 // Running Lights
-async function startRunningLights() {
+async function startRunningLights(speed = 1) {
     if (isAnimationRunning && currentAnim !== "running_lights") {
         await stopAnimation();
     }
@@ -780,11 +917,13 @@ async function startRunningLights() {
     runningLightsBtn.textContent = 'Running Lights (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Running Lights";
-    await sendRequest("/animate", { animation_type: "running_lights" });
+    await sendRequest("/animate", { 
+        animation_type: "running_lights",
+        speed_factor: speed });
 }
 
 // Breathing Effect
-async function startBreathingAnimation() {
+async function startBreathingAnimation(speed = 1) {
     if (isAnimationRunning && currentAnim !== "breathing_effect") {
         await stopAnimation();
     }
@@ -798,11 +937,13 @@ async function startBreathingAnimation() {
     breathingEffectBtn.textContent = 'Breathing Effect (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Breathing Effect";
-    await sendRequest("/animate", { animation_type: "breathing_effect" });
+    await sendRequest("/animate", { 
+        animation_type: "breathing_effect",
+        speed_factor: speed });
 }
 
 // Snakes Chasing ( Meteor Shower)
-async function startSnakesChasing() {
+async function startSnakesChasing(speed = 1) {
     if (isAnimationRunning && currentAnim !== "meteor_shower") {
         await stopAnimation();
     }
@@ -816,11 +957,13 @@ async function startSnakesChasing() {
     snakesChasingBtn.textContent = 'Snakes Chasing (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Snakes Chasing";
-    await sendRequest("/animate", { animation_type: "meteor_shower" });
+    await sendRequest("/animate", { 
+        animation_type: "meteor_shower",
+        speed_factor: speed });
 }
 
 // ———   “Meteor Shower” (الأفعى الوحيدة) ———
-async function startSingleSnake() {
+async function startSingleSnake(speed = 1) {
     if (isAnimationRunning && currentAnim !== "single_snake") {
         await stopAnimation();
     }
@@ -834,10 +977,12 @@ async function startSingleSnake() {
     meteorShowerNewBtn.textContent = 'Meteor Shower (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Meteor Shower";
-    await sendRequest("/animate", { animation_type: "single_snake" });
+    await sendRequest("/animate", { 
+        animation_type: "single_snake",
+        speed_factor: speed });
 }
 
-async function startRandomColors() {
+async function startRandomColors(speed = 1) {
     if (isAnimationRunning && currentAnim !== "random_colors") {
         await stopAnimation();
     }
@@ -851,11 +996,13 @@ async function startRandomColors() {
     randomColorsBtn.textContent = 'Random Colors (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Random Colors";
-    await sendRequest("/animate", { animation_type: "random_colors" });
+    await sendRequest("/animate", { 
+        animation_type: "random_colors",
+        speed_factor: speed });
 }
 
 // Fireworks Burst
-async function startFireworksBurst() {
+async function startFireworksBurst(speed = 1) {
     if (isAnimationRunning && currentAnim !== "fireworks_burst") {
         await stopAnimation();
     }
@@ -869,7 +1016,9 @@ async function startFireworksBurst() {
     fireworksBurstBtn.textContent = 'Fireworks Burst (Running)';
     cardElement.style.background = "#000000";
     colorDisplay.textContent = "Fireworks Burst";
-    await sendRequest("/animate", { animation_type: "fireworks_burst" });
+    await sendRequest("/animate", { 
+        animation_type: "fireworks_burst",
+        speed_factor: speed });
 }
 
 // ────   “Fade Colors (Custom)” ────
