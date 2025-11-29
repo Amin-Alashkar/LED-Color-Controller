@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="cursor.css">
     <link rel="stylesheet" href="customcolors.css">
     <link rel="stylesheet" href="customanimation.css">
+    <link rel="stylesheet" href="customcolorpicker.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <title>LED Color Controller</title>
@@ -36,6 +37,12 @@
             <br>
             <button id="offBtn" onclick="changeColor('#000000')">Off</button>
         </div>
+        
+        <h2 class="button-title">Color Picker</h2>
+        <div class="color-picker-wrapper">
+            <div class="color-ring"></div>
+            <input type="color" id="colorPicker" value="#000000">
+        </div>
 
         <h2 class="button-title">Animation</h2>
         <div class="button-container">
@@ -53,11 +60,6 @@
             <button id="off2Btn" onclick="changeColor('#000000')">Off</button>
         </div>
 
-        <h2 class="button-title">Color Picker</h2>
-        <div class="color-picker-wrapper">
-            <div class="color-ring"></div>
-            <input type="color" id="colorPicker" value="#000000">
-        </div>
 
         <h2 class="button-title">Custom animation</h2>
         <div class="button-container">
@@ -199,6 +201,7 @@
     <script src="curson.js"></script>
     <script src="customcolors.js"></script>
     <script src="customanimation.js"></script>
+    <script src="customcolorpicker.js"></script>
     <script src="https://unpkg.com/cursor-effects@1.0.17/dist/browser.js"></script>
 
 </body>
