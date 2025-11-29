@@ -1,0 +1,330 @@
+/* customcolorpicker.css  */
+
+.ccp-tooltip {
+    position: fixed;
+    background: rgba(30, 30, 40, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 20px;
+    width: 320px;
+    box-shadow: 
+        0 5px 25px rgba(0, 0, 0, 0.3),
+        0 0 0 2px var(--ccp-color-1, rgba(100, 100, 255, 0.5)),
+        0 0 10px 2px var(--ccp-color-2, rgba(255, 100, 100, 0.5)),
+        0 0 20px 2px var(--ccp-color-3, rgba(100, 255, 100, 0.5));
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    transform: translateY(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    animation: ccp-border-glow 3s infinite alternate;
+}
+
+.ccp-tooltip.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.ccp-tooltip .ccp-tooltip-content h3 {
+    margin: 0 0 15px 0;
+    color: var(--ccp-color-1, #4e44ce);
+    font-size: 1.4rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px var(--ccp-color-1, rgba(78, 68, 206, 0.5));
+    text-align: center;
+}
+
+.ccp-tooltip .ccp-description {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    text-align: center;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+/* أنماط الـ Color Picker الجديد المعزول */
+.ccp-color-container {
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.ccp-color-title {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    margin-bottom: 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.ccp-color-wrapper {
+    position: relative;
+    width: 100%;
+    height: 60px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ccp-color-ring {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: conic-gradient(red, yellow, lime, aqua, blue, magenta, red);
+    animation: ccp-rotate-ring 4s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes ccp-rotate-ring {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+#ccp-color-picker {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: transparent;
+    z-index: 2;
+}
+
+#ccp-color-picker::-webkit-color-swatch {
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+#ccp-color-picker::-webkit-color-swatch-wrapper {
+    padding: 0;
+    border: none;
+}
+
+#ccp-color-picker::-moz-color-swatch {
+    border: 3px solid rgba(255, 255, 255, 0.8);
+    border-radius: 50%;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+}
+
+.ccp-preview-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.ccp-selected-preview {
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.ccp-selected-preview:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 8px currentColor;
+}
+
+.ccp-preview-text {
+    font-size: 0.8rem;
+    color: #e0e0e0;
+}
+
+.ccp-tooltip .ccp-tooltip-arrow {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: rgba(30, 30, 40, 0.95);
+    transform: rotate(45deg);
+    bottom: -6px;
+    left: 50%;
+    margin-left: -6px;
+    border-right: 2px solid var(--ccp-color-1, rgba(255, 255, 255, 0.1));
+    border-bottom: 2px solid var(--ccp-color-2, rgba(255, 255, 255, 0.1));
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes ccp-border-glow {
+    0% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--ccp-color-1),
+            0 0 10px 2px var(--ccp-color-2),
+            0 0 20px 2px var(--ccp-color-3);
+    }
+    33% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--ccp-color-2),
+            0 0 10px 2px var(--ccp-color-3),
+            0 0 20px 2px var(--ccp-color-1);
+    }
+    66% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--ccp-color-3),
+            0 0 10px 2px var(--ccp-color-1),
+            0 0 20px 2px var(--ccp-color-2);
+    }
+    100% {
+        box-shadow: 
+            0 5px 25px rgba(0, 0, 0, 0.3),
+            0 0 0 2px var(--ccp-color-1),
+            0 0 10px 2px var(--ccp-color-3),
+            0 0 20px 2px var(--ccp-color-2);
+    }
+}
+
+/* أنماط عناصر التحكم في السطوع */
+.ccp-brightness-controls {
+    margin: 15px 0;
+}
+
+.ccp-brightness-title {
+    font-size: 0.9rem;
+    color: #e0e0e0;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.ccp-brightness-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.ccp-brightness-value {
+    font-size: 1.1rem;
+    color: var(--ccp-color-1, #4e44ce);
+    font-weight: bold;
+    min-width: 40px;
+    text-align: center;
+}
+
+.ccp-brightness-slider-container {
+    width: 100%;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+#ccp-brightness-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+#ccp-brightness-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ccp-color-1, #4e44ce);
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    transition: all 0.2s ease;
+}
+
+#ccp-brightness-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    background: var(--ccp-color-2, #ff5e5e);
+}
+
+#ccp-brightness-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ccp-color-1, #4e44ce);
+    cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+/* أنماط رسالة الخطأ */
+.ccp-error-message {
+    color: #ff4444;
+    font-size: 0.8rem;
+    text-align: center;
+    margin: 10px 0;
+    padding: 8px;
+    background: rgba(255, 68, 68, 0.1);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 68, 68, 0.3);
+    display: none;
+    animation: ccp-shake 0.5s ease-in-out;
+}
+
+@keyframes ccp-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.ccp-apply-btn {
+    width: 90%;
+    padding: 12px;
+    background: var(--ccp-color-1, #4e44ce);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 10px;
+}
+
+.ccp-apply-btn:hover {
+    background: var(--ccp-color-2, #ff5e5e);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.ccp-apply-btn.done {
+    background: #00cc00;
+    transform: scale(0.95);
+}
+
+.ccp-apply-btn:active {
+    transform: scale(0.95);
+}
+
+.ccp-apply-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.ccp-apply-btn:disabled:hover {
+    background: var(--ccp-color-1, #4e44ce);
+    transform: none;
+    box-shadow: none;
+}
+
+/* حالة عدم اختيار اللون */
+.ccp-no-color {
+    opacity: 0.6;
+    border: 2px dashed rgba(255, 255, 255, 0.3) !important;
+}
+
+.ccp-no-color-text {
+    color: #888 !important;
+    font-style: italic;
+}
