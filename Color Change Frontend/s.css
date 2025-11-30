@@ -174,12 +174,11 @@ button:hover {
 }
 
 
-
-
 #colorPicker {
+    display: none;
     width: 100px;
     height: 100px;
-    position: absolute; 
+    position: absolute;
     top: 10px;
     left: 10px;
     cursor: pointer;
@@ -189,8 +188,13 @@ button:hover {
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     z-index: 2;
     outline: 3px solid #fff;
-
 }
+
+
+#colorPicker:focus {
+    display: block;
+}
+
 #colorPicker:hover {
     transform: scale(1.1);
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
@@ -222,6 +226,14 @@ button:hover {
     z-index: 1;
     filter: blur(5px);
     opacity: 0.8;
+    cursor: pointer;
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+
+.color-ring:hover {
+    transform: scale(1.1);
+    filter: blur(3px) brightness(1.2);
 }
 
 .color-ring-inner {
@@ -234,12 +246,14 @@ button:hover {
     left: 5px;
     z-index: 1;
 }
+
 .color-picker-wrapper {
     position: relative;
     width: 120px;
     height: 120px;
     margin: 20px auto;
 }
+
 
 .card {
     position: relative;
