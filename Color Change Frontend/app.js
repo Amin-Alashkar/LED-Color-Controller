@@ -49,6 +49,31 @@ const customQuantumFlickerBtn   = document.getElementById('customQuantumFlickerB
 const customRunningLightsBtn2   = document.getElementById('customRunningLightsBtn');
 const customFireworksBurstBtn   = document.getElementById('customFireworksBurstBtn');
 
+
+// Add click event listener to the color ring to show the color picker
+document.querySelector('.color-ring').addEventListener('click', function() {
+    const colorPicker = document.getElementById('colorPicker');
+    colorPicker.style.display = 'block';
+    colorPicker.focus();
+    colorPicker.click(); // This immediately opens the color picker dialog
+});
+
+// Hide color picker when it loses focus (user selects a color or clicks away)
+document.getElementById('colorPicker').addEventListener('blur', function() {
+    // Use setTimeout to ensure the color selection is processed before hiding
+    setTimeout(() => {
+        this.style.display = 'none';
+    }, 100);
+});
+
+// Alternative: Also hide when color change is complete
+document.getElementById('colorPicker').addEventListener('change', function() {
+    setTimeout(() => {
+        this.style.display = 'none';
+    }, 100);
+});
+
+
 // دالة مساعدة يمكن استخدامها من الملفات الأخرى
 function sendRequest(endpoint, data) {
     const API_BASE_URL = `http://${window.location.hostname}:8000`;
@@ -1035,7 +1060,7 @@ async function startCustomFadeAnimation() {
     //  طلب من المستخدم اختيار اللون:
     customFadeBtn.textContent = "Choose color…";
     // opens نافذة color picker برمجياً:
-    colorPicker.click();
+    // colorPicker.click();
     // نُعدّ مستمعاً وحيداً لحدث "input" على colorPicker
     const onColorChosen = async (e) => {
         // أولاً ننظف (نزيل) هذا المستمع
@@ -1068,7 +1093,7 @@ async function startCustomBlinkAnimation() {
         await stopAnimation();
     }
     customBlinkBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1096,7 +1121,7 @@ async function startCustomBreathingAnimation() {
         await stopAnimation();
     }
     customBreathingBtn2.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1124,7 +1149,7 @@ async function startCustomMeteorShower() {
         await stopAnimation();
     }
     customMeteorShowerBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1152,7 +1177,7 @@ async function startCustomPulseSync() {
         await stopAnimation();
     }
     customPulseSyncBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1180,7 +1205,7 @@ async function startCustomGlitchFlash() {
         await stopAnimation();
     }
     customGlitchFlashBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1208,7 +1233,7 @@ async function startCustomHeartBeat() {
         await stopAnimation();
     }
     customHeartBeatBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1236,7 +1261,7 @@ async function startCustomTunnelEffect() {
         await stopAnimation();
     }
     customTunnelEffectBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1264,7 +1289,7 @@ async function startCustomLaserShot() {
         await stopAnimation();
     }
     customLaserShotBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1292,7 +1317,7 @@ async function startCustomSparklingStars() {
         await stopAnimation();
     }
     customSparklingStarsBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1320,7 +1345,7 @@ async function startCustomStrobeFlash() {
         await stopAnimation();
     }
     customStrobeFlashBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1348,7 +1373,7 @@ async function startCustomKnightRider() {
         await stopAnimation();
     }
     customKnightRiderBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1376,7 +1401,7 @@ async function startCustomBounceBack() {
         await stopAnimation();
     }
     customBounceBackBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1404,7 +1429,7 @@ async function startCustomRippleTouch() {
         await stopAnimation();
     }
     customRippleTouchBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1432,7 +1457,7 @@ async function startCustomFireFlicker() {
         await stopAnimation();
     }
     customFireFlickerBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1460,7 +1485,7 @@ async function startCustomColorWipe() {
         await stopAnimation();
     }
     customColorWipeBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1488,7 +1513,7 @@ async function startCustomStaticGlow() {
         await stopAnimation();
     }
     customStaticGlowBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1516,7 +1541,7 @@ async function startCustomColorEcho() {
         await stopAnimation();
     }
     customColorEchoBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1544,7 +1569,7 @@ async function startCustomTimeWarp() {
         await stopAnimation();
     }
     customTimeWarpBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1572,7 +1597,7 @@ async function startCustomQuantumFlicker() {
         await stopAnimation();
     }
     customQuantumFlickerBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1600,7 +1625,7 @@ async function startCustomRunningLights() {
         await stopAnimation();
     }
     customRunningLightsBtn2.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
@@ -1628,7 +1653,7 @@ async function startCustomFireworksBurst() {
         await stopAnimation();
     }
     customFireworksBurstBtn.textContent = "Choose color…";
-    colorPicker.click();
+    // colorPicker.click();
     const onColorChosen = async (e) => {
         colorPicker.removeEventListener("input", onColorChosen);
         const chosenColor = e.target.value;
