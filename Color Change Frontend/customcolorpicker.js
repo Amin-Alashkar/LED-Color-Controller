@@ -1,4 +1,4 @@
-// customcolorpicker.js 
+// customcolorpicker.js - الملف المحدث والمصحح
 
 // بيانات التلميحات لأزرار Custom Animation
 const customColorPickerTooltipData = {
