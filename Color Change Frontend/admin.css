@@ -1,5 +1,6 @@
-/* admin.css */
+/* admin.css (full, with Coming Soon overlay adjusted: inside the button, semi-transparent text, overlay 50%) */
 
+/* === existing styles (unchanged except where noted) === */
 #adminPanelBtn.ap-button {
   padding: 16px 150px;
   font-size: 1.05rem;
@@ -13,9 +14,9 @@
   z-index: 10004;
   margin: 15px auto;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  display: inline-block; 
-  width: auto; 
-  max-width: none; 
+  display: inline-block;
+  width: auto;
+  max-width: none;
   font-family: inherit;
   letter-spacing: 0.5px;
   text-transform: none;
@@ -33,7 +34,7 @@
   transform: rotate(-18deg);
   pointer-events: none;
   filter: blur(8px);
-  opacity: 0.9;
+  opacity: 0.9
 }
 
 #adminPanelBtn.ap-button:hover {
@@ -96,11 +97,11 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, 
-    rgba(30, 28, 20, 0.95) 0%, 
-    rgba(22, 20, 15, 0.98) 50%, 
+  background: linear-gradient(135deg,
+    rgba(30, 28, 20, 0.95) 0%,
+    rgba(22, 20, 15, 0.98) 50%,
     rgba(18, 16, 12, 0.95) 100%);
-  box-shadow: 
+  box-shadow:
     0 30px 90px rgba(0, 0, 0, 0.8),
     0 12px 40px rgba(218, 165, 32, 0.2),
     inset 0 1px 0 rgba(255, 215, 0, 0.08);
@@ -477,4 +478,153 @@ body.ap-modal-open {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+/* === NEW: Coming soon overlay styles (updated per request) === */
+
+/* wrapper around the emergency button so overlay can sit perfectly over it */
+.ap-button-wrap {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+  vertical-align: middle;
+  overflow: hidden; /* clip any pseudo-element glows that would escape */
+  border-radius: inherit;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* make sure the danger button sits below overlay visually */
+.ap-button-wrap .ap-control-btn {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
+  transition: none;
+}
+
+.ap-button-wrap.has-overlay .ap-control-btn {
+  color: transparent !important;    /* visually hide */
+  text-shadow: none !important;
+  pointer-events: none;             /* don't let hover events change appearance */
+  box-shadow: none !important;
+}
+
+
+.coming-soon-overlay {
+  position: absolute;
+  inset: 0; /* cover exactly the button area */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: inherit;
+  background: rgba(11,7,16,0.75); /* 75% dark tint */
+  backdrop-filter: blur(6px) saturate(1.05);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+  z-index: 9999;
+  pointer-events: auto; /* block clicks (button disabled) */
+  padding: 8px 12px;
+  box-sizing: border-box;
+  user-select: none;
+  will-change: transform, opacity;
+  overflow: hidden;
+}
+
+/* subtle floating motion kept very gentle */
+.coming-soon-overlay.animate-float {
+  animation: overlayFloat 4.2s ease-in-out infinite;
+}
+
+@keyframes overlayFloat { 0%{transform:translateY(0)}50%{transform:translateY(-1.4px)}100%{transform:translateY(0)} }
+
+
+/* text inside overlay: now very transparent as requested */
+.coming-soon-overlay .coming-soon-text {
+  font-weight:700;
+  font-size:0.98rem;
+  color: rgba(255,255,255,0.14); /* very transparent */
+  letter-spacing:0.3px;
+  text-align:center;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.45);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  white-space:nowrap;;
+}
+
+/* responsive scaling for small screens */
+@media (max-width: 420px) {
+  .coming-soon-overlay .coming-soon-text {
+    font-size: 0.85rem;
+    gap: 6px;
+  }
+}
+
+/* dots: three spans, animated smoothly (no abrupt blinking).
+   each dot gently rises and brightens in a staggered pattern to create
+   the progressive effect without hard flashing */
+.coming-soon-overlay .dots { display:inline-flex; gap:4px; margin-left:8px; align-items:center; }
+
+.coming-soon-overlay .dots span {
+  display:inline-block;
+  font-weight:800;
+  font-size:1.02rem;
+  line-height:1;
+  opacity:0.22;
+  transform:translateY(0);
+  color: rgba(255,255,255,0.22);
+  will-change:opacity, transform;
+  animation: dotPulse 1.8s cubic-bezier(.2,.9,.3,.95) infinite;
+}
+
+/* stagger delays produce the progressive dot sequence */
+.coming-soon-overlay .dots span:nth-child(1) { animation-delay: 0s; }
+.coming-soon-overlay .dots span:nth-child(2) { animation-delay: 0.16s; }
+.coming-soon-overlay .dots span:nth-child(3) { animation-delay: 0.32s; }
+
+/* keyframes: smooth ramp up then fade (no abrupt blinking) */
+@keyframes dotPulse {
+  0%   { opacity: 0.22; transform: translateY(0); }
+  20%  { opacity: 0.48; transform: translateY(-1px); }
+  40%  { opacity: 0.86; transform: translateY(-2px); }
+  60%  { opacity: 0.5;  transform: translateY(-1px); }
+  100% { opacity: 0.22; transform: translateY(0); }
+}
+
+
+.coming-soon-overlay .dots span:nth-child(1){animation-delay:0s}
+.coming-soon-overlay .dots span:nth-child(2){animation-delay:.16s}
+.coming-soon-overlay .dots span:nth-child(3){animation-delay:.32s}
+@keyframes dotPulse {
+  0% { opacity:0.22; transform:translateY(0); }
+  20% { opacity:0.48; transform:translateY(-1px); }
+  40% { opacity:0.86; transform:translateY(-2px); }
+  60% { opacity:0.5; transform:translateY(-1px); }
+  100% { opacity:0.22; transform:translateY(0); }
+}
+
+/* disable hover/active transforms while overlay is active to avoid misalignment */
+.ap-button-wrap.has-overlay .ap-control-btn:hover,
+.ap-button-wrap.has-overlay .ap-control-btn:active {
+  transform: none !important;
+}
+
+/* fallback: hide common floating dot indicators in controls/footer (image showed a red dot) */
+.ap-controls .floating-dot,
+.site-footer .floating-dot,
+.ap-modal .floating-dot,
+.ap-controls .focus-indicator,
+.site-footer .focus-indicator {
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
+
+/* accessibility helper: if visually-hidden-label present, hide it from screen readers when overlay active */
+.ap-button-wrap.has-overlay .visually-hidden-label { aria-hidden: true; }
+
+/* responsive tweaks for overlay text */
+@media (max-width:420px) {
+  .coming-soon-overlay .coming-soon-text { font-size:0.85rem; gap:6px; }
 }
