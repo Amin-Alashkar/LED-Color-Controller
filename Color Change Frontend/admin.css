@@ -1,6 +1,11 @@
-/* admin.css (full, with Coming Soon overlay adjusted: inside the button, semi-transparent text, overlay 50%) */
+/* admin.css (FULL) */
+/* ===========================
+   Admin Panel styles + Real Admin Stuff section (Coming soon)
+   Overlay alpha = 50% (rgba(...,0.5))
+   Smooth dot animation, responsive, accessible
+   =========================== */
 
-/* === existing styles (unchanged except where noted) === */
+/* === existing styles (kept mostly as provided) === */
 #adminPanelBtn.ap-button {
   padding: 16px 150px;
   font-size: 1.05rem;
@@ -22,7 +27,7 @@
   text-transform: none;
 }
 
-/* تأثير الإضاءة - نفس تأثير About */
+/* decorative light */
 #adminPanelBtn.ap-button::after {
   content: "";
   position: absolute;
@@ -34,7 +39,7 @@
   transform: rotate(-18deg);
   pointer-events: none;
   filter: blur(8px);
-  opacity: 0.9
+  opacity: 0.9;
 }
 
 #adminPanelBtn.ap-button:hover {
@@ -55,7 +60,7 @@
   transform: translateY(-3px);
 }
 
-/* Admin Panel Modal - باقي الأنماط كما هي */
+/* Admin Modal */
 .ap-modal {
   position: fixed;
   top: 0;
@@ -73,19 +78,11 @@
   box-sizing: border-box;
 }
 
-.ap-modal.show {
-  display: flex;
-}
+.ap-modal.show { display: flex; }
 
 @keyframes apFadeIn {
-  from { 
-    opacity: 0; 
-    backdrop-filter: blur(0px) saturate(1);
-  }
-  to { 
-    opacity: 1; 
-    backdrop-filter: blur(8px) saturate(1.2);
-  }
+  from { opacity: 0; backdrop-filter: blur(0px) saturate(1); }
+  to   { opacity: 1; backdrop-filter: blur(8px) saturate(1.2); }
 }
 
 .ap-content {
@@ -111,491 +108,109 @@
 }
 
 @keyframes apSlideIn {
-  from { 
-    transform: translateY(20px) scale(0.98); 
-    opacity: 0; 
-  }
-  to { 
-    transform: translateY(0) scale(1); 
-    opacity: 1; 
-  }
+  from { transform: translateY(20px) scale(0.98); opacity: 0; }
+  to   { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Admin Panel Header */
-.ap-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 20px 24px;
-  border-bottom: 1px solid rgba(255, 215, 0, 0.08);
-  background: linear-gradient(90deg, 
-    rgba(255, 215, 0, 0.08) 0%, 
-    rgba(255, 165, 0, 0.06) 50%, 
-    rgba(218, 165, 32, 0.08) 100%);
-  position: relative;
-}
+/* Header, body, sections (originals kept) */
+.ap-header { display:flex; align-items:center; justify-content:space-between; padding:20px 24px; border-bottom:1px solid rgba(255,215,0,0.08); background: linear-gradient(90deg, rgba(255,215,0,0.08) 0%, rgba(255,165,0,0.06) 50%, rgba(218,165,32,0.08) 100%); position:relative; }
+.ap-header h2 { margin:0; font-size:1.1rem; letter-spacing:1px; color:#FFD700; font-weight:700; text-transform:uppercase; text-shadow:0 2px 10px rgba(255,215,0,0.3); }
+.ap-close-btn { background: rgba(255,215,0,0.1); border:1px solid rgba(255,215,0,0.15); border-radius:10px; width:36px; height:36px; display:flex; align-items:center; justify-content:center; cursor:pointer; color:#FFD700; font-size:1.4rem; transition: all .2s ease; backdrop-filter: blur(10px); font-weight:300; }
+.ap-close-btn:hover { background:rgba(255,215,0,0.2); color:#FFF; border-color:rgba(255,215,0,0.4); transform:scale(1.1); }
 
-.ap-header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, 
-    transparent 0%, 
-    rgba(255, 215, 0, 0.4) 50%, 
-    transparent 100%);
-}
+.ap-body { padding:0; color:#E6E6EA; font-size:.95rem; line-height:1.6; display:block; overflow-y:auto; overflow-x:hidden; flex:1; scrollbar-width:thin; scrollbar-color: rgba(255,215,0,0.5) rgba(0,0,0,0.1); }
+.ap-body::-webkit-scrollbar{ width:6px; }
+.ap-body::-webkit-scrollbar-track{ background: rgba(0,0,0,0.1); border-radius:3px; }
+.ap-body::-webkit-scrollbar-thumb{ background: linear-gradient(180deg,#FFD700,#FFA500); border-radius:3px; }
+.ap-body::-webkit-scrollbar-thumb:hover{ background: linear-gradient(180deg,#FFE44D,#FFB732); }
 
-.ap-header h2 {
-  margin: 0;
-  font-size: 1.1rem;
-  letter-spacing: 1px;
-  color: #FFD700;
-  font-weight: 700;
-  text-transform: uppercase;
-  text-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
-}
+.ap-container { padding:24px; min-height:100%; box-sizing:border-box; }
+.ap-section { margin-bottom:20px; padding:16px; background: rgba(255,255,255,0.03); border-radius:12px; border:1px solid rgba(255,215,0,0.05); transition: all .2s ease; }
+.ap-section:hover { border-color: rgba(255,215,0,0.15); transform: translateY(-1px); }
+.ap-section-title { font-size:.95rem; font-weight:600; color:#FFA500; margin:0 0 12px 0; display:flex; align-items:center; gap:6px; }
+.ap-section-title::before { content: "🔧"; font-size:.9rem; }
+.ap-section p{ margin:8px 0; color:#C8C9CD; font-size:.9rem; line-height:1.5; }
 
-.ap-close-btn {
-  background: rgba(255, 215, 0, 0.1);
-  border: 1px solid rgba(255, 215, 0, 0.15);
-  border-radius: 10px;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: #FFD700;
-  font-size: 1.4rem;
-  transition: all 0.2s ease;
-  backdrop-filter: blur(10px);
-  font-weight: 300;
-}
+.ap-info-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:12px; margin-top:12px; }
+.ap-info-item { background: rgba(255,215,0,0.05); border-radius:8px; padding:10px; border:1px solid rgba(255,215,0,0.1); }
+.ap-info-label { font-size:.8rem; color:#FFD700; font-weight:600; margin-bottom:4px; }
+.ap-info-value { font-size:.9rem; color:#E6E6EA; font-family:'Courier New', monospace; }
 
-.ap-close-btn:hover {
-  background: rgba(255, 215, 0, 0.2);
-  color: #FFF;
-  border-color: rgba(255, 215, 0, 0.4);
-  transform: scale(1.1);
-}
+/* Status & controls */
+.ap-status { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:20px; font-size:.8rem; font-weight:600; }
+.ap-status.online { background: rgba(0,255,0,0.1); color:#00FF00; }
+.ap-status.online::before { content:""; width:6px; height:6px; border-radius:50%; background:#00FF00; animation:apPulse 2s infinite; }
+@keyframes apPulse { 0%,100%{opacity:1}50%{opacity:0.5} }
+.ap-status.offline { background: rgba(255,0,0,0.1); color:#FF4444; }
+.ap-status.offline::before { content:""; width:6px; height:6px; border-radius:50%; background:#FF4444; }
 
-/* Admin Panel Body */
-.ap-body {
-  padding: 0;
-  color: #E6E6EA;
-  font-size: 0.95rem;
-  line-height: 1.6;
-  display: block;
-  overflow-y: auto;
-  overflow-x: hidden;
-  flex: 1;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 215, 0, 0.5) rgba(0, 0, 0, 0.1);
-}
+.ap-controls { display:flex; flex-direction:column; gap:10px; margin-top:15px; }
+.ap-control-btn { padding:10px 16px; border:none; border-radius:8px; background: rgba(255,215,0,0.1); color:#FFD700; font-weight:600; cursor:pointer; transition: all .2s ease; font-size:.9rem; text-align:center; }
+.ap-control-btn:hover{ background: rgba(255,215,0,0.2); transform: translateY(-1px); }
+.ap-control-btn.danger { background: rgba(255,68,68,0.1); color:#FF4444; }
+.ap-control-btn.danger:hover { background: rgba(255,68,68,0.2); }
+.ap-control-btn.primary { background: linear-gradient(90deg, rgba(255,215,0,0.2), rgba(255,165,0,0.2)); color:#FFD700; }
+.ap-control-btn.primary:hover { background: linear-gradient(90deg, rgba(255,215,0,0.3), rgba(255,165,0,0.3)); }
 
-.ap-body::-webkit-scrollbar {
-  width: 6px;
-}
+/* Footer note */
+.ap-footer-note { text-align:center; padding:16px 0 8px; border-top:1px solid rgba(255,215,0,0.05); margin-top:20px; color:#A8A9AD; font-size:.85rem; }
+.ap-footer-note p{ margin:0; font-style:italic; }
 
-.ap-body::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 3px;
-}
+/* body class when open */
+body.ap-modal-open { overflow:hidden; }
 
-.ap-body::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #FFD700, #FFA500);
-  border-radius: 3px;
-}
+/* footer layout */
+.site-footer { width:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; padding:20px 0 60px; z-index:15; gap:15px; }
 
-.ap-body::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #FFE44D, #FFB732);
-}
+/* responsive */
+@media (max-width:1024px) { .ap-content { width:70%; max-width:450px; } }
+@media (max-width:768px) { .ap-content { width:85%; max-width:400px; max-height:85vh; } .ap-container{ padding:20px; } .ap-header{ padding:16px 20px; } .ap-section{ padding:14px; } .ap-info-grid{ grid-template-columns:1fr; } #adminPanelBtn.ap-button{ padding:14px 32px; font-size:1rem; } }
+@media (max-width:480px) { .ap-content{ width:92%; max-width:350px; max-height:90vh; } .ap-container{ padding:16px; } .ap-section{ padding:12px; } .ap-body{ font-size:0.9rem; } }
 
-/* Admin Content */
-.ap-container {
-  padding: 24px;
-  min-height: 100%;
-  box-sizing: border-box;
-}
+/* Fade in sections */
+.ap-section { animation: apFadeInUp .4s ease-out both; }
+.ap-section:nth-child(1){animation-delay:.1s} .ap-section:nth-child(2){animation-delay:.15s} .ap-section:nth-child(3){animation-delay:.2s}
+@keyframes apFadeInUp { from{opacity:0; transform:translateY(10px)} to{opacity:1; transform:translateY(0)} }
 
-.ap-section {
-  margin-bottom: 20px;
-  padding: 16px;
-  background: rgba(255, 255, 255, 0.03);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 215, 0, 0.05);
-  transition: all 0.2s ease;
-}
+/* ===========================
+   Coming Soon overlays (button + Real Admin Stuff card)
+   =========================== */
 
-.ap-section:hover {
-  border-color: rgba(255, 215, 0, 0.15);
-  transform: translateY(-1px);
-}
+/* BUTTON overlay wrapper (existing emergency stop overlay) */
+.ap-button-wrap { position: relative; display: inline-block; line-height:0; vertical-align:middle; overflow: hidden; border-radius: inherit; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+.ap-button-wrap .ap-control-btn { position: relative; z-index: 1; width: 100%; box-sizing: border-box; transition: none; }
+.ap-button-wrap.has-overlay .ap-control-btn { color: transparent !important; text-shadow:none !important; pointer-events:none; box-shadow:none !important; }
 
-.ap-section-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #FFA500;
-  margin: 0 0 12px 0;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ap-section-title::before {
-  content: "🔧";
-  font-size: 0.9rem;
-}
-
-.ap-section p {
-  margin: 8px 0;
-  color: #C8C9CD;
-  font-size: 0.9rem;
-  line-height: 1.5;
-}
-
-.ap-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 12px;
-}
-
-.ap-info-item {
-  background: rgba(255, 215, 0, 0.05);
-  border-radius: 8px;
-  padding: 10px;
-  border: 1px solid rgba(255, 215, 0, 0.1);
-}
-
-.ap-info-label {
-  font-size: 0.8rem;
-  color: #FFD700;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.ap-info-value {
-  font-size: 0.9rem;
-  color: #E6E6EA;
-  font-family: 'Courier New', monospace;
-}
-
-/* Status Indicators */
-.ap-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.ap-status.online {
-  background: rgba(0, 255, 0, 0.1);
-  color: #00FF00;
-}
-
-.ap-status.online::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #00FF00;
-  animation: apPulse 2s infinite;
-}
-
-@keyframes apPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.ap-status.offline {
-  background: rgba(255, 0, 0, 0.1);
-  color: #FF4444;
-}
-
-.ap-status.offline::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #FF4444;
-}
-
-/* Admin Controls */
-.ap-controls {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 15px;
-}
-
-.ap-control-btn {
-  padding: 10px 16px;
-  border: none;
-  border-radius: 8px;
-  background: rgba(255, 215, 0, 0.1);
-  color: #FFD700;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-  text-align: center;
-}
-
-.ap-control-btn:hover {
-  background: rgba(255, 215, 0, 0.2);
-  transform: translateY(-1px);
-}
-
-.ap-control-btn.danger {
-  background: rgba(255, 68, 68, 0.1);
-  color: #FF4444;
-}
-
-.ap-control-btn.danger:hover {
-  background: rgba(255, 68, 68, 0.2);
-}
-
-.ap-control-btn.primary {
-  background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
-  color: #FFD700;
-}
-
-.ap-control-btn.primary:hover {
-  background: linear-gradient(90deg, rgba(255, 215, 0, 0.3), rgba(255, 165, 0, 0.3));
-}
-
-/* Footer Note */
-.ap-footer-note {
-  text-align: center;
-  padding: 16px 0 8px;
-  border-top: 1px solid rgba(255, 215, 0, 0.05);
-  margin-top: 20px;
-  color: #A8A9AD;
-  font-size: 0.85rem;
-}
-
-.ap-footer-note p {
-  margin: 0;
-  font-style: italic;
-}
-
-/* Body class when modal is open */
-body.ap-modal-open {
-  overflow: hidden;
-}
-
-/* تحسين ترتيب الأزرار في الـ Footer */
-.site-footer {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 20px 0 60px;
-  z-index: 15;
-  gap: 15px;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .ap-content {
-    width: 70%;
-    max-width: 450px;
-  }
-}
-
-@media (max-width: 768px) {
-  .ap-content {
-    width: 85%;
-    max-width: 400px;
-    max-height: 85vh;
-  }
-  
-  .ap-container {
-    padding: 20px;
-  }
-  
-  .ap-header {
-    padding: 16px 20px;
-  }
-  
-  .ap-section {
-    padding: 14px;
-  }
-  
-  .ap-info-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  #adminPanelBtn.ap-button {
-    padding: 14px 32px;
-    font-size: 1rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .ap-content {
-    width: 92%;
-    max-width: 350px;
-    max-height: 90vh;
-  }
-  
-  .ap-container {
-    padding: 16px;
-  }
-  
-  .ap-section {
-    padding: 12px;
-  }
-  
-  .ap-body {
-    font-size: 0.9rem;
-  }
-}
-
-/* Fade In Animation for Sections */
-.ap-section {
-  animation: apFadeInUp 0.4s ease-out both;
-}
-
-.ap-section:nth-child(1) { animation-delay: 0.1s; }
-.ap-section:nth-child(2) { animation-delay: 0.15s; }
-.ap-section:nth-child(3) { animation-delay: 0.2s; }
-
-@keyframes apFadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-
-/* === NEW: Coming soon overlay styles (updated per request) === */
-
-/* wrapper around the emergency button so overlay can sit perfectly over it */
-.ap-button-wrap {
-  position: relative;
-  display: inline-block;
-  line-height: 0;
-  vertical-align: middle;
-  overflow: hidden; /* clip any pseudo-element glows that would escape */
-  border-radius: inherit;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-}
-
-/* make sure the danger button sits below overlay visually */
-.ap-button-wrap .ap-control-btn {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  box-sizing: border-box;
-  transition: none;
-}
-
-.ap-button-wrap.has-overlay .ap-control-btn {
-  color: transparent !important;    /* visually hide */
-  text-shadow: none !important;
-  pointer-events: none;             /* don't let hover events change appearance */
-  box-shadow: none !important;
-}
-
-
+/* button overlay (inside button) - alpha 0.50 */
 .coming-soon-overlay {
   position: absolute;
-  inset: 0; /* cover exactly the button area */
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
   border-radius: inherit;
-  background: rgba(11,7,16,0.75); /* 75% dark tint */
+  background: rgba(11,7,16,0.50); /* 50% tint */
   backdrop-filter: blur(6px) saturate(1.05);
   -webkit-backdrop-filter: blur(6px) saturate(1.05);
   z-index: 9999;
-  pointer-events: auto; /* block clicks (button disabled) */
-  padding: 8px 12px;
-  box-sizing: border-box;
-  user-select: none;
+  pointer-events:auto;
+  padding:8px 12px;
+  box-sizing:border-box;
+  user-select:none;
   will-change: transform, opacity;
-  overflow: hidden;
+  overflow:hidden;
 }
-
-/* subtle floating motion kept very gentle */
-.coming-soon-overlay.animate-float {
-  animation: overlayFloat 4.2s ease-in-out infinite;
-}
-
+.coming-soon-overlay.animate-float { animation: overlayFloat 4.2s ease-in-out infinite; }
 @keyframes overlayFloat { 0%{transform:translateY(0)}50%{transform:translateY(-1.4px)}100%{transform:translateY(0)} }
 
+.coming-soon-overlay .coming-soon-text { font-weight:700; font-size:0.98rem; color: rgba(255,255,255,0.18); letter-spacing:0.3px; text-align:center; text-shadow:0 1px 4px rgba(0,0,0,0.45); display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
 
-/* text inside overlay: now very transparent as requested */
-.coming-soon-overlay .coming-soon-text {
-  font-weight:700;
-  font-size:0.98rem;
-  color: rgba(255,255,255,0.14); /* very transparent */
-  letter-spacing:0.3px;
-  text-align:center;
-  text-shadow: 0 1px 4px rgba(0,0,0,0.45);
-  display:inline-flex;
-  align-items:center;
-  gap:8px;
-  white-space:nowrap;;
-}
-
-/* responsive scaling for small screens */
-@media (max-width: 420px) {
-  .coming-soon-overlay .coming-soon-text {
-    font-size: 0.85rem;
-    gap: 6px;
-  }
-}
-
-/* dots: three spans, animated smoothly (no abrupt blinking).
-   each dot gently rises and brightens in a staggered pattern to create
-   the progressive effect without hard flashing */
+/* dots for button */
 .coming-soon-overlay .dots { display:inline-flex; gap:4px; margin-left:8px; align-items:center; }
+.coming-soon-overlay .dots span { display:inline-block; font-weight:800; font-size:1.02rem; line-height:1; opacity:0.22; transform:translateY(0); color: rgba(255,255,255,0.22); will-change:opacity, transform; animation: dotPulse 1.8s cubic-bezier(.2,.9,.3,.95) infinite; }
+.coming-soon-overlay .dots span:nth-child(1){animation-delay:0s} .coming-soon-overlay .dots span:nth-child(2){animation-delay:.16s} .coming-soon-overlay .dots span:nth-child(3){animation-delay:.32s}
 
-.coming-soon-overlay .dots span {
-  display:inline-block;
-  font-weight:800;
-  font-size:1.02rem;
-  line-height:1;
-  opacity:0.22;
-  transform:translateY(0);
-  color: rgba(255,255,255,0.22);
-  will-change:opacity, transform;
-  animation: dotPulse 1.8s cubic-bezier(.2,.9,.3,.95) infinite;
-}
-
-/* stagger delays produce the progressive dot sequence */
-.coming-soon-overlay .dots span:nth-child(1) { animation-delay: 0s; }
-.coming-soon-overlay .dots span:nth-child(2) { animation-delay: 0.16s; }
-.coming-soon-overlay .dots span:nth-child(3) { animation-delay: 0.32s; }
-
-/* keyframes: smooth ramp up then fade (no abrupt blinking) */
-@keyframes dotPulse {
-  0%   { opacity: 0.22; transform: translateY(0); }
-  20%  { opacity: 0.48; transform: translateY(-1px); }
-  40%  { opacity: 0.86; transform: translateY(-2px); }
-  60%  { opacity: 0.5;  transform: translateY(-1px); }
-  100% { opacity: 0.22; transform: translateY(0); }
-}
-
-
-.coming-soon-overlay .dots span:nth-child(1){animation-delay:0s}
-.coming-soon-overlay .dots span:nth-child(2){animation-delay:.16s}
-.coming-soon-overlay .dots span:nth-child(3){animation-delay:.32s}
+/* smooth dot pulse (shared) */
 @keyframes dotPulse {
   0% { opacity:0.22; transform:translateY(0); }
   20% { opacity:0.48; transform:translateY(-1px); }
@@ -604,27 +219,154 @@ body.ap-modal-open {
   100% { opacity:0.22; transform:translateY(0); }
 }
 
-/* disable hover/active transforms while overlay is active to avoid misalignment */
+/* ===========================
+   NEW: Real Admin Stuff card (professional "coming soon")
+   =========================== */
+
+.ap-section-real-admin { padding: 0; } /* remove inner padding to use full-width card */
+
+.real-admin-card {
+  position: relative;
+  margin: 8px 0;
+  border-radius: 14px;
+  overflow: hidden;
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,215,0,0.04);
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.55),
+    inset 0 1px 0 rgba(255,255,255,0.02);
+}
+
+/* decorative left accent (vertical) */
+.real-admin-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 6px;
+  background: linear-gradient(180deg, rgba(255,215,0,0.95), rgba(255,165,0,0.9));
+  box-shadow: 0 6px 18px rgba(255,165,0,0.06);
+}
+
+/* inner content (kept non-interactive since section is placeholder) */
+.real-admin-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  text-align: center;
+  color: rgba(230,230,234,0.95);
+  pointer-events: none; /* block interactions since coming soon */
+}
+
+.real-admin-title {
+  display:block;
+  font-weight:800;
+  font-size:1.05rem;
+  color:#FFD966;
+  letter-spacing:0.6px;
+  margin-bottom:8px;
+  text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+}
+
+.real-admin-desc {
+  font-size:0.92rem;
+  color: rgba(230,230,234,0.85);
+  margin-bottom:6px;
+  opacity:0.9;
+}
+
+/* CTA placeholder (visually present but disabled) */
+.real-admin-cta {
+  margin-top:8px;
+  display:inline-block;
+  padding:8px 14px;
+  border-radius:10px;
+  background: linear-gradient(90deg, rgba(255,215,0,0.09), rgba(255,165,0,0.06));
+  color:#FFD700;
+  font-weight:700;
+  font-size:0.9rem;
+  pointer-events: none;
+  opacity:0.9;
+  border:1px solid rgba(255,215,0,0.06);
+}
+
+/* overlay that sits on top of the card (inside it) */
+/* alpha 0.50 consistent with button overlay */
+.real-admin-overlay {
+  position: absolute;
+  inset: 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  padding:20px;
+  box-sizing:border-box;
+  background: linear-gradient(180deg, rgba(8,6,12,0.50), rgba(16,12,20,0.50));
+  backdrop-filter: blur(8px) saturate(1.05);
+  -webkit-backdrop-filter: blur(8px) saturate(1.05);
+  z-index: 10;
+  pointer-events: auto; /* block interactions under the overlay */
+  transition: opacity .28s ease, transform .28s ease;
+}
+
+/* overlay inner styling - slightly larger text for emphasis but subtle */
+.real-admin-overlay .coming-soon-text {
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:800;
+  font-size:1.06rem;
+  color: rgba(255,255,255,0.16); /* very transparent */
+  letter-spacing:0.4px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  white-space:nowrap;
+}
+
+/* bigger dots variant for card */
+.real-admin-overlay .dots { display:inline-flex; gap:6px; margin-left:6px; align-items:center; }
+.real-admin-overlay .dots span {
+  display:inline-block;
+  width:auto;
+  font-weight:900;
+  font-size:1.12rem;
+  line-height:1;
+  color: rgba(255,255,255,0.22);
+  opacity:0.22;
+  transform:translateY(0);
+  will-change:opacity, transform;
+  animation: dotPulse 1.9s cubic-bezier(.2,.9,.3,.95) infinite;
+}
+.real-admin-overlay .dots span:nth-child(1){animation-delay:0s}
+.real-admin-overlay .dots span:nth-child(2){animation-delay:.18s}
+.real-admin-overlay .dots span:nth-child(3){animation-delay:.36s}
+
+/* subtle entrance for overlay (no blinking) */
+.real-admin-overlay { animation: overlayIntro .35s cubic-bezier(.2,.9,.3,.95) both; }
+@keyframes overlayIntro { from { opacity:0; transform: translateY(6px);} to { opacity:1; transform: translateY(0);} }
+
+/* Responsive tweaks */
+@media (max-width: 520px) {
+  .real-admin-card { padding:14px; min-height:100px; }
+  .real-admin-title{ font-size:1rem }
+  .real-admin-overlay .coming-soon-text { font-size:0.92rem; gap:6px; }
+  .real-admin-overlay .dots span { font-size:0.96rem; }
+}
+
+/* disable hover transforms globally for elements behind overlays to avoid jitter */
 .ap-button-wrap.has-overlay .ap-control-btn:hover,
-.ap-button-wrap.has-overlay .ap-control-btn:active {
+.ap-button-wrap.has-overlay .ap-control-btn:active,
+.real-admin-card .ap-control-btn:hover,
+.real-admin-card .ap-control-btn:active {
   transform: none !important;
 }
 
-/* fallback: hide common floating dot indicators in controls/footer (image showed a red dot) */
-.ap-controls .floating-dot,
-.site-footer .floating-dot,
-.ap-modal .floating-dot,
-.ap-controls .focus-indicator,
-.site-footer .focus-indicator {
-  display: none !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-}
-
-/* accessibility helper: if visually-hidden-label present, hide it from screen readers when overlay active */
-.ap-button-wrap.has-overlay .visually-hidden-label { aria-hidden: true; }
-
-/* responsive tweaks for overlay text */
-@media (max-width:420px) {
-  .coming-soon-overlay .coming-soon-text { font-size:0.85rem; gap:6px; }
-}
+/* fallback hidden selectors for stray floating dot (from screenshot) */
+.ap-controls .floating-dot, .site-footer .floating-dot, .ap-modal .floating-dot, .ap-controls .focus-indicator, .site-footer .focus-indicator { display:none !important; pointer-events:none !important; opacity:0 !important; }
