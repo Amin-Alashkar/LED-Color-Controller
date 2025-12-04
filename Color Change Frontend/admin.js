@@ -1,5 +1,6 @@
-// admin.js
+// admin.js (full, updated: overlay stays inside the button, text very transparent, overlay alpha 50%)
 
+/* eslint-disable no-underscore-dangle */
 class AdminPanel {
     constructor() {
         this.modal = null;
@@ -34,6 +35,8 @@ class AdminPanel {
         if (document.getElementById('adminPanelModal')) {
             console.log('Admin Panel modal already exists');
             this.modal = document.getElementById('adminPanelModal');
+            // ensure overlay exists if modal recreated
+            this.addComingSoonOverlay();
             return;
         }
         
@@ -115,6 +118,9 @@ class AdminPanel {
         // إضافة المودال إلى body
         document.body.appendChild(modal);
         this.modal = modal;
+        
+        // إنشاء غشاوة "Coming soon" فوق زر Emergency Stop
+        this.addComingSoonOverlay();
         
         // تحديث العناصر القابلة للتركيز
         this.updateFocusableElements();
@@ -381,6 +387,95 @@ class AdminPanel {
                 this.updateStatus();
             }, 1500);
         }, 800);
+    }
+
+
+    /* === NEW: Add Coming Soon overlay (inside button, transparent text) === */
+    addComingSoonOverlay() {
+        if (!this.modal) return;
+
+        const btn = this.modal.querySelector('#apEmergencyStop');
+        if (!btn) return; // button not present yet
+
+        // If overlay already exists, don't recreate
+        if (btn.__comingSoonAttached) return;
+
+        // Create wrapper if not already wrapped
+        let wrapper;
+        if (btn.parentNode && btn.parentNode.classList && btn.parentNode.classList.contains('ap-button-wrap')) {
+            wrapper = btn.parentNode;
+        } else {
+            wrapper = document.createElement('div');
+            wrapper.className = 'ap-button-wrap';
+            // preserve display style
+            wrapper.style.display = window.getComputedStyle(btn).display === 'block' ? 'block' : 'inline-block';
+            btn.parentNode.insertBefore(wrapper, btn);
+            wrapper.appendChild(btn);
+        }
+
+        // apply border-radius for consistent pill shape on wrapper
+        try {
+            const br = window.getComputedStyle(btn).borderRadius;
+            if (br) wrapper.style.borderRadius = br;
+        } catch (e) {
+            // ignore
+        }
+
+        // Create overlay element with inner HTML for CSS-only dots animation
+        const overlay = document.createElement('div');
+        overlay.className = 'coming-soon-overlay animate-float';
+        overlay.setAttribute('aria-hidden', 'true');
+
+        overlay.innerHTML = `
+            <span class="coming-soon-text">
+                Coming soon
+                <span class="dots" aria-hidden="true">
+                    <span class="dot">.</span>
+                    <span class="dot">.</span>
+                    <span class="dot">.</span>
+                </span>
+            </span>
+        `;
+
+        wrapper.appendChild(overlay);
+
+        // Disable the underlying button to avoid accidental triggers
+        btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
+
+        // store reference for cleanup if needed
+        btn.__comingSoonAttached = true;
+        btn.__comingSoonOverlay = overlay;
+
+        // Refresh focusable elements list since we changed DOM and disabled button
+        this.updateFocusableElements();
+    }
+
+    // Utility: remove the overlay and restore button (kept for dev/test)
+    removeComingSoonOverlay() {
+        if (!this.modal) return;
+        const btn = this.modal.querySelector('#apEmergencyStop');
+        if (!btn || !btn.__comingSoonAttached) return;
+
+        // remove overlay
+        const overlay = btn.__comingSoonOverlay;
+        if (overlay && overlay.parentNode) overlay.parentNode.removeChild(overlay);
+
+        // unwrap the button if desired
+        const wrapper = btn.parentNode;
+        if (wrapper && wrapper.classList && wrapper.classList.contains('ap-button-wrap')) {
+            wrapper.parentNode.insertBefore(btn, wrapper);
+            wrapper.parentNode.removeChild(wrapper);
+        }
+
+        btn.disabled = false;
+        btn.removeAttribute('aria-disabled');
+
+        delete btn.__comingSoonAttached;
+        delete btn.__comingSoonOverlay;
+
+        // refresh focusables
+        this.updateFocusableElements();
     }
 }
 
