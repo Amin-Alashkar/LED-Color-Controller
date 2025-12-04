@@ -72,7 +72,7 @@ class AdminPanel {
                                 </div>
                                 <div class="ap-info-item">
                                     <div class="ap-info-label">Active Clients</div>
-                                    <div class="ap-info-value" id="apClientCount">1</div>
+                                    <div class="ap-info-value" id="apClientCount">N/A</div>
                                 </div>
                                 <div class="ap-info-item">
                                     <div class="ap-info-label">Uptime</div>
@@ -307,13 +307,13 @@ class AdminPanel {
         if (!uptimeElement) return;
         
         // وقت التشغيل المحاكى
-        const startTime = Date.now() - (30 * 60 * 1000); // منذ 30 دقيقة
+        const startTime = Date.now() - (30 * 60 * 1000); 
         const uptimeMs = Date.now() - startTime;
         
         const hours = Math.floor(uptimeMs / (1000 * 60 * 60));
         const minutes = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
         
-        uptimeElement.textContent = `${hours}h ${minutes}m`;
+        uptimeElement.textContent = `N/A`;
     }
     
     refreshStatus() {
