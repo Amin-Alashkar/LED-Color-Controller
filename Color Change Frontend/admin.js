@@ -1,5 +1,4 @@
-// admin.js (full, updated: overlay stays inside the button, text very transparent, overlay alpha 50%)
-
+// admin.js (FULL) - updated: Real Admin Stuff section added inside modal HTML
 /* eslint-disable no-underscore-dangle */
 class AdminPanel {
     constructor() {
@@ -49,7 +48,7 @@ class AdminPanel {
         modal.setAttribute('aria-hidden', 'true');
         modal.setAttribute('aria-labelledby', 'adminPanelTitle');
         
-        // محتوى المودال
+        // محتوى المودال — تم إضافة قسم "Real Admin Stuff" هنا
         modal.innerHTML = `
             <div class="ap-content" role="document">
                 <div class="ap-header">
@@ -106,6 +105,29 @@ class AdminPanel {
                                 </button>
                             </div>
                         </div>
+
+                        <!-- NEW: Real Admin Stuff section (coming soon, professional design) -->
+                        <div class="ap-section ap-section-real-admin" id="apRealAdminSection" aria-labelledby="realAdminTitle" role="region">
+                          <div class="real-admin-card" role="group" aria-label="Real Admin Stuff (coming soon)">
+                            <div class="real-admin-content" aria-hidden="true">
+                              <span class="real-admin-title" id="realAdminTitle">Real Admin Stuff</span>
+                              <div class="real-admin-desc">Advanced controls and server-side tools — available soon.</div>
+                              <div class="real-admin-cta">Locked</div>
+                            </div>
+
+                            <!-- overlay that shows the professional coming soon -->
+                            <div class="real-admin-overlay" role="status" aria-live="polite" aria-label="Coming soon">
+                              <span class="coming-soon-text">
+                                Coming soon
+                                <span class="dots" aria-hidden="true">
+                                  <span class="dot">.</span>
+                                  <span class="dot">.</span>
+                                  <span class="dot">.</span>
+                                </span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
                         
                         <div class="ap-footer-note">
                             <p>Restricted Access • VPA Gold Theme</p>
@@ -119,13 +141,13 @@ class AdminPanel {
         document.body.appendChild(modal);
         this.modal = modal;
         
-        // إنشاء غشاوة "Coming soon" فوق زر Emergency Stop
+        // إنشاء غشاوة "Coming soon" فوق زر Emergency Stop (button overlay)
         this.addComingSoonOverlay();
         
         // تحديث العناصر القابلة للتركيز
         this.updateFocusableElements();
         
-        console.log('Admin Panel modal created');
+        console.log('Admin Panel modal created (with Real Admin Stuff placeholder)');
     }
     
     addEventListeners() {
@@ -362,7 +384,7 @@ class AdminPanel {
     }
     
     emergencyStop() {
-        if (!confirm('Are you sure you want to emergency stop all animations?\nThis will turn off all LEDs.')) {
+        if (!confirm('Are you sure you want to emergency stop all animations?\\nThis will turn off all LEDs.')) {
             return;
         }
         
@@ -390,7 +412,7 @@ class AdminPanel {
     }
 
 
-    /* === NEW: Add Coming Soon overlay (inside button, transparent text) === */
+    /* === Coming Soon overlay for Emergency Stop button (unchanged) === */
     addComingSoonOverlay() {
         if (!this.modal) return;
 
