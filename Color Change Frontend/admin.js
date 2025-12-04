@@ -130,7 +130,7 @@ class AdminPanel {
                         </div>
                         
                         <div class="ap-footer-note">
-                            <p>Restricted Access • VPA Gold Theme</p>
+                            <p>Restricted Access • Admin is tuff</p>
                         </div>
                     </div>
                 </div>
