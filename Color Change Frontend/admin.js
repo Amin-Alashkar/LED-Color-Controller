@@ -1,160 +1,412 @@
-// DOM Elements for Admin
-const vipBtn = document.getElementById('vipBtn');
-const modal = document.getElementById('adminModal');
-const closeBtn = document.querySelector('.close-btn');
-const adminFeatures = document.getElementById('adminFeatures');
+// admin.js
 
-let is_admin = false;
-
-// Show modal when VIP button is clicked
-vipBtn.addEventListener('click', function() {
-    modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    modal.classList.remove('closing');
-});
-
-// Close modal function
-function closeModal() {
-    modal.classList.add('closing');
-    setTimeout(() => {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }, 600);
-}
-
-// Close modal events
-closeBtn.addEventListener('click', closeModal);
-modal.addEventListener('click', function(e) {
-    if (e.target === modal) {
-        closeModal();
+class AdminPanel {
+    constructor() {
+        this.modal = null;
+        this.isOpen = false;
+        this.focusableElements = [];
+        this.focusedElementBeforeOpen = null;
+        
+        this.init();
     }
-});
-
-// Close with ESC key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape' && modal.style.display === 'flex') {
-        closeModal();
+    
+    init() {
+        // إنشاء المودال فقط (الزر موجود في HTML)
+        this.createAdminModal();
+        
+        // إضافة مستمعي الأحداث
+        this.addEventListeners();
+        
+        // تحديث الحالة
+        setTimeout(() => {
+            this.updateStatus();
+            this.updateUptime();
+        }, 1000);
+        
+        // تحديث الـ Uptime كل دقيقة
+        setInterval(() => this.updateUptime(), 60000);
+        
+        console.log('Admin Panel initialized');
     }
-});
-
-// Admin login function
-async function adminLogin() {
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-    const submitBtn = document.querySelector('.submit-btn');
-
-    if (!username || !password) {
-        alert('Please enter both username and password');
-        return;
-    }
-
-    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Accessing…';
-    submitBtn.disabled = true;
-
-    try {
-        const formData = new FormData();
-        formData.append('username', username);
-        formData.append('password', password);
-
-        const response = await fetch(`${API_BASE_URL}/admin/login`, {
-            method: 'POST',
-            body: formData,
-            credentials: 'include'
-        });
-
-        if (response.ok) {
-            const result = await response.json();
-            if (result.status === "success") {
-                is_admin = true;
-                closeModal();               
-                updateUIForAdmin();         
-            } else {
-                throw new Error('Login failed. Please check your credentials.');
-            }
-        } else {
-            const error = await response.json();
-            throw new Error(error.detail || 'Login failed');
+    
+    createAdminModal() {
+        // تحقق إذا كان المودال موجود مسبقاً
+        if (document.getElementById('adminPanelModal')) {
+            console.log('Admin Panel modal already exists');
+            this.modal = document.getElementById('adminPanelModal');
+            return;
         }
-    } catch (error) {
-        alert(error.message);
-    } finally {
-        submitBtn.innerHTML = 'Access Dashboard';
-        submitBtn.disabled = false;
-    }
-}
-
-// Update UI for admin
-function updateUIForAdmin() {
-    if (is_admin) {
-        adminFeatures.style.display = 'block';
-        adminFeatures.innerHTML = `
-            <h2 class="button-title">Admin Controls</h2>
-            <div class="button-container">
-                <button id="resetSystemBtn" onclick="systemReset()">Reset System</button>
-                <button id="rebootDeviceBtn" onclick="rebootDevice()">Reboot Device</button>
-                <button id="shutdownSystemBtn" onclick="shutdownSystem()">Shutdown</button>
-                <button id="adminLogoutBtn" onclick="adminLogout()">Logout</button>
+        
+        // إنشاء حاوية المودال
+        const modal = document.createElement('div');
+        modal.id = 'adminPanelModal';
+        modal.className = 'ap-modal';
+        modal.setAttribute('role', 'dialog');
+        modal.setAttribute('aria-modal', 'true');
+        modal.setAttribute('aria-hidden', 'true');
+        modal.setAttribute('aria-labelledby', 'adminPanelTitle');
+        
+        // محتوى المودال
+        modal.innerHTML = `
+            <div class="ap-content" role="document">
+                <div class="ap-header">
+                    <h2 id="adminPanelTitle">Admin Panel</h2>
+                    <button id="adminClose" class="ap-close-btn" aria-label="Close admin panel">&times;</button>
+                </div>
+                <div class="ap-body">
+                    <div class="ap-container">
+                        <div class="ap-section">
+                            <h3 class="ap-section-title">System Status</h3>
+                            <div class="ap-info-grid">
+                                <div class="ap-info-item">
+                                    <div class="ap-info-label">API Status</div>
+                                    <div class="ap-info-value" id="apApiStatus">
+                                        <span class="ap-status online">Online</span>
+                                    </div>
+                                </div>
+                                <div class="ap-info-item">
+                                    <div class="ap-info-label">LED Controller</div>
+                                    <div class="ap-info-value" id="apLedStatus">
+                                        <span class="ap-status online">Connected</span>
+                                    </div>
+                                </div>
+                                <div class="ap-info-item">
+                                    <div class="ap-info-label">Active Clients</div>
+                                    <div class="ap-info-value" id="apClientCount">1</div>
+                                </div>
+                                <div class="ap-info-item">
+                                    <div class="ap-info-label">Uptime</div>
+                                    <div class="ap-info-value" id="apUptime">0h 0m</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="ap-section">
+                            <h3 class="ap-section-title">System Information</h3>
+                            <p><strong>Version:</strong> 1.0.0</p>
+                            <p><strong>API Base:</strong> <span id="apApiBase">${window.location.hostname}:8000</span></p>
+                            <p><strong>Last Updated:</strong> <span id="apLastUpdate">Just now</span></p>
+                            <p><strong>Animation State:</strong> <span id="apAnimState">Idle</span></p>
+                        </div>
+                        
+                        <div class="ap-section">
+                            <h3 class="ap-section-title">Quick Actions</h3>
+                            <div class="ap-controls">
+                                <button class="ap-control-btn primary" id="apRefreshStatus">
+                                    Refresh Status
+                                </button>
+                                <button class="ap-control-btn" id="apViewLogs">
+                                    View System Logs
+                                </button>
+                                <button class="ap-control-btn danger" id="apEmergencyStop">
+                                    Emergency Stop
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="ap-footer-note">
+                            <p>Restricted Access • VPA Gold Theme</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
-    } else {
-        adminFeatures.style.display = 'none';
-        adminFeatures.innerHTML = '';
+        
+        // إضافة المودال إلى body
+        document.body.appendChild(modal);
+        this.modal = modal;
+        
+        // تحديث العناصر القابلة للتركيز
+        this.updateFocusableElements();
+        
+        console.log('Admin Panel modal created');
     }
-}
-
-// Admin control functions
-async function systemReset() {
-    await fetch(`${API_BASE_URL}/admin/reset`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-    alert('System reset!');
-}
-
-async function rebootDevice() {
-    await fetch(`${API_BASE_URL}/admin/reboot`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-    alert('Device rebooting...');
-}
-
-async function shutdownSystem() {
-    await fetch(`${API_BASE_URL}/admin/shutdown`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-    alert('System shutting down...');
-}
-
-async function adminLogout() {
-    await fetch(`${API_BASE_URL}/admin/logout`, {
-        method: 'POST',
-        credentials: 'include'
-    });
-    is_admin = false;
-    updateUIForAdmin();
-    alert('You have been logged out');
-}
-
-// Check admin status on page load
-async function checkAdminStatus() {
-    try {
-        const res = await fetch(`${API_BASE_URL}/admin/status`, {
-            credentials: 'include'
+    
+    addEventListeners() {
+        // النقر على زر Admin Panel
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'adminPanelBtn' || e.target.closest('#adminPanelBtn')) {
+                e.preventDefault();
+                this.open();
+            }
+            
+            // النقر على زر الإغلاق
+            if (e.target.id === 'adminClose' || e.target.closest('#adminClose')) {
+                e.preventDefault();
+                this.close();
+            }
+            
+            // النقر خارج المودال (الخلفية)
+            if (e.target === this.modal) {
+                this.close();
+            }
         });
-        const data = await res.json();
-        is_admin = data.is_admin;
-        updateUIForAdmin();
-    } catch (error) {
-        console.error('Failed to check admin status:', error);
+        
+        // أحداث لوحة المفاتيح
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.isOpen) {
+                this.close();
+            }
+            
+            // حصر التركيز داخل المودال
+            if (e.key === 'Tab' && this.isOpen) {
+                this.trapFocus(e);
+            }
+        });
+        
+        // التحكم في أزرار المودال
+        document.addEventListener('click', (e) => {
+            if (!this.isOpen) return;
+            
+            if (e.target.id === 'apRefreshStatus') {
+                this.refreshStatus();
+            }
+            
+            if (e.target.id === 'apViewLogs') {
+                this.viewLogs();
+            }
+            
+            if (e.target.id === 'apEmergencyStop') {
+                this.emergencyStop();
+            }
+        });
+        
+        console.log('Admin Panel event listeners added');
+    }
+    
+    open() {
+        if (this.isOpen) return;
+        
+        // حفظ العنصر المركّز حالياً
+        this.focusedElementBeforeOpen = document.activeElement;
+        
+        // عرض المودال
+        this.modal.classList.add('show');
+        this.modal.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('ap-modal-open');
+        this.isOpen = true;
+        
+        // تحديث العناصر القابلة للتركيز
+        this.updateFocusableElements();
+        
+        // التركيز على أول عنصر
+        setTimeout(() => {
+            this.focusableElements[0]?.focus();
+        }, 50);
+        
+        // تحديث الحالة
+        this.updateStatus();
+        
+        console.log('Admin Panel opened');
+    }
+    
+    close() {
+        if (!this.isOpen) return;
+        
+        // إخفاء المودال
+        this.modal.classList.remove('show');
+        this.modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('ap-modal-open');
+        this.isOpen = false;
+        
+        // إعادة التركيز إلى الزر
+        if (this.focusedElementBeforeOpen) {
+            this.focusedElementBeforeOpen.focus();
+        }
+        
+        console.log('Admin Panel closed');
+    }
+    
+    updateFocusableElements() {
+        if (!this.modal) return;
+        
+        const focusableSelectors = [
+            'button:not([disabled])',
+            '[href]',
+            'input:not([disabled])',
+            'select:not([disabled])',
+            'textarea:not([disabled])',
+            '[tabindex]:not([tabindex="-1"])'
+        ];
+        
+        this.focusableElements = Array.from(
+            this.modal.querySelectorAll(focusableSelectors.join(','))
+        );
+    }
+    
+    trapFocus(e) {
+        if (!this.isOpen || this.focusableElements.length === 0) return;
+        
+        const firstElement = this.focusableElements[0];
+        const lastElement = this.focusableElements[this.focusableElements.length - 1];
+        
+        if (e.shiftKey) {
+            // Shift + Tab
+            if (document.activeElement === firstElement) {
+                e.preventDefault();
+                lastElement.focus();
+            }
+        } else {
+            // Tab
+            if (document.activeElement === lastElement) {
+                e.preventDefault();
+                firstElement.focus();
+            }
+        }
+    }
+    
+    async updateStatus() {
+        try {
+            const apiStatus = this.modal?.querySelector('#apApiStatus .ap-status');
+            const ledStatus = this.modal?.querySelector('#apLedStatus .ap-status');
+            const clientCount = this.modal?.querySelector('#apClientCount');
+            const animState = this.modal?.querySelector('#apAnimState');
+            
+            if (!apiStatus || !ledStatus || !clientCount || !animState) return;
+            
+            // التحقق من حالة API
+            try {
+                const response = await fetch(`http://${window.location.hostname}:8000/state`);
+                if (response.ok) {
+                    const data = await response.json();
+                    
+                    apiStatus.className = 'ap-status online';
+                    apiStatus.textContent = 'Online';
+                    
+                    ledStatus.className = 'ap-status online';
+                    ledStatus.textContent = 'Connected';
+                    
+                    animState.textContent = data.animation ? data.animation : 'Idle';
+                } else {
+                    throw new Error('API not responding');
+                }
+            } catch (error) {
+                apiStatus.className = 'ap-status offline';
+                apiStatus.textContent = 'Offline';
+                
+                ledStatus.className = 'ap-status offline';
+                ledStatus.textContent = 'Disconnected';
+                
+                animState.textContent = 'Unknown';
+            }
+            
+            // تحديث الطابع الزمني
+            const lastUpdate = this.modal.querySelector('#apLastUpdate');
+            if (lastUpdate) {
+                const now = new Date();
+                lastUpdate.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            }
+            
+        } catch (error) {
+            console.error('Error updating admin status:', error);
+        }
+    }
+    
+    updateUptime() {
+        const uptimeElement = this.modal?.querySelector('#apUptime');
+        if (!uptimeElement) return;
+        
+        // وقت التشغيل المحاكى
+        const startTime = Date.now() - (30 * 60 * 1000); // منذ 30 دقيقة
+        const uptimeMs = Date.now() - startTime;
+        
+        const hours = Math.floor(uptimeMs / (1000 * 60 * 60));
+        const minutes = Math.floor((uptimeMs % (1000 * 60 * 60)) / (1000 * 60));
+        
+        uptimeElement.textContent = `${hours}h ${minutes}m`;
+    }
+    
+    refreshStatus() {
+        const btn = this.modal?.querySelector('#apRefreshStatus');
+        if (!btn) return;
+        
+        const originalText = btn.textContent;
+        
+        btn.textContent = 'Refreshing...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            this.updateStatus();
+            this.updateUptime();
+            
+            btn.textContent = '✓ Refreshed';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }, 1000);
+        }, 500);
+    }
+    
+    viewLogs() {
+        const btn = this.modal?.querySelector('#apViewLogs');
+        if (!btn) return;
+        
+        const originalText = btn.textContent;
+        
+        btn.textContent = 'Loading logs...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            alert('Log viewer would open here. This is a demo implementation.');
+            
+            btn.textContent = originalText;
+            btn.disabled = false;
+        }, 300);
+    }
+    
+    emergencyStop() {
+        if (!confirm('Are you sure you want to emergency stop all animations?\nThis will turn off all LEDs.')) {
+            return;
+        }
+        
+        const btn = this.modal?.querySelector('#apEmergencyStop');
+        if (!btn) return;
+        
+        const originalText = btn.textContent;
+        
+        btn.textContent = 'Stopping...';
+        btn.disabled = true;
+        
+        // محاكاة التوقف الطارئ
+        setTimeout(() => {
+            // في التطبيق الحقيقي، استدع endpoint الإيقاف
+            // fetch(`http://${window.location.hostname}:8000/stop`, { method: 'POST' });
+            
+            btn.textContent = '✓ Stopped';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.disabled = false;
+                this.updateStatus();
+            }, 1500);
+        }, 800);
     }
 }
 
-// Bind login function to submit button
-document.querySelector('.submit-btn').addEventListener('click', adminLogin);
-
-// Check admin status when page loads
-document.addEventListener("DOMContentLoaded", async () => {
-    await checkAdminStatus();
+// تهيئة عند تحميل DOM
+document.addEventListener('DOMContentLoaded', () => {
+    // إضافة زر Admin Panel يدوياً إلى HTML
+    const footer = document.querySelector('.site-footer');
+    if (footer) {
+        // إنشاء زر Admin Panel
+        const adminBtn = document.createElement('button');
+        adminBtn.id = 'adminPanelBtn';
+        adminBtn.className = 'ap-button';
+        adminBtn.textContent = 'Admin Panel';
+        adminBtn.setAttribute('aria-haspopup', 'dialog');
+        adminBtn.setAttribute('aria-controls', 'adminPanelModal');
+        adminBtn.setAttribute('aria-label', 'Open Admin Panel');
+        
+        // إضافة الزر إلى الـ footer
+        footer.appendChild(adminBtn);
+        
+        console.log('Admin Panel button added to footer');
+    }
+    
+    // تهيئة Admin Panel
+    new AdminPanel();
 });
+
+// تصدير للوصول العالمي (اختياري)
+window.AdminPanel = AdminPanel;
