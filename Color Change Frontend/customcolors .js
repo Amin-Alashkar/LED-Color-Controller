@@ -1,4 +1,4 @@
-// customcolors.js
+// customcolors.js - UPDATED with 3-second hover delay
 
 // بيانات التلميحات لأزرار الألوان
 const colorTooltipData = {
@@ -15,6 +15,9 @@ const colorTooltipData = {
 let currentTooltip = null;
 let currentBrightness = 25;
 let currentColorButton = null;
+let hoverTimeout = null; // NEW: For hover delay
+let tooltipShownByClick = false; // NEW: Track if tooltip was shown by click
+let isHovering = false; // NEW: Track hover state
 
 // دالة لتحميل السطوع من localStorage
 function loadBrightnessFromStorage() {
@@ -115,24 +118,76 @@ function setupEventListeners() {
         if (colorTooltipData[buttonId]) {
             console.log('Adding listeners to button:', buttonId);
             
-            // mouseenter على الزر
+            // Add hover delay class for visual feedback
+            button.classList.add('button-hover-delay');
+            
+            // mouseenter على الزر - مع تأخير 3 ثواني
             button.addEventListener('mouseenter', (e) => {
                 console.log('Mouse enter on button:', buttonId);
-                showTooltip(e.target, buttonId);
+                isHovering = true;
+                
+                // Don't show if tooltip is already visible (except if shown by click)
+                if (currentTooltip && currentTooltip.classList.contains('show') && !tooltipShownByClick) {
+                    return;
+                }
+                
+                // Clear any existing timeout
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                    hoverTimeout = null;
+                }
+                
+                // Start 3-second delay for hover
+                hoverTimeout = setTimeout(() => {
+                    console.log('3-second hover delay completed - showing tooltip');
+                    if (isHovering) { // Only show if still hovering
+                        tooltipShownByClick = false;
+                        showTooltip(e.target, buttonId);
+                    }
+                    hoverTimeout = null;
+                }, 3000); // 3 seconds
             });
 
             // mouseleave على الزر
             button.addEventListener('mouseleave', (e) => {
                 console.log('Mouse leave from button:', buttonId);
-                const relatedTarget = e.relatedTarget;
-                if (!relatedTarget || (currentTooltip && !currentTooltip.contains(relatedTarget))) {
-                    hideTooltip();
+                isHovering = false;
+                
+                // Clear hover timeout
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                    hoverTimeout = null;
+                    console.log('Hover timeout cleared');
+                }
+                
+                // Only hide tooltip if it was shown by hover (not by click)
+                if (currentTooltip && currentTooltip.classList.contains('show') && !tooltipShownByClick) {
+                    const relatedTarget = e.relatedTarget;
+                    // Check if mouse is moving to tooltip
+                    if (!relatedTarget || (currentTooltip && !currentTooltip.contains(relatedTarget))) {
+                        hideTooltip();
+                    }
                 }
             });
 
-            // click على الزر - التطبيق التلقائي للسطوع
+            // click على الزر - التطبيق التلقائي للسطوع مع عرض فوري
             button.addEventListener('click', (e) => {
-                console.log('Color button clicked:', buttonId);
+                console.log('Color button clicked - showing tooltip immediately');
+                e.stopPropagation();
+                
+                // Clear any hover timeout
+                if (hoverTimeout) {
+                    clearTimeout(hoverTimeout);
+                    hoverTimeout = null;
+                }
+                
+                // Set flag that tooltip was shown by click
+                tooltipShownByClick = true;
+                
+                // Show tooltip immediately
+                showTooltip(e.target, buttonId);
+                
+                // Also handle the color application
                 handleColorButtonClick(e.target, buttonId);
             });
         }
@@ -147,9 +202,41 @@ function setupEventListeners() {
 
         currentTooltip.addEventListener('mouseleave', () => {
             console.log('Mouse leave from tooltip');
-            hideTooltip();
+            // Only hide if tooltip was shown by hover (not by click)
+            if (!tooltipShownByClick) {
+                hideTooltip();
+            }
         });
     }
+    
+    // NEW: Close tooltip when clicking outside
+    document.addEventListener('click', function(e) {
+        if (currentTooltip && currentTooltip.classList.contains('show')) {
+            // Check if click is outside the tooltip and not on a color button
+            if (!currentTooltip.contains(e.target) && 
+                !e.target.closest('.button-container button[id]')) {
+                hideTooltip();
+                tooltipShownByClick = false;
+            }
+        }
+    });
+    
+    // NEW: Clear hover timeout when window loses focus
+    window.addEventListener('blur', function() {
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = null;
+        }
+        isHovering = false;
+    });
+    
+    // NEW: Clear hover timeout on page unload
+    window.addEventListener('beforeunload', function() {
+        if (hoverTimeout) {
+            clearTimeout(hoverTimeout);
+            hoverTimeout = null;
+        }
+    });
 }
 
 function showTooltip(button, buttonId) {
@@ -205,6 +292,7 @@ function showTooltip(button, buttonId) {
 function hideTooltip() {
     if (currentTooltip) {
         currentTooltip.classList.remove('show');
+        tooltipShownByClick = false; // Reset flag
         console.log('Tooltip hidden');
     }
 }
