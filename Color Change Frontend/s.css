@@ -200,7 +200,7 @@ button:hover {
     box-shadow: 0 8px 25px rgba(0,0,0,0.3);
 }
 
-.color-ring {
+/* .color-ring {
     position: absolute;
     width: 120px;
     height: 120px;
@@ -228,7 +228,7 @@ button:hover {
     opacity: 0.8;
     cursor: pointer;
     transition: transform 0.3s ease, filter 0.3s ease;
-}
+} */
 
 
 .color-ring:hover {
@@ -247,13 +247,16 @@ button:hover {
     z-index: 1;
 }
 
-.color-picker-wrapper {
+/* .color-picker-wrapper {
     position: relative;
     width: 120px;
     height: 120px;
     margin: 20px auto;
-}
+} */
 
+#colorPickerBtn {
+  color: #7f5cff;
+}
 
 .card {
     position: relative;
