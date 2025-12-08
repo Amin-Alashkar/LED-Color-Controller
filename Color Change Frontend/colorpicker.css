@@ -5,7 +5,7 @@
     display: inline-block;
 }
 
-.color-picker-btn {
+/* .color-picker-btn {
     padding: 12px 25px;
     font-size: 16px;
     cursor: pointer;
@@ -17,12 +17,12 @@
     background: linear-gradient(135deg, #4e44ce, #ff5e5e);
     color: white;
     margin: 5px;
-}
+} */
 
-.color-picker-btn:hover {
+/* .color-picker-btn:hover {
     transform: translateY(-3px);
     box-shadow: 0 7px 14px rgba(0,0,0,0.2);
-}
+} */
 
 .cp-tooltip {
     position: absolute;
@@ -164,6 +164,7 @@
     color: #e0e0e0;
 }
 
+/* Brightness Controls */
 .cp-brightness-controls {
     margin: 15px 0;
     padding: 15px;
