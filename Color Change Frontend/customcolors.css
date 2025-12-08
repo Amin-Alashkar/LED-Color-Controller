@@ -1,4 +1,4 @@
-/* customcolors.css */
+/* customcolors.css - UPDATED */
 
 .custom-color-tooltip {
     position: fixed;
@@ -198,4 +198,95 @@
     background: var(--random-color-1, #4e44ce);
     transform: none;
     box-shadow: none;
+}
+
+/* NEW: Button hover delay indicators */
+.button-hover-delay {
+    position: relative;
+    overflow: hidden;
+}
+
+.button-hover-delay::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--random-color-1), var(--random-color-2));
+    transition: width 3s linear;
+    border-radius: 2px;
+}
+
+.button-hover-delay:hover::after {
+    width: 100%;
+}
+
+.button-hover-delay:hover.delay-complete::after {
+    width: 100%;
+    background: var(--random-color-2);
+}
+
+/* Quick hover indicator for debugging */
+.button-hover-delay:hover:not(.delay-complete) {
+    position: relative;
+}
+
+.button-hover-delay:hover:not(.delay-complete)::before {
+    content: '...';
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--random-color-1);
+    font-size: 14px;
+    font-weight: bold;
+    animation: pulse 1s infinite;
+    background: rgba(0,0,0,0.7);
+    padding: 2px 6px;
+    border-radius: 4px;
+    z-index: 1000;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+#colorPickerBtn {
+    background: linear-gradient(45deg, #ff0000, #ff8000, #ffff00, #00ff00, #00ffff, #0000ff, #8000ff, #ff00ff);
+    background-size: 400% 400%;
+    animation: rainbow-gradient 3s ease infinite;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+#colorPickerBtn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+#colorPickerBtn:hover::before {
+    left: 100%;
+}
+
+@keyframes rainbow-gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+#colorPickerBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
