@@ -1,1 +1,222 @@
 
+// API Configuration
+const API_BASE_URL = 'http://192.168.1.146:8000';
+const GET_MESSAGE_ENDPOINT = `${API_BASE_URL}/message`;
+const POST_MESSAGE_ENDPOINT = `${API_BASE_URL}/message`;
+
+// DOM Elements
+const messageInput = document.getElementById('message-input');
+const sendBtn = document.getElementById('send-btn');
+const clearBtn = document.getElementById('clear-btn');
+const retrieveBtn = document.getElementById('retrieve-btn');
+const autoRefreshBtn = document.getElementById('auto-refresh-btn');
+const serverResponse = document.getElementById('server-response');
+const lastMessage = document.getElementById('last-message');
+const connectionStatus = document.getElementById('connection-status');
+const statusDot = document.querySelector('.status-dot');
+const statusText = document.querySelector('.status-text');
+
+// State variables
+let autoRefreshInterval = null;
+let autoRefreshEnabled = false;
+
+// Initialize the app
+document.addEventListener('DOMContentLoaded', function() {
+    // Check connection to backend
+    checkConnection();
+    
+    // Set up event listeners
+    sendBtn.addEventListener('click', sendMessage);
+    clearBtn.addEventListener('click', clearInput);
+    retrieveBtn.addEventListener('click', getLastMessage);
+    autoRefreshBtn.addEventListener('click', toggleAutoRefresh);
+    
+    // Allow pressing Enter to send (with Shift+Enter for new line)
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    // Retrieve last message on page load
+    getLastMessage();
+});
+
+// Check backend connection
+async function checkConnection() {
+    try {
+        const response = await fetch(GET_MESSAGE_ENDPOINT);
+        
+        if (response.ok) {
+            setConnectionStatus(true, 'Connected to backend');
+        } else {
+            setConnectionStatus(false, 'Backend error');
+        }
+    } catch (error) {
+        console.error('Connection error:', error);
+        setConnectionStatus(false, 'Cannot connect to backend');
+    }
+}
+
+// Set connection status UI
+function setConnectionStatus(isConnected, message) {
+    if (isConnected) {
+        statusDot.classList.remove('disconnected');
+        statusDot.classList.add('connected');
+        statusText.textContent = message;
+    } else {
+        statusDot.classList.remove('connected');
+        statusDot.classList.add('disconnected');
+        statusText.textContent = message;
+    }
+}
+
+// Send message to backend
+async function sendMessage() {
+    const text = messageInput.value.trim();
+    
+    if (!text) {
+        showResponse('Please enter a message before sending.', 'error');
+        messageInput.focus();
+        return;
+    }
+    
+    // Disable send button and show loading state
+    setButtonLoading(sendBtn, true);
+    
+    try {
+        const response = await fetch(POST_MESSAGE_ENDPOINT, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: text })
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            showResponse(`Message sent successfully! Server response: "${data.last_message}"`, 'success');
+            
+            // Clear input after successful send
+            messageInput.value = '';
+            
+            // Immediately update the last message display
+            getLastMessage();
+        } else {
+            showResponse(`Error: Server returned status ${response.status}`, 'error');
+        }
+    } catch (error) {
+        console.error('Error sending message:', error);
+        showResponse('Error: Could not connect to the server. Please check your connection.', 'error');
+        setConnectionStatus(false, 'Connection lost');
+    } finally {
+        // Re-enable send button
+        setButtonLoading(sendBtn, false);
+    }
+}
+
+// Retrieve last message from backend
+async function getLastMessage() {
+    // Disable retrieve button and show loading state
+    setButtonLoading(retrieveBtn, true);
+    
+    try {
+        const response = await fetch(GET_MESSAGE_ENDPOINT);
+        
+        if (response.ok) {
+            const data = await response.json();
+            
+            // Update last message display
+            if (data.last_message) {
+                lastMessage.innerHTML = `<p><strong>Message:</strong> ${escapeHtml(data.last_message)}</p>
+                                        <p><strong>Retrieved:</strong> ${new Date().toLocaleTimeString()}</p>`;
+                lastMessage.classList.remove('error');
+                lastMessage.classList.add('success');
+            } else {
+                lastMessage.innerHTML = '<p class="placeholder">No message stored on server yet</p>';
+                lastMessage.classList.remove('success', 'error');
+            }
+            
+            // Update connection status
+            setConnectionStatus(true, 'Connected to backend');
+        } else {
+            lastMessage.innerHTML = `<p class="error">Error: Server returned status ${response.status}</p>`;
+            lastMessage.classList.add('error');
+        }
+    } catch (error) {
+        console.error('Error retrieving message:', error);
+        lastMessage.innerHTML = '<p class="error">Error: Could not connect to the server</p>';
+        lastMessage.classList.add('error');
+        setConnectionStatus(false, 'Connection lost');
+    } finally {
+        // Re-enable retrieve button
+        setButtonLoading(retrieveBtn, false);
+    }
+}
+
+// Toggle auto-refresh of last message
+function toggleAutoRefresh() {
+    if (autoRefreshEnabled) {
+        // Disable auto-refresh
+        clearInterval(autoRefreshInterval);
+        autoRefreshBtn.innerHTML = '<i class="fas fa-redo"></i> <span>Enable Auto-Refresh (10s)</span>';
+        autoRefreshBtn.classList.remove('btn-primary');
+        autoRefreshBtn.classList.add('btn-secondary');
+        autoRefreshEnabled = false;
+    } else {
+        // Enable auto-refresh
+        autoRefreshInterval = setInterval(getLastMessage, 10000); // 10 seconds
+        autoRefreshBtn.innerHTML = '<i class="fas fa-stop"></i> <span>Disable Auto-Refresh</span>';
+        autoRefreshBtn.classList.remove('btn-secondary');
+        autoRefreshBtn.classList.add('btn-primary');
+        autoRefreshEnabled = true;
+        
+        // Also retrieve immediately
+        getLastMessage();
+    }
+}
+
+// Clear the message input
+function clearInput() {
+    messageInput.value = '';
+    messageInput.focus();
+    showResponse('Input cleared', 'success');
+}
+
+// Show response in the response box
+function showResponse(message, type = 'info') {
+    // Clear any existing classes
+    serverResponse.classList.remove('success', 'error');
+    
+    // Add appropriate class based on type
+    if (type === 'success') {
+        serverResponse.classList.add('success');
+    } else if (type === 'error') {
+        serverResponse.classList.add('error');
+    }
+    
+    // Update content
+    serverResponse.innerHTML = `
+        <p><strong>${type === 'error' ? 'Error' : 'Response'}:</strong> ${escapeHtml(message)}</p>
+        <p><strong>Time:</strong> ${new Date().toLocaleTimeString()}</p>
+    `;
+}
+
+// Set button loading state
+function setButtonLoading(button, isLoading) {
+    if (isLoading) {
+        button.classList.add('loading');
+        button.disabled = true;
+    } else {
+        button.classList.remove('loading');
+        button.disabled = false;
+    }
+}
+
+// Helper function to escape HTML (prevent XSS)
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
